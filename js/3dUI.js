@@ -2,9 +2,10 @@
  * Created by amandaghassaei on 5/5/17.
  */
 
-
+//モデル表示に関する部分かな？
+//ハイライトや交差の関数が定義してある。
 function init3DUI(globals) {
-
+    
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
     var raycasterPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1));

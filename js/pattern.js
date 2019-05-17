@@ -342,6 +342,7 @@ function initPattern(globals){
         }
     }
 
+    //svgファイルを読み込む部分
     function loadSVG(url){
         SVGloader.load(url, function(svg){
 
@@ -449,6 +450,8 @@ function initPattern(globals){
         });
     }
 
+
+    //svg変換？
     function parseSVG(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw){
 
         _.each(_verticesRaw, function(vertex){
