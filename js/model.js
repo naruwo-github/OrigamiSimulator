@@ -272,11 +272,20 @@ function initModel(globals){
             vertices.push(nodes[i].getOriginalPosition());
         }
 
+        //ここでSimulationタブとPatternタブの切り替えをしている
         if (globals.noCreasePatternAvailable() && globals.navMode == "pattern"){
             //switch to simulation mode
             $("#navSimulation").parent().addClass("open");
             $("#navPattern").parent().removeClass("open");
             $("#svgViewer").hide();
+            globals.navMode = "simulation";
+        }
+        //じゃあdrawAppViewerも切り替えしなきゃね
+        if (globals.noCreasePatternAvailable() && globals.navMode == "drawapp"){
+            //switch to simulation mode
+            $("#navSimulation").parent().addClass("open");
+            $("#navDrawApp").parent().removeClass("open");
+            $("#drawAppViewer").hide();
             globals.navMode = "simulation";
         }
 

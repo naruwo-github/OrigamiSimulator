@@ -345,7 +345,10 @@ function initControls(globals){
         $("#recordStatus").hide();
     });
 
+    //おそらくここにsetLinkでPatternやSimulatorのタブの機能を実装している
+    //DrawAppもここに追加するべき
 
+    //Patternのタブについてのところ
     setLink("#navPattern", function(){
         if (globals.noCreasePatternAvailable()){
             globals.warn("No crease pattern available for FOLD format.");
@@ -355,20 +358,58 @@ function initControls(globals){
         globals.pausedForPatternView = globals.simulationRunning;
         globals.model.pause();
         globals.navMode = "pattern";
-        $("#navPattern").parent().addClass("open");
+        $("#navPattern").parent().addClass("open");//Patternのタブに切り替え
         $("#navSimulation").parent().removeClass("open");
-        $("#svgViewer").show();
+        //
+        //
+        $("#navDrawApp").parent().removeClass("open");
+        $("#drawAppViewer").hide();
+        //
+        //
+        $("#svgViewer").show();//svgを表示
     });
     $("#navSimulation").parent().addClass("open");
     $("#navPattern").parent().removeClass("open");
     setLink("#navSimulation", function(){
-        if (globals.navMode == "simulation") return;
-        globals.navMode = "simulation";
+        if (globals.navMode == "simulation") return;//Simulationの状態だったらそのまま
+        globals.navMode = "simulation";//他のタブからであればSimulationタブへ
         if (globals.pausedForPatternView) globals.model.resume();
         $("#navSimulation").parent().addClass("open");
         $("#navPattern").parent().removeClass("open");
-        $("#svgViewer").hide();
+        //
+        //
+        $("#navDrawApp").parent().removeClass("open");
+        $("#drawAppViewer").hide();
+        //
+        //
+        $("#svgViewer").hide();//svgを非表示
     });
+
+    //
+    //ここにDrawAppを書こうかな
+    setLink("#navDrawApp", function(){
+        if (globals.noCreasePatternAvailable()){
+            globals.warn("No crease pattern available for FOLD format.");
+            return;
+        }
+        if (globals.navMode == "drawapp") return;
+        globals.pausedForPatternView = globals.simulationRunning;
+        globals.model.pause();//シミュレーション動作をストップさせるやつ
+        globals.navMode = "drawapp";
+        $("#navDrawApp").parent().addClass("open");//Patternのタブに切り替えを行なっている
+        $("#navSimulation").parent().removeClass("open");
+        $("#navPattern").parent().removeClass("open");
+        //$("#svgViewer").show();//svgを表示
+        //
+        $("#svgViewer").hide();//svgを非表示
+        $("#drawAppViewer").show();//drawAppを表示
+        //
+    });
+    $("#navSimulation").parent().addClass("open");
+    $("#navPattern").parent().removeClass("open");
+    $("#navDrawApp").parent().removeClass("open");
+    //
+    //
 
     setLink(".seeMore", function(e){
         var $target = $(e.target);
@@ -747,9 +788,10 @@ function initControls(globals){
         });
     }
 
+    //setLinkの宣言
     function setLink(id, callback){
         $(id).click(function(e){
-            e.preventDefault();
+            e.preventDefault();//イベントのデフォルト機能を発生させない
             callback(e);
         });
     }
