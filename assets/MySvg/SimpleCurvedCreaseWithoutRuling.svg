@@ -1,0 +1,32 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1400px"
+		height="1200px" viewBox="0 0 1400 1400" enable-background="new 0 0 1400 1400" xml:space="preserve">
+<g id="レイヤー_1">
+
+	<line fill="none" stroke="#000000" x1="328" y1="173" x2="968" y2="173"/>
+	<line fill="none" stroke="#000000" x1="328" y1="173" x2="328" y2="813"/>
+	<line fill="none" stroke="#000000" x1="968" y1="173" x2="968" y2="813"/>
+	<line fill="none" stroke="#000000" x1="328" y1="813" x2="968" y2="813"/>
+</g>
+
+<g id="レイヤー_2">
+	<line fill="none" stroke="#ff0000" x1="670" y1="814" x2="656" y2="790"/>
+	<line fill="none" stroke="#ff0000" x1="656" y1="790" x2="639" y2="757"/>
+	<line fill="none" stroke="#ff0000" x1="639" y1="757" x2="625" y2="724"/>
+	<line fill="none" stroke="#ff0000" x1="625" y1="724" x2="613" y2="690"/>
+	<line fill="none" stroke="#ff0000" x1="613" y1="690" x2="602" y2="655"/>
+	<line fill="none" stroke="#ff0000" x1="602" y1="655" x2="594" y2="619"/>
+	<line fill="none" stroke="#ff0000" x1="594" y1="619" x2="588" y2="584"/>
+	<line fill="none" stroke="#ff0000" x1="588" y1="584" x2="584" y2="548"/>
+	<line fill="none" stroke="#ff0000" x1="584" y1="548" x2="582" y2="512"/>
+	<line fill="none" stroke="#ff0000" x1="582" y1="512" x2="583" y2="475"/>
+	<line fill="none" stroke="#ff0000" x1="583" y1="475" x2="586" y2="439"/>
+	<line fill="none" stroke="#ff0000" x1="586" y1="439" x2="590" y2="403"/>
+	<line fill="none" stroke="#ff0000" x1="590" y1="403" x2="597" y2="368"/>
+	<line fill="none" stroke="#ff0000" x1="597" y1="368" x2="606" y2="332"/>
+	<line fill="none" stroke="#ff0000" x1="606" y1="332" x2="617" y2="298"/>
+	<line fill="none" stroke="#ff0000" x1="617" y1="298" x2="630" y2="264"/>
+	<line fill="none" stroke="#ff0000" x1="630" y1="264" x2="644" y2="230"/>
+	<line fill="none" stroke="#ff0000" x1="644" y1="230" x2="660" y2="197"/>
+	<line fill="none" stroke="#ff0000" x1="660" y1="197" x2="673" y2="174"/>
+</g>
+</svg>
