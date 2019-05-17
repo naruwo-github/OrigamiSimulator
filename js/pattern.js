@@ -384,6 +384,7 @@ function initPattern(globals){
             findType(verticesRaw, triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons, $polylines);
             findType(verticesRaw, hingesRaw, hingeFilter, $paths, $lines, $rects, $polygons, $polylines);
 
+            //色の指定が不適切な場合
             if (badColors.length>0){
                 badColors = _.uniq(badColors);
                 var string = "Some objects found with the following stroke colors:<br/><br/>";
@@ -391,7 +392,7 @@ function initPattern(globals){
                     string += "<span style='background:" + color + "' class='colorSwatch'></span>" + color + "<br/>";
                 });
                 string +=  "<br/>These objects were ignored.<br/>  Please check that your file is set up correctly, <br/>" +
-                    "see <b>File > File Import Tips</b> for more information.";
+                    "see <b>File > File Import Tips</b> for more information.";//この表示をする。色変えなよ〜て
                 globals.warn(string);
             }
 

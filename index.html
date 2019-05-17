@@ -794,9 +794,15 @@
     <script type="text/javascript" src="js/videoAnimator.js"></script>
 
     <script type="text/javascript" src="js/main.js"></script>
+
+    <!---->
+    <!-- <script type="text/javascript" src="js/drawApp.js"></script> -->
+    <!---->
 </head>
 <body>
 
+    <!-- Aboutのところ -->
+    <!-- どれもclassで modal-body持ってる -->
 <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -872,6 +878,7 @@
 </div><!-- /.modal -->
 <!-- ツールバー的な部分の開始点 -->
 <nav id="globalNav" class="navbar navbar-inverse navbar-embossed" role="navigation">
+    <!-- バーにロゴをふってるところ？-->
     <div class="navbar-header">
         <a id="logo" class="navbar-brand" target="_blank" href="http://cba.mit.edu/">
             <img id="inactiveLogo" src="assets/logo.png"/>
@@ -1080,7 +1087,7 @@
             <li><a id="navSimulation" href="#">Simulation</a></li>
             <!---->
             <!-- Draw Appのところ -->
-            <li><a id="navDrawApp" href="#">Draw App</a></li>
+            <li><a id="navDrawApp" class="drawApp" href="#">Draw App</a></li>        
             <!---->
             <!---->
             <!-- Aboutのところ -->
@@ -1212,7 +1219,12 @@
 </div>
 <!---->
 <!-- svgViewer使われてるけどなんでだろう？？ -->
-<div id="drawAppViewer"></div>
+<div class="drawApp" id="drawAppViewer">
+        <b>DRAWING APPLICATION FOR EDITTING</b><br/>
+        <img style="width: 100%; max-width:300px;" src="assets/doc/crane.gif" /><br/>
+        JavaScriptって難しいなあ色々勉強しなきゃ
+</div>
+
 <!-- 一応追加して見た⤴︎ -->
 <div id="svgViewer"></div>
 <div id="helper">Load more origami patterns here!</div>
@@ -1345,6 +1357,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
+                <!-- File -> File  Important Tips -> ここで定義しているページ -->
                 <p><b>FILE IMPORT TIPS</b><br/><br/>
                     Bad design files will throw errors and create models that explode or cannot be solved, here are some tips for
                     importing FOLD or SVG files that work.<br/><br/>
