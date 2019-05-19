@@ -229,7 +229,8 @@ p{
 }
 
 a, a:hover, a:visited, a:focus{
-    color:#ec008b;
+    /*color:#ec008b;*/
+    color: #bbecaa;
 }
 
 a.btn:visited, a.btn:focus{
@@ -615,7 +616,8 @@ a.seeMore.closed>.fui-triangle-down{
 }
 
 #authorMoreInfo a, #authorMoreInfo a:hover,#authorMoreInfo a:visited,#authorMoreInfo a:focus{
-    color: #ec008b !important;
+    /*color: #ec008b !important;*/
+    color: #bbecaa !important;
 }
 
 #authorMoreInfo:after {

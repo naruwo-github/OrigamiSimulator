@@ -13,7 +13,8 @@ function initGlobals(){
         //view
         colorMode: "color",
         calcFaceStrain: false,
-        color1: "ec008b",
+        //color1: "ec008b",
+        color1: "bbecaa",
         color2: "dddddd",
         edgesVisible: true,
         mtnsVisible: true,
