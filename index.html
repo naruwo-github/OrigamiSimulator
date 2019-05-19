@@ -794,9 +794,8 @@
     <script type="text/javascript" src="js/videoAnimator.js"></script>
 
     <script type="text/javascript" src="js/main.js"></script>
-
     <!---->
-    <!-- <script type="text/javascript" src="js/drawApp.js"></script> -->
+    <script type="text/javascript" src="js/drawApp.js"></script>
     <!---->
 </head>
 <body>
@@ -1225,13 +1224,16 @@
         <b>DRAWING APPLICATION FOR EDITTING</b><br/>
         <img style="width: 100%; max-width:300px;" src="assets/doc/crane.gif" /><br/>
         JavaScriptって難しい
-        <div class="drawApp" id="drawAppCanvas">
-                <canvas
-                id="draw-area"
-                width="400px"
-                height="400px"
-                style="border: 1px solid #000000;"></canvas>
+        <div>
+            <canvas
+            id="draw-area"
+            width="400px"
+            height="400px"
+            style="border: 1px solid #000000;"></canvas>
         </div>
+        <div>
+            <button id="clear-button">全消し</button>
+          </div>
 </div>
 
 <!-- 一応追加して見た⤴︎ -->
