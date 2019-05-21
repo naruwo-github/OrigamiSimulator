@@ -168,6 +168,8 @@ function initDynamicSolver(globals){
     }
 
     var $errorOutput = $("#globalError");
+    var $errorOutput2 = $("#globalErrorMax");
+    var $errorOutput3 = $("#globalErrorMin");
 
     function getAvgPosition(){
         var xavg = 0;
@@ -199,11 +201,18 @@ function initDynamicSolver(globals){
             globals.gpuMath.readPixels(0, 0, textureDim * vectorLength, height, pixels);
             var parsedPixels = new Float32Array(pixels.buffer);
             var globalError = 0;
+            var globalError2 = 0;
+            var globalError3 = 0;
             var shouldUpdateColors = globals.colorMode == "axialStrain";
             for (var i = 0; i < nodes.length; i++) {
                 var rgbaIndex = i * vectorLength;
                 var nodeError = parsedPixels[rgbaIndex+3]*100;
                 globalError += nodeError;
+                if(globalError2 < nodeError){
+                    globalError2 = nodeError;
+                }else{
+                    globalError3 = nodeError;
+                }
                 var nodePosition = new THREE.Vector3(parsedPixels[rgbaIndex], parsedPixels[rgbaIndex + 1], parsedPixels[rgbaIndex + 2]);
                 nodePosition.add(nodes[i]._originalPosition);
                 positions[3*i] = nodePosition.x;
@@ -220,6 +229,9 @@ function initDynamicSolver(globals){
                 }
             }
             $errorOutput.html((globalError/nodes.length).toFixed(7) + " %");
+            $errorOutput2.html(globalError2.toFixed(7) + " %");
+            $errorOutput3.html(globalError3.toFixed(7) + " %");
+
         } else {
             console.log("shouldn't be here");
         }

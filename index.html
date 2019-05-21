@@ -1124,6 +1124,7 @@
 
 </div>
 
+<!-- ここのcontrolsはSimulationタブの右上にあるshow or hide Advanced Optionsのところ -->
 <div id="controls">
     <a href="#" id="hideAdvancedOptions">Hide Advanced Options</a><br/><br/>
     <div class="sliderInput floatRight" id="creasePercent">
@@ -1159,6 +1160,7 @@
     </div>
     <div class="fullWidth">
         <a href="#" class="seeMore closed" data-id="simulationSettings"><span class="fui-triangle-down"></span><b>Simulation Settings:</b></a><a class="about" href="#" id="aboutStiffness"><span class="fui-question-circle"></span></a><br/>
+        <!-- Simulation Settingsのところ -->
         <div id="simulationSettings" class="hide">
             <div class="indent">Numerical Integration:
             <div class="doubleIndent">
@@ -1195,6 +1197,7 @@
     </div>
     <div class="fullWidth">
         <a href="#" class="seeMore closed" data-id="animationsSettings"><span class="fui-triangle-down"></span><b>Animation Settings:</b></a><a class="about" href="#" id="aboutAnimation"><span class="fui-question-circle"></span></a><br/>
+        <!-- Animation Settingsのところ -->
         <div id="animationsSettings" class="fullWidth hide">
             <div class="doubleIndent">
                 <span class="smallTxt">&Delta;t = <span id="deltaT"></span> seconds</span><br/>
@@ -1211,8 +1214,17 @@
 
     <div class="fullWidth">
         <a href="#" class="seeMore closed" data-id="errorInfo"><span class="fui-triangle-down"></span><b>Error:</b></a><a class="about" href="#" id="aboutError"><span class="fui-question-circle"></span></a><br/>
+        <!-- Errorのところ(最大値、最小値を追加した) -->
         <div id="errorInfo" class="hide smallTxt doubleIndent">
-            <label>Average vertex error: <span id="globalError"></span></label>
+            <div>
+                    <label>Average vertex error: <span id="globalError"></span></label>
+            </div>
+            <div>
+                <label>Max vertex error: <span id="globalErrorMax"></span></label>
+            </div>
+            <div>
+                <label>Min vertex error: <span id="globalErrorMin"></span></label>
+            </div>
         </div>
     </div><br/>
 
@@ -1223,17 +1235,19 @@
 <div class="drawApp" id="drawAppViewer">
         <b>DRAWING APPLICATION FOR EDITTING</b><br/>
         <img style="width: 100%; max-width:300px;" src="assets/doc/crane.gif" /><br/>
-        JavaScriptって難しい
+        ここにドローツールを表示させたい。
+        またはsvgファイル
         <div>
             <canvas
             id="draw-area"
-            width="400px"
-            height="400px"
+            width="600px"
+            height="600px"
             style="border: 1px solid #000000;"></canvas>
         </div>
         <div>
-            <button id="clear-button">全消し</button>
-          </div>
+            <button id="add-button">Add</button>
+            <button id="clear-button">Delete</button>
+        </div>
 </div>
 
 <!-- 一応追加して見た⤴︎ -->
