@@ -1,3 +1,6 @@
+# Amandaさんが開発したOrigami Simulatorを、研究のために使わせていただいております。
+展開図入力に関して拡張機能を追加することを目的としています。以下、Amandaさんのreadmeです。
+
 # OrigamiSimulator
 
 Live demo at <a href="http://apps.amandaghassaei.com/OrigamiSimulator">apps.amandaghassaei.com/OrigamiSimulator</a><br/>
