@@ -1,6 +1,5 @@
 # これは、Amandaさんが開発したOrigami Simulatorを、研究のために使わせていただいているものです。
-# 展開図入力に関して拡張機能を追加することを目的としています。
-# 以下、Amandaさんのreadmeです。
+展開図入力に関して拡張機能を追加することを目的としています。以下、Amandaさんのreadmeです。
 
 # OrigamiSimulator
 
