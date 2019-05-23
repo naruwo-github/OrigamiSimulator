@@ -4,15 +4,6 @@
 
 
 function initControls(globals){
-    //ここにドローツールの処理を書こうかな
-    window.addEventListener('click', function(){
-        if(globals.navMode === "drawapp"){
-            console.log("drawapp now!!");
-        }else{
-            console.log("clicked!!");
-        }
-    },false);
-
     window.addEventListener('resize', function(){
         if (globals.capturer) return;
         globals.threeView.onWindowResize();

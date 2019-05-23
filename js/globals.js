@@ -6,6 +6,8 @@
 function initGlobals(){
 
     var _globals = {
+        //グローバル変数の中でsvgを取得できるように宣言する
+        svgsvg: null,
 
         navMode: "simulation",
         scale: 1,

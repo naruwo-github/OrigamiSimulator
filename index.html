@@ -1234,9 +1234,12 @@
 <!-- svgViewer使われてるけどなんでだろう？？ -->
 <div class="drawApp" id="drawAppViewer">
         <b>DRAWING APPLICATION FOR EDITTING</b><br/>
+        <img style="position: absolute; left: 0px; top: 85px; width: 100%; max-width:400px;" src="assets/doc/crane.gif" />
+        <!--
         <img style="width: 100%; max-width:300px;" src="assets/doc/crane.gif" /><br/>
         ここにドローツールを表示させたい。
         またはsvgファイル
+        -->
         <div>
             <canvas
             id="draw-area"
@@ -1245,12 +1248,12 @@
             style="border: 1px solid #000000;"></canvas>
         </div>
         <div>
-            <button id="add-button">Add</button>
-            <button id="clear-button">Delete</button>
+            <button id="sline-button" style="position: absolute; left: 0px; top:500px">StraightLine</button>
+            <button id="delete-button" style="position: absolute; left: 0px; top:540px">Delete</button>
+            <button id="to-svg" style="position: absolute; left: 0px; top: 580px">To SVG</button>
         </div>
 </div>
 
-<!-- 一応追加して見た⤴︎ -->
 <div id="svgViewer"></div>
 <div id="helper">Load more origami patterns here!</div>
 <div id="controlsBottom">

@@ -3,7 +3,6 @@
  */
 
 function initPattern(globals){
-
     var FOLD = require('fold');
 
     var foldData = {};
@@ -345,6 +344,10 @@ function initPattern(globals){
     //svgファイルを読み込む部分
     function loadSVG(url){
         SVGloader.load(url, function(svg){
+            //svg image
+            var img = new Image();
+            img.src = url;
+            globals.svgsvg = img;
 
             var _$svg = $(svg);
 
@@ -442,6 +445,10 @@ function initPattern(globals){
                 svg.appendChild(line);
             }
             $("#svgViewer").html(svg);
+            
+            //globals.svgsvgにsvg情報を格納
+            //globals.svgsvg = svg;
+            //
 
             },
             function(){},
