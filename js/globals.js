@@ -7,6 +7,9 @@ function initGlobals(){
 
     var _globals = {
         //グローバル変数の中でsvgを取得できるように宣言する
+        //img.src=urlでimg形式で保存するやつ
+        svgimg: null,
+        //patternのsvgをそのまま保存するやつ
         svgsvg: null,
 
         navMode: "simulation",

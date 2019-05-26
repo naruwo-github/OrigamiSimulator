@@ -344,10 +344,11 @@ function initPattern(globals){
     //svgファイルを読み込む部分
     function loadSVG(url){
         SVGloader.load(url, function(svg){
-            //svg image
+            //svgをimage形式でグローバル化する
             var img = new Image();
             img.src = url;
-            globals.svgsvg = img;
+            globals.svgimg = img;
+            //
 
             var _$svg = $(svg);
 
@@ -446,9 +447,8 @@ function initPattern(globals){
             }
             $("#svgViewer").html(svg);
             
-            //globals.svgsvgにsvg情報を格納
-            //globals.svgsvg = svg;
-            //
+            //globals.svgimgにsvg情報を格納
+            globals.svgsvg = svg;
 
             },
             function(){},
