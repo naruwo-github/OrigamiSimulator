@@ -348,6 +348,7 @@ function initPattern(globals){
             var img = new Image();
             img.src = url;
             globals.svgimg = img;
+            globals.svgsvg = url;
             //
 
             var _$svg = $(svg);
@@ -448,7 +449,7 @@ function initPattern(globals){
             $("#svgViewer").html(svg);
             
             //globals.svgimgにsvg情報を格納
-            globals.svgsvg = svg;
+            //globals.svgsvg = svg;
 
             },
             function(){},
