@@ -42,12 +42,8 @@ function initDrawApp(globals){
   canvas.addEventListener("click", e => {
     if(counter === 0){//初回クリック時にのみ、canvas内に展開図を表示する
       counter++;
-      //色を白に
-      //context.fillStyle = 'rgb(255,255,255)';
-      //canvasを白で塗りつぶす = clear
-      //context.fillRect(0,0,canvas.width,canvas.height);
-      //描画！
-      context.drawImage(globals.svgimg,0,0,globals.svgimg.width,globals.svgimg.height);
+      //描画
+      context.drawImage(globals.svgimg,100,0,globals.svgimg.width*0.7,globals.svgimg.height*0.7);
     }
     if(globals.navMode === "drawapp") {
       if(straight === true){//直線ツールがON!!
@@ -56,13 +52,6 @@ function initDrawApp(globals){
         //四角形をプロットする
         context.fillRect(event.offsetX,event.offsetY,5,5);
       }
-      //console.log("(layerx, layery) : ("+event.layerX+", "+event.layerY+")");
-      //console.log("(offsetx, offsety) : ("+event.offsetX+", "+event.offsetY+")");
-      //context.fillRect(event.layerX,event.layerY,5,5);
-      //console.log(scHeight+" , "+scWidth);
-      //svgimgの内容を表示
-      //console.log("globals.svgimg = " + globals.svgimg);
-      //console.log("globals.svgsvg = " + globals.svgsvg);
     }
     globals.simulationRunning = true;
   })
@@ -90,3 +79,72 @@ function initDrawApp(globals){
     console.log("converting to svg...");
   });
 }
+
+//色を白に
+//context.fillStyle = 'rgb(255,255,255)';
+//canvasを白で塗りつぶす = clear
+//context.fillRect(0,0,canvas.width,canvas.height);
+//console.log("(layerx, layery) : ("+event.layerX+", "+event.layerY+")");
+//console.log("(offsetx, offsety) : ("+event.offsetX+", "+event.offsetY+")");
+//context.fillRect(event.layerX,event.layerY,5,5);
+//console.log(scHeight+" , "+scWidth);
+//svgimgの内容を表示
+//console.log("globals.svgimg = " + globals.svgimg);
+//console.log("globals.svgsvg = " + globals.svgsvg);
+/*
+var ctx = new C2S(canvas.width,canvas.height);
+    ctx.drawImage(globals.svgimg,100,0,globals.svgimg.width*0.7,globals.svgimg.height*0.7);
+    console.log("ctx = " + ctx);
+    var myRectangle = ctx.getSerializedSvg(true);
+    console.log("myRectangle = " + myRectangle);
+    //globals.pattern.loadSVG(myRectangle);
+    */
+/*
+//OutputText(myRectangle, 'output.svg');
+var b = new Blob(["\uFEFF", myRectangle]);
+if (navigator.msSaveBlob) {
+  navigator.msSaveOrOpenBlob(b, 'output.svg');
+} else {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  //a.setAttribute('download', 'output.svg');
+  //a.dispatchEvent(new CustomEvent('click'));
+  globals.pattern.loadSVG(a.href);
+}
+console.log('ended');
+*/
+/*
+var fs = nodejs.require("fs");
+//var text = myRectangle;
+// 非同期で行う場合
+fs.writeFile('output.svg', myRectangle, (err, data) => {
+  if(err){
+    console.log(err);
+  }else{
+    console.log('write end');
+    console.log('and loading svg');
+    globals.pattern.loadSVG(fs);
+  }
+});
+*/
+/*
+var fs = WScript.CreateObject("Scripting.FileSystemObject");
+var file = fs.CreateTextFile("output.svg");
+file.Write(myRectangle);
+file.Close();
+globals.pattern.loadSVG(fs);
+*/
+
+/*
+function OutputText(text, fileName) {
+  var b = new Blob(["\uFEFF", text]);
+  if (navigator.msSaveBlob) {
+      navigator.msSaveOrOpenBlob(b, fileName);
+  } else {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(b);
+      a.setAttribute('download', fileName);
+      a.dispatchEvent(new CustomEvent('click'));
+  }
+}
+*/
