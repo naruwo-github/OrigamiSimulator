@@ -1,4 +1,4 @@
-# Amandaさんが開発したOrigami Simulatorを、研究のために使わせていただいております。
+# Amanda Ghassaei氏が開発したOrigami Simulator[Ghassaei et. al 2017]を、研究のために使わせていただいております。
 展開図入力に関して拡張機能を追加することを目的としています。以下、Amandaさんのreadmeです。
 
 # OrigamiSimulator
