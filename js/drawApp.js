@@ -35,15 +35,46 @@ function initDrawApp(globals){
   //var scWidth = screen.width;
 
   //canvasの大きさをwindowと同じにする
-  $('#draw-area').get(0).width = $(window).width();
-  $('#draw-area').get(0).height = $(window).height();
+  $('#draw-area').attr('width', $(window).width());
+  $('#draw-area').attr('height', $(window).height());
+  //$('#draw-area').get(0).width = $(window).width();
+  //$('#draw-area').get(0).height = $(window).height();
 
+  //canvas内のクリック判定
+  canvas.addEventListener("click", e => {
+    if(straight === true){//直線ツールがON!!
+      cooX.push(event.layerX);
+      cooY.push(event.layerY);
+      //四角形をプロットする
+      context.fillRect(event.offsetX,event.offsetY,5,5);
+      //context.fillRect(event.layerX,event.layerY,5,5);
+    }else{
+      $('#draw-area').attr('width', $(window).width());
+      $('#draw-area').attr('height', $(window).height());
+      //$('#draw-area').attr('width', globals.svgimg.width);
+      //$('#draw-area').attr('height', globals.svgimg.height);
+
+      //$('#draw-area').get(0).width = globals.svgimg.width;
+      //$('#draw-area').get(0).height = globals.svgimg.height;
+      //描画
+      //context.drawImage(globals.svgimg,400,100,globals.svgimg.width,globals.svgimg.height);
+      context.drawImage(globals.svgimg,100,100,canvas.width,canvas.height);
+      
+      var foldInfo = globals.foldfold;
+      console.log(foldInfo);
+    }
+    globals.simulationRunning = true;
+  })
+
+  /*
   //canvas内のクリック判定
   canvas.addEventListener("click", e => {
     if(counter === 0){//初回クリック時にのみ、canvas内に展開図を表示する
       counter++;
+      $('#draw-area').get(0).width = globals.svgimg.width;
+      $('#draw-area').get(0).height = globals.svgimg.height;
       //描画
-      context.drawImage(globals.svgimg,100,0,globals.svgimg.width*0.7,globals.svgimg.height*0.7);
+      context.drawImage(globals.svgimg,400,100,globals.svgimg.width,globals.svgimg.height);
     }
     if(globals.navMode === "drawapp") {
       if(straight === true){//直線ツールがON!!
@@ -55,6 +86,25 @@ function initDrawApp(globals){
     }
     globals.simulationRunning = true;
   })
+  */
+
+  var timeoutId;
+  window.addEventListener("resize", function() {
+    // リサイズを停止して500ms後に終了とする
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(function() {
+      // 処理内容
+      $('#draw-area').attr('width', $(window).width());
+      $('#draw-area').attr('height', $(window).height());
+      //$('#draw-area').attr('width', globals.svgimg.width);
+      //$('#draw-area').attr('height', globals.svgimg.height);
+
+      //$('#draw-area').get(0).width = globals.svgimg.width;
+      //$('#draw-area').get(0).height = globals.svgimg.height;
+      //context.drawImage(globals.svgimg,400,100,globals.svgimg.width,globals.svgimg.height);
+      context.drawImage(globals.svgimg,100,100,canvas.width,canvas.height);
+    },50);
+  });
 
   //直線ボタンが押された時の処理
   document.getElementById("sline-button").addEventListener("click", function(){

@@ -1194,6 +1194,12 @@ function initPattern(globals){
         return foldData.faces_vertices;
     }
 
+    //
+    //returnの前にfoldDataをglobal変数に格納しよう
+    globals.foldfold = foldData;
+    //
+    //
+
     return {
         loadSVG: loadSVG,
         saveSVG: saveSVG,
