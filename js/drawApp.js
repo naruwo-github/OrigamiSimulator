@@ -1,72 +1,176 @@
 //
 /*
-アプローチ
-①キャンバス上に入力した線群を、patternsの要素に追加
-②キャンバスを使わないことを考慮し、まずは展開図を表示してみる
-③とりあえず展開図に修正を加えた結果は、svgとして再入力させる
-④修正を加えた結果を部分的に追加する
+ドローアプリの部分
+展開図の修正機能の追加を目的としている
 */
 //
 
 function initDrawApp(globals){
-  
-  //クリックした座標を格納する配列
-  var cooX = new Array();
-  var cooY = new Array();
+  //----------------------------------------------------------------------
+  //変数など各種定義
+  var cooX = new Array();//クリックしたX座標
+  var cooY = new Array();//クリックしたY座標
 
-  //キャンバスを取得
-  const canvas = document.querySelector('#draw-area');
-
-  //描画の準備のためcontextを取得
-  const context = canvas.getContext('2d');
+  const canvas = document.querySelector('#draw-area');      //canvasを取得
+  const context = canvas.getContext('2d');                  //描画準備のためcontextを取得
   //let currentColor = '#000000';
-
-  //初期クリックを判定するカウンタ
-  var counter = 0;
-
-  //直線モードのon-off
-  var straight = false;
-  //色変更対象の直線ボタン
-  var slineButton = document.getElementById("sline-button");
-  var buttonColor = slineButton.style.backgroundColor;
-
-  //スクリーンの高さを取得
-  //var scHeight = screen.height;
-  //var scWidth = screen.width;
+  //var counter = 0;//初回クリックを判定するカウンタ
+  var straight = false;                                     //直線モードのかどうかの判定
+  var slineButton = document.getElementById("sline-button");//直線ボタン
+  var buttonColor = slineButton.style.backgroundColor;      //ボタンの元の色
 
   //canvasの大きさをwindowと同じにする
   $('#draw-area').attr('width', $(window).width());
   $('#draw-area').attr('height', $(window).height());
   //$('#draw-area').get(0).width = $(window).width();
   //$('#draw-area').get(0).height = $(window).height();
+  
+  context.font = "30px serif";                              //canvasに表示させる文字のサイズ
+  context.strokeText("Click here!",100,100);
+  //context.fillText("Click here!",100,100);
+  //context.strokeStyle = "#666";
+  //context.lineWidth = 10;
+  //context.strokeStyle = 'rgb(255, 255, 0)';
+  //context.fillStyle = 'rgb(255, 255, 0)';
+
+  //----------------------------------------------------------------------
 
   //canvas内のクリック判定
   canvas.addEventListener("click", e => {
-    if(straight === true){//直線ツールがON!!
-      cooX.push(event.layerX);
-      cooY.push(event.layerY);
-      //四角形をプロットする
-      context.fillRect(event.offsetX,event.offsetY,5,5);
+    if(straight === true){                                  //直線ツールがON!!
+      cooX.push(event.offsetX);                              //座標を取得x&y
+      cooY.push(event.offsetY);
+      console.log(cooX.length);
+      console.log(cooX);
+      //context.fillRect(event.offsetX,event.offsetY,5,5);    //四角形プロット
       //context.fillRect(event.layerX,event.layerY,5,5);
     }else{
+      /*
       $('#draw-area').attr('width', $(window).width());
       $('#draw-area').attr('height', $(window).height());
-      //$('#draw-area').attr('width', globals.svgimg.width);
-      //$('#draw-area').attr('height', globals.svgimg.height);
-
+      //キャンバスに合わせて縮小したサイズ
+      //context.drawImage(globals.svgimg,100,100,canvas.width,canvas.height);
+      */
+     canvasReload();
+      /*
+      $('#draw-area').attr('width', globals.svgimg.width);  //canvasリサイズ
+      $('#draw-area').attr('height', globals.svgimg.height);
       //$('#draw-area').get(0).width = globals.svgimg.width;
       //$('#draw-area').get(0).height = globals.svgimg.height;
-      //描画
-      //context.drawImage(globals.svgimg,400,100,globals.svgimg.width,globals.svgimg.height);
-      context.drawImage(globals.svgimg,100,100,canvas.width,canvas.height);
-      
-      var foldInfo = globals.foldfold;
+
+      //svg元の大きさで描画
+      context.drawImage(globals.svgimg,400,100,globals.svgimg.width,globals.svgimg.height);
+      */
+
+      var foldInfo = globals.foldfold;                      //foldDataの取得
       console.log(foldInfo);
+
+      /*
+      var svgsvg = new FileReader();
+      var file = globals.svgimg.src;
+      var filename = file.match(".+/(.+?)([\?#;].*)?$")[1];
+      console.log(filename);
+      */
     }
-    globals.simulationRunning = true;
+    drawCanvas();
+
+    globals.simulationRunning = true;                       //シミュレーションをON
   })
 
-  /*
+  //ドローツール画面のリサイズ判定
+  window.addEventListener("resize", function() {
+    /*
+    $('#draw-area').attr('width', globals.svgimg.width);  //canvasリサイズ
+    $('#draw-area').attr('height', globals.svgimg.height);
+    //svg元のサイズで描画
+    context.drawImage(globals.svgimg,400,100,globals.svgimg.width,globals.svgimg.height);
+    //点を描画
+    for(var i = 0; i < cooX.length; i++){
+      context.fillRect(cooX[i],cooY[i],3,3);
+    }
+    */
+   canvasReload();
+   drawCanvas();
+  });
+
+  //直線ボタンが押された時の処理
+  document.getElementById("sline-button").addEventListener("click", function(){
+    if(straight === true){
+      console.log("straight line mode ended...");
+      straight = false;
+      slineButton.style.backgroundColor = buttonColor;
+    }else{
+      console.log("straight line mode started...");
+      straight = true;
+      slineButton.style.backgroundColor = '#aaaaaa';
+    }
+  });
+
+  //デリートボタンが押された時の処理
+  document.getElementById("delete-button").addEventListener("click", function(){
+    console.log("delete button pressed...");
+    cooX.pop();
+    cooY.pop();
+    console.log(cooX.length);
+    console.log(cooX);
+    /*
+    //canvas初期化
+    $('#draw-area').attr('width', globals.svgimg.width);  //canvasリサイズ
+    $('#draw-area').attr('height', globals.svgimg.height);
+    context.drawImage(globals.svgimg,400,100,globals.svgimg.width,globals.svgimg.height);
+    //点を描画
+    for(var i = 0; i < cooX.length; i++){
+      context.fillRect(cooX[i],cooY[i],3,3);
+    }
+    */
+   canvasReload();
+   drawCanvas();
+  });
+
+  //svg出力ボタンが押された時の処理
+  document.getElementById("go-simulation").addEventListener("click", function(){
+    console.log("converting to svg or fold...");
+    //ここに、シミュレーターに作成した展開図を投げるように記述する
+  });
+
+  //canvasリロードメソッド
+  function canvasReload(){
+    //canvas初期化
+    $('#draw-area').attr('width', globals.svgimg.width);  //canvasリサイズ
+    $('#draw-area').attr('height', globals.svgimg.height);
+    context.drawImage(globals.svgimg,400,100,globals.svgimg.width,globals.svgimg.height);
+  }
+
+  function drawCanvas(){
+    //点を描画
+    for(var i = 0; i < cooX.length; i++){
+      context.fillRect(cooX[i],cooY[i],3,3);
+      if(cooX[i+1] !== null){
+        drawLine(context,cooX[i],cooY[i],cooX[i+1],cooY[i+1]);
+      }
+    }
+  }
+
+  //ruling描画メソッド
+  function drawLine(ctx, x1, y1, x2, y2){
+    //線の色
+    ctx.strokeStyle = "rgb(0, 255, 0)";     //見やすいから緑
+    //ctx.strokeStyle = "rgb(255, 255, 0)";   //rulingのために黄色
+    //2点から直線を引く
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+}
+
+
+//以下今まで使っていたコードたち
+/*
+  //var scHeight = screen.height;//スクリーンの高さ
+  //var scWidth = screen.width;//スクリーンの横幅取得
   //canvas内のクリック判定
   canvas.addEventListener("click", e => {
     if(counter === 0){//初回クリック時にのみ、canvas内に展開図を表示する
@@ -87,48 +191,6 @@ function initDrawApp(globals){
     globals.simulationRunning = true;
   })
   */
-
-  var timeoutId;
-  window.addEventListener("resize", function() {
-    // リサイズを停止して500ms後に終了とする
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(function() {
-      // 処理内容
-      $('#draw-area').attr('width', $(window).width());
-      $('#draw-area').attr('height', $(window).height());
-      //$('#draw-area').attr('width', globals.svgimg.width);
-      //$('#draw-area').attr('height', globals.svgimg.height);
-
-      //$('#draw-area').get(0).width = globals.svgimg.width;
-      //$('#draw-area').get(0).height = globals.svgimg.height;
-      //context.drawImage(globals.svgimg,400,100,globals.svgimg.width,globals.svgimg.height);
-      context.drawImage(globals.svgimg,100,100,canvas.width,canvas.height);
-    },50);
-  });
-
-  //直線ボタンが押された時の処理
-  document.getElementById("sline-button").addEventListener("click", function(){
-    if(straight === true){
-      console.log("straight line mode ended...");
-      straight = false;
-      slineButton.style.backgroundColor = buttonColor;
-    }else{
-      console.log("straight line mode started...");
-      straight = true;
-      slineButton.style.backgroundColor = '#aaaaaa';
-    }
-  });
-
-  //デリートボタンが押された時の処理
-  document.getElementById("delete-button").addEventListener("click", function(){
-    console.log("delete button pressed...");
-  });
-
-  //svg出力ボタンが押された時の処理
-  document.getElementById("to-svg").addEventListener("click", function(){
-    console.log("converting to svg...");
-  });
-}
 
 //色を白に
 //context.fillStyle = 'rgb(255,255,255)';

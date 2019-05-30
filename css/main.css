@@ -463,6 +463,7 @@ span.modal-close{
     top:0px;
     right:0;
     background: white;
+    overflow: scroll;
     display: none;
     padding-top: 56px;
 }
