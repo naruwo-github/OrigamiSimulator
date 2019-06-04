@@ -17,6 +17,11 @@ function initImporter(globals){
             globals.filename = name;
             globals.extension = extension;
             globals.pattern.loadSVG("assets/" + url);
+
+            //-------------------
+            //ここにグローバル化の情報を入力しようか
+            
+            //-------------------
         } else {
             console.warn("unknown extension: " + extension);
         }

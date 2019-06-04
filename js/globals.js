@@ -9,10 +9,6 @@ function initGlobals(){
         //グローバル変数の中でsvgを取得できるように宣言する
         //img.src=urlでimg形式で保存するやつ
         svgimg: null,
-        //patternのsvgをそのまま保存するやつ
-        svgsvg: null,
-        //foldData格納したやつ
-        //foldfold: null,
         //file格納したやつ
         svgFile: null,
 

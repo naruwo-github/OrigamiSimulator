@@ -353,7 +353,6 @@ function initPattern(globals){
             var img = new Image();
             img.src = url;
             globals.svgimg = img;
-            globals.svgsvg = url;
             console.log(url);
             //
 
@@ -457,11 +456,6 @@ function initPattern(globals){
                 //console.log(line);
             }
             $("#svgViewer").html(svg);
-            
-            //globals.svgimgにsvg情報を格納
-            globals.svgsvg = svg;
-            //console.log(svg.children);
-
             },
             function(){},
             function(error){
@@ -477,7 +471,6 @@ function initPattern(globals){
             var img = new Image();
             img.src = url;
             globals.svgimg = img;
-            globals.svgsvg = url;
             //console.log(url);
             //
 
@@ -634,11 +627,6 @@ function initPattern(globals){
             $("#svgViewer").html(svg);
 
             //----------------------------------------------------------
-            
-            //globals.svgimgにsvg情報を格納
-            globals.svgsvg = svg;
-            //console.log(svg.children);
-
             },
             function(){},
             function(error){
