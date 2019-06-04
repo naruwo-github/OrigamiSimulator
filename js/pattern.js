@@ -505,7 +505,21 @@ function initPattern(globals){
             //この後追加しようか
             console.log(_$svg.get()[0]);
             var g = document.createElement("g");
-            //_$svg.get()[0].appendChild(g);
+            //ここでcooX,cooY
+            //ここでcoox,cooyのあたいも追加しようか
+            var ns = 'http://www.w3.org/2000/svg';
+            for(var i = 0; i < cooX.length; i+=2){
+                var line = document.createElementNS(ns, 'line');
+                line.setAttribute('stroke', "#ffff00");
+                line.setAttribute('opacity', "1");
+                line.setAttribute('x1', cooX[i]);
+                line.setAttribute('y1', cooY[i]);
+                line.setAttribute('x2', cooX[i+1]);
+                line.setAttribute('y2', cooY[i+1]);
+                //line.setAttribute('stroke-width', strokeWidth);
+                g.appendChild(line);
+              }
+            _$svg.get()[0].appendChild(g);
             //console.log(_$svg.get()[0]);
             //-----------------------------------
 
