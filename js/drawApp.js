@@ -39,6 +39,7 @@ function initDrawApp(globals){
       //console.log(cooX);
     }else{
      canvasReload();                                        //canvasのリロード
+     console.log(globals.svgFile);
      readerFile.readAsText(globals.svgFile);                    //svgファイルをテキストで取得
      readerFile.onload = function(ev){
        //console.log(readerFile.result);
@@ -47,6 +48,7 @@ function initDrawApp(globals){
      //readerData.onload = function(ev){
        //console.log(readerData.result);
      //}
+     console.log(globals.svgFile);
     }
     drawCanvas();
 

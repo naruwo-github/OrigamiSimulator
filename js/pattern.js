@@ -464,6 +464,8 @@ function initPattern(globals){
         });
     }
 
+    //------------------------------------------------------------------
+    //------------------------------------------------------------------
     //svgを再シミュレートするやつ
     function loadSVGAgain(url,cooX,cooY){
         SVGloader.load(url, function(svg){
@@ -634,9 +636,11 @@ function initPattern(globals){
                 console.warn(error);
         });
     }
+    //------------------------------------------------------------------
+    //------------------------------------------------------------------
 
 
-    //svg変換？
+    //svgからfold形式へ変換
     function parseSVG(_verticesRaw, _bordersRaw, _mountainsRaw, _valleysRaw, _cutsRaw, _triangulationsRaw, _hingesRaw){
 
         _.each(_verticesRaw, function(vertex){

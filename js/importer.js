@@ -17,11 +17,6 @@ function initImporter(globals){
             globals.filename = name;
             globals.extension = extension;
             globals.pattern.loadSVG("assets/" + url);
-
-            //-------------------
-            //ここにグローバル化の情報を入力しようか
-            
-            //-------------------
         } else {
             console.warn("unknown extension: " + extension);
         }
@@ -175,7 +170,6 @@ function initImporter(globals){
                     globals.extension = extension;
                     globals.url = null;
                     globals.pattern.loadSVGAgain(reader.result,cooX,cooY);
-                    //console.log(reader.result);
                 });
                 /*
                 return function (e) {
@@ -202,7 +196,6 @@ function initImporter(globals){
             globals.warn('Unknown file extension: .' + extension);
             return null;
         }
-        //globals.navMode = "Simulation";
     }
     //------------------------------------------------------
 
