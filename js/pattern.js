@@ -19,6 +19,7 @@ function initPattern(globals){
         rawFold = {};
     }
 
+     
     var verticesRaw = [];
     //refs to vertex indices
     var mountainsRaw = [];
@@ -335,8 +336,12 @@ function initPattern(globals){
             for (var j=0;j<element.points.length;j++){
                 _verticesRaw.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
                 applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
-                if (j>0) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
-                if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                //if (j>0) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
+                //if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                if (j>0) {
+                    _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
+                    if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
+                }
             }
         }
     }
@@ -349,6 +354,7 @@ function initPattern(globals){
             img.src = url;
             globals.svgimg = img;
             globals.svgsvg = url;
+            console.log(url);
             //
 
             var _$svg = $(svg);
@@ -445,11 +451,179 @@ function initPattern(globals){
                 line.setAttribute('y2', vertex[2]);
                 line.setAttribute('stroke-width', strokeWidth);
                 svg.appendChild(line);
+
+
+                //デバッグ用
+                //console.log(line);
             }
             $("#svgViewer").html(svg);
             
             //globals.svgimgにsvg情報を格納
-            //globals.svgsvg = svg;
+            globals.svgsvg = svg;
+            //console.log(svg.children);
+
+            },
+            function(){},
+            function(error){
+                globals.warn("Error loading SVG " + url + " : " + error);
+                console.warn(error);
+        });
+    }
+
+    //svgを再シミュレートするやつ
+    function loadSVGAgain(url,cooX,cooY){
+        SVGloader.load(url, function(svg){
+            //svgをimage形式でグローバル化する
+            var img = new Image();
+            img.src = url;
+            globals.svgimg = img;
+            globals.svgsvg = url;
+            //console.log(url);
+            //
+
+            //
+            //ここの序盤でシミュレーションに必要なデータを用意している。
+            //
+
+            var _$svg = $(svg);
+
+            clearAll();
+
+            //warn of global styling
+            var $style = _$svg.children("style");
+            
+            //_$svg.get().insertAdjacentHTML('afterend','\n<g xmlns=\"http://www.w3.org/2000/svg\" id=\"ã\u0083¬ã\u0082¤ã\u0083¤ã\u0083¼_1\">\n\t<line fill=\"none\" stroke=\"#000000\" stroke-opacity=\"1\" x1=\"100\" y1=\"100\" x2=\"900\" y2=\"100\" style=\"fill: none; stroke-dasharray: none;\"/>\n\t<line fill=\"none\" stroke=\"#000000\" stroke-opacity=\"1\" x1=\"100\" y1=\"100\" x2=\"100\" y2=\"900\" style=\"fill: none; stroke-dasharray: none;\"/>\n\t<line fill=\"none\" stroke=\"#000000\" stroke-opacity=\"1\" x1=\"900\" y1=\"100\" x2=\"900\" y2=\"900\" style=\"fill: none; stroke-dasharray: none;\"/>\n\t<line fill=\"none\" stroke=\"#000000\" stroke-opacity=\"1\" x1=\"100\" y1=\"900\" x2=\"900\" y2=\"900\" style=\"fill: none; stroke-dasharray: none;\"/>\n</g>');
+            //_$svg.insertAdjacentHTML('afterbegin', '<b>Test:</b>');
+            //-----------------------------------
+            //ここで$syleのObjectのinnerHTMLにcooXとcooYの情報が追加できるといい
+            //console.log($style);
+            //console.log(_$svg.get());
+            //svgGet = _$svg.get();
+            //console.log(svgGet);
+            //console.log(svgGet[0]);
+
+            //この後追加しようか
+            console.log(_$svg.get()[0]);
+            var g = document.createElement("g");
+            //_$svg.get()[0].appendChild(g);
+            //console.log(_$svg.get()[0]);
+            //-----------------------------------
+
+            if ($style.length>0){
+                globals.warn("Global styling found on SVG, this is currently ignored by the app.  This may cause some lines " +
+                    "to be styled incorrectly and missed during import.  Please find a way to save this file without using global style tags." +
+                    "<br/><br/>Global styling:<br/><br/><b>" + $style.html() + "</b>");
+            }
+
+            //warn of groups
+            // var $groups = _$svg.children("g");
+            // if ($groups.length>0){
+            //     globals.warn("Grouped elements found in SVG, these are currently ignored by the app.  " +
+            //         "Please ungroup all elements before importing.");
+            // }
+
+            //format all appropriate svg elements
+            var $paths = _$svg.find("path");
+            var $lines = _$svg.find("line");
+            var $rects = _$svg.find("rect");
+            var $polygons = _$svg.find("polygon");
+            var $polylines = _$svg.find("polyline");
+            $paths.css({fill:"none", 'stroke-dasharray':"none"});
+            $lines.css({fill:"none", 'stroke-dasharray':"none"});
+            $rects.css({fill:"none", 'stroke-dasharray':"none"});
+            $polygons.css({fill:"none", 'stroke-dasharray':"none"});
+            $polylines.css({fill:"none", 'stroke-dasharray':"none"});
+
+            findType(verticesRaw, bordersRaw, borderFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, mountainsRaw, mountainFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, valleysRaw, valleyFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, cutsRaw, cutFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, triangulationsRaw, triangulationFilter, $paths, $lines, $rects, $polygons, $polylines);
+            findType(verticesRaw, hingesRaw, hingeFilter, $paths, $lines, $rects, $polygons, $polylines);
+
+            //色の指定が不適切な場合
+            if (badColors.length>0){
+                badColors = _.uniq(badColors);
+                var string = "Some objects found with the following stroke colors:<br/><br/>";
+                _.each(badColors, function(color){
+                    string += "<span style='background:" + color + "' class='colorSwatch'></span>" + color + "<br/>";
+                });
+                string +=  "<br/>These objects were ignored.<br/>  Please check that your file is set up correctly, <br/>" +
+                    "see <b>File > File Import Tips</b> for more information.";//この表示をする。色変えなよ〜て
+                globals.warn(string);
+            }
+
+            //todo revert back to old pattern if bad import
+            var success = parseSVG(verticesRaw, bordersRaw, mountainsRaw, valleysRaw, cutsRaw, triangulationsRaw, hingesRaw);
+            if (!success) return;
+
+            //find max and min vertices
+            var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
+            var min = new THREE.Vector3(Infinity,Infinity,Infinity);
+            for (var i=0;i<rawFold.vertices_coords.length;i++){
+                var vertex = new THREE.Vector3(rawFold.vertices_coords[i][0], rawFold.vertices_coords[i][1], rawFold.vertices_coords[i][2]);
+                max.max(vertex);
+                min.min(vertex);
+            }
+            if (min.x === Infinity){
+                if (badColors.length == 0) globals.warn("no geometry found in file");
+                return;
+            }
+            max.sub(min);
+            var border = new THREE.Vector3(0.1, 0, 0.1);
+            var scale = max.x;
+            if (max.z < scale) scale = max.z;
+            if (scale == 0) return;
+
+            var strokeWidth = scale/300;
+            border.multiplyScalar(scale);
+            min.sub(border);
+            max.add(border.multiplyScalar(2));
+            var viewBoxTxt = min.x + " " + min.z + " " + max.x + " " + max.z;
+
+            var ns = 'http://www.w3.org/2000/svg';
+            var svg = document.createElementNS(ns, 'svg');
+            svg.setAttribute('viewBox', viewBoxTxt);
+            for (var i=0;i<rawFold.edges_vertices.length;i++){
+                var line = document.createElementNS(ns, 'line');
+                var edge = rawFold.edges_vertices[i];
+                var vertex = rawFold.vertices_coords[edge[0]];
+                line.setAttribute('stroke', colorForAssignment(rawFold.edges_assignment[i]));
+                line.setAttribute('opacity', opacityForAngle(rawFold.edges_foldAngles[i], rawFold.edges_assignment[i]));
+                line.setAttribute('x1', vertex[0]);
+                line.setAttribute('y1', vertex[2]);
+                vertex = rawFold.vertices_coords[edge[1]];
+                line.setAttribute('x2', vertex[0]);
+                line.setAttribute('y2', vertex[2]);
+                line.setAttribute('stroke-width', strokeWidth);
+                svg.appendChild(line);
+
+
+                //デバッグ用
+                //console.log(line);
+            }
+            //----------------------------------------------------------
+            //ここはただ、svgViewer表示にしか関係ない
+
+            //ここでcoox,cooyのあたいも追加しようか
+            for(var i = 0; i < cooX.length; i+=2){
+                var line = document.createElementNS(ns, 'line');
+                line.setAttribute('stroke', "#ff0");
+                line.setAttribute('opacity', "1");
+                line.setAttribute('x1', cooX[i]);
+                line.setAttribute('y1', cooY[i]);
+                line.setAttribute('x2', cooX[i+1]);
+                line.setAttribute('y2', cooY[i+1]);
+                line.setAttribute('stroke-width', strokeWidth);
+                svg.appendChild(line);
+              }
+            $("#svgViewer").html(svg);
+
+            //----------------------------------------------------------
+            
+            //globals.svgimgにsvg情報を格納
+            globals.svgsvg = svg;
+            //console.log(svg.children);
 
             },
             function(){},
@@ -573,6 +747,7 @@ function initPattern(globals){
         if (returnCreaseParams) return allCreaseParams;
 
         globals.model.buildModel(foldData, allCreaseParams);
+
         return foldData;
     }
 
@@ -1196,12 +1371,13 @@ function initPattern(globals){
 
     //
     //returnの前にfoldDataをglobal変数に格納しよう
-    globals.foldfold = foldData;
+    //globals.foldfold = foldData;
     //
     //
 
     return {
         loadSVG: loadSVG,
+        loadSVGAgain: loadSVGAgain,
         saveSVG: saveSVG,
         getFoldData: getFoldData,
         getTriangulatedFaces: getTriangulatedFaces,

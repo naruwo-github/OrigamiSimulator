@@ -12,7 +12,9 @@ function initGlobals(){
         //patternのsvgをそのまま保存するやつ
         svgsvg: null,
         //foldData格納したやつ
-        foldfold: null,
+        //foldfold: null,
+        //file格納したやつ
+        svgFile: null,
 
         navMode: "simulation",
         scale: 1,

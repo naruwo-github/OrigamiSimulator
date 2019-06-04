@@ -4,7 +4,6 @@
 
 
 function initImporter(globals){
-
     var reader = new FileReader();
 
     function importDemoFile(url){
@@ -30,6 +29,13 @@ function initImporter(globals){
         }
 
         var file = files[0];
+
+        //files[0]をグローバル化
+        console.log("Getting a file!");
+        globals.svgFile = files[0];
+        //console.log(globals.svgFile);
+        //
+
         var extension = file.name.split(".");
         var name = extension[0];
         extension = extension[extension.length - 1];
@@ -52,6 +58,7 @@ function initImporter(globals){
                         globals.extension = extension;
                         globals.url = null;
                         globals.pattern.loadSVG(reader.result);
+                        //console.log(reader.result);
                     });
                 }
             }(file);
@@ -141,6 +148,59 @@ function initImporter(globals){
 
     });
 
+    //------------------------------------------------------
+    //読み込む関数を作ろう
+    //ファイルを入力にとって、シミュレーションを開始する
+    function simulateAgain(svgFile,cooX,cooY) {
+        var file = svgFile;
+        var extension = file.name.split(".");
+        var name = extension[0];
+        extension = extension[extension.length - 1];
+
+        //$(e.target).val("");
+
+        if (extension == "svg") {
+            reader.onload = function () {
+                $("#vertTol").val(globals.vertTol);
+                $("#importSettingsModal").modal("show");
+                $('#doSVGImport').click(function (e) {
+                    e.preventDefault();
+                    $('#doSVGImport').unbind("click");
+                    globals.filename = name;
+                    globals.extension = extension;
+                    globals.url = null;
+                    globals.pattern.loadSVGAgain(reader.result,cooX,cooY);
+                    //console.log(reader.result);
+                });
+                /*
+                return function (e) {
+                    if (!reader.result) {
+                        warnUnableToLoad();
+                        return;
+                    }
+                    $("#vertTol").val(globals.vertTol);
+                    $("#importSettingsModal").modal("show");
+                    $('#doSVGImport').click(function (e) {
+                        e.preventDefault();
+                        $('#doSVGImport').unbind("click");
+                        globals.filename = name;
+                        globals.extension = extension;
+                        globals.url = null;
+                        globals.pattern.loadSVG(reader.result);
+                        //console.log(reader.result);
+                    });
+                }
+                */
+            }(file);
+            reader.readAsDataURL(file);
+        }else {
+            globals.warn('Unknown file extension: .' + extension);
+            return null;
+        }
+        //globals.navMode = "Simulation";
+    }
+    //------------------------------------------------------
+
     function makeVector(v){
         if (v.length == 2) return makeVector2(v);
         return makeVector3(v);
@@ -157,6 +217,7 @@ function initImporter(globals){
     }
 
     return {
-        importDemoFile: importDemoFile
+        importDemoFile: importDemoFile,
+        simulateAgain: simulateAgain
     }
 }
