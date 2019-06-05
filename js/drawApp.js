@@ -104,6 +104,7 @@ function initDrawApp(globals){
     $('#draw-area').attr('width', globals.svgimg.width);  //canvasリサイズ
     $('#draw-area').attr('height', globals.svgimg.height);
     //context.drawImage(globals.svgimg,100,100,globals.svgimg.width,globals.svgimg.height);
+    //context.drawImage(globals.svgimg,0,0,globals.svgimg.width,globals.svgimg.height);
     console.log("drawDevelopment began");
     drawDevelopment(globals.svgInformation,context);
     console.log("drawDevelopment ended");

@@ -461,15 +461,11 @@ span.modal-close{
     overflow: scroll;
     position: absolute;
     display: none;
-    /*
     text-align: center;
     z-index: 3;
     top:0px;
     right:0;
-    background: white;
-    overflow: scroll;
     padding-top: 56px;
-    */
 }
 /**/
 
