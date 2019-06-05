@@ -354,6 +354,14 @@ function initPattern(globals){
             img.src = url;
             globals.svgimg = img;
             console.log(url);
+            //↓初期化しておく
+            globals.svgInformation.stroke = new Array();
+            globals.svgInformation.opacity = new Array();
+            globals.svgInformation.x1 = new Array();
+            globals.svgInformation.y1 = new Array();
+            globals.svgInformation.x2 = new Array();
+            globals.svgInformation.y2 = new Array();
+            globals.svgInformation.stroke_width = new Array();
             //
 
             var _$svg = $(svg);
@@ -445,16 +453,31 @@ function initPattern(globals){
                 line.setAttribute('opacity', opacityForAngle(rawFold.edges_foldAngles[i], rawFold.edges_assignment[i]));
                 line.setAttribute('x1', vertex[0]);
                 line.setAttribute('y1', vertex[2]);
+
+                //-----------------------------------------------
+                globals.svgInformation.stroke.push(colorForAssignment(rawFold.edges_assignment[i]));
+                globals.svgInformation.opacity.push(opacityForAngle(rawFold.edges_foldAngles[i], rawFold.edges_assignment[i]));
+                globals.svgInformation.x1.push(vertex[0]);
+                globals.svgInformation.y1.push(vertex[2]);
+                //-----------------------------------------------
+
                 vertex = rawFold.vertices_coords[edge[1]];
                 line.setAttribute('x2', vertex[0]);
                 line.setAttribute('y2', vertex[2]);
                 line.setAttribute('stroke-width', strokeWidth);
                 svg.appendChild(line);
 
-
-                //デバッグ用
-                //console.log(line);
+                //-----------------------------------------------
+                globals.svgInformation.x2.push(vertex[0]);
+                globals.svgInformation.y2.push(vertex[2]);
+                globals.svgInformation.stroke_width.push(strokeWidth);
+                //-----------------------------------------------
             }
+            //---------------------------------------------------
+            console.log("svg information");
+            console.log(globals.svgInformation);
+            //---------------------------------------------------
+
             $("#svgViewer").html(svg);
             },
             function(){},
@@ -473,12 +496,7 @@ function initPattern(globals){
             var img = new Image();
             img.src = url;
             globals.svgimg = img;
-            //console.log(url);
-            //
-
-            //
-            //ここの序盤でシミュレーションに必要なデータを用意している。
-            //
+            //画像イメージとして飛ばす
 
             var _$svg = $(svg);
 
@@ -486,22 +504,10 @@ function initPattern(globals){
 
             //warn of global styling
             var $style = _$svg.children("style");
-            
-            //_$svg.get().insertAdjacentHTML('afterend','\n<g xmlns=\"http://www.w3.org/2000/svg\" id=\"ã\u0083¬ã\u0082¤ã\u0083¤ã\u0083¼_1\">\n\t<line fill=\"none\" stroke=\"#000000\" stroke-opacity=\"1\" x1=\"100\" y1=\"100\" x2=\"900\" y2=\"100\" style=\"fill: none; stroke-dasharray: none;\"/>\n\t<line fill=\"none\" stroke=\"#000000\" stroke-opacity=\"1\" x1=\"100\" y1=\"100\" x2=\"100\" y2=\"900\" style=\"fill: none; stroke-dasharray: none;\"/>\n\t<line fill=\"none\" stroke=\"#000000\" stroke-opacity=\"1\" x1=\"900\" y1=\"100\" x2=\"900\" y2=\"900\" style=\"fill: none; stroke-dasharray: none;\"/>\n\t<line fill=\"none\" stroke=\"#000000\" stroke-opacity=\"1\" x1=\"100\" y1=\"900\" x2=\"900\" y2=\"900\" style=\"fill: none; stroke-dasharray: none;\"/>\n</g>');
-            //_$svg.insertAdjacentHTML('afterbegin', '<b>Test:</b>');
-            //-----------------------------------
-            //ここで$syleのObjectのinnerHTMLにcooXとcooYの情報が追加できるといい
-            //console.log($style);
-            //console.log(_$svg.get());
-            //svgGet = _$svg.get();
-            //console.log(svgGet);
-            //console.log(svgGet[0]);
 
-            //この後追加しようか
-            console.log(_$svg.get()[0]);
+            //------------------------------------------------------------
             var g = document.createElement("g");
-            //ここでcooX,cooY
-            //ここでcoox,cooyのあたいも追加しようか
+            //ここでcoox,cooyの値を追加
             var ns = 'http://www.w3.org/2000/svg';
             for(var i = 0; i < cooX.length; i+=2){
                 var line = document.createElementNS(ns, 'line');
@@ -511,12 +517,10 @@ function initPattern(globals){
                 line.setAttribute('y1', cooY[i]);
                 line.setAttribute('x2', cooX[i+1]);
                 line.setAttribute('y2', cooY[i+1]);
-                //line.setAttribute('stroke-width', strokeWidth);
                 g.appendChild(line);
               }
             _$svg.get()[0].appendChild(g);
-            //console.log(_$svg.get()[0]);
-            //-----------------------------------
+            //------------------------------------------------------------
 
             if ($style.length>0){
                 globals.warn("Global styling found on SVG, this is currently ignored by the app.  This may cause some lines " +

@@ -11,6 +11,8 @@ function initGlobals(){
         svgimg: null,
         //file格納したやつ
         svgFile: null,
+        //svg形式の正確な座標や色情報
+        svgInformation: [],
 
         navMode: "simulation",
         scale: 1,
