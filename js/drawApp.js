@@ -133,7 +133,7 @@ function initDrawApp(globals){
   function drawDevelopment(info,ctx){
     for(var i = 0; i < info.stroke.length; i++){
       //drawLine(ctx,info.stroke[i],info.stroke_width[i],info.x1,info.y1,info.x2,info.y2);
-      drawLine(ctx,"rgb(100,100,100)",Number(info.stroke_width[i]),parseInt(info.x1[i]),parseInt(info.y1[i]),parseInt(info.x2[i]),parseInt(info.y2[i]));
+      drawLine(ctx,"rgb("+String(hex2rgb(info.stroke[i]))+")",Number(info.stroke_width[i]),parseInt(info.x1[i]),parseInt(info.y1[i]),parseInt(info.x2[i]),parseInt(info.y2[i]));
     }
   }
   //パス
@@ -155,5 +155,17 @@ function initDrawApp(globals){
     }, 100);  
     //document.body.removeChild(a);
     //window.URL.revokeObjectURL(url);    
+  }
+
+  function hex2rgb(hex) {
+    if(hex.slice(0,1) == "#"){
+      hex = hex.slice(1);
+    }
+    if(hex.length == 3){
+      hex = hex.slice(0,1) + hex.slice(0,1) + hex.slice(1,2) + hex.slice(1,2) + hex.slice(2,3) + hex.slice(2,3);
+    }
+    return [hex.slice(0,2), hex.slice(2,4), hex.slice(4,6)].map(function(str) {
+      return parseInt(str,16);
+    });
   }
 }
