@@ -73,8 +73,8 @@ function initDrawApp(globals){
     cooY.pop();
     console.log(cooX.length);
     console.log(cooX);
-   canvasReload();
-   drawCanvas();
+    canvasReload();
+    drawCanvas();
   });
 
   //svg出力ボタンが押された時の処理
