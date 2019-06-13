@@ -64,6 +64,7 @@ $(function() {
 
     //
     globals.drawapp = initDrawApp(globals);
+    globals.beziercurve = initBezierCurve(globals);
     //
 
     $(".demo[data-url='Tessellations/huffmanWaterbomb.svg']").click();//load demo model

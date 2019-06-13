@@ -10,7 +10,13 @@ function initDrawApp(globals){
   var cooX = new Array();                                   //クリックしたX座標
   var cooY = new Array();                                   //クリックしたY座標
 
-  var readerFile = new FileReader();
+  var beziList = new Array();                               //ベジェ曲線の座標を格納するリスト(配列を代用)
+  //var dragList = new Array();                               //tmp
+  var bezi = false;
+  var bcurveButton = document.getElementById("bcurve-button");
+  //var dragging = false;                                     //ドラッグ中かどうか
+
+  var readerFile = new FileReader();                        //svgのdlに使う
 
   const canvas = document.querySelector('#draw-area');      //canvasを取得
   const context = canvas.getContext('2d');                  //描画準備のためcontextを取得
@@ -32,20 +38,45 @@ function initDrawApp(globals){
     if(straight === true){                                  //直線ツールがON!!
       cooX.push(event.offsetX);                              //座標を取得x&y
       cooY.push(event.offsetY);
-      //console.log(cooX.length);
+    }else if(bezi === true){                                //ベジェ曲線ツールがON!!
+      beziList.push([e.offsetX,e.offsetY]);
+      console.log(beziList);
     }else{
-      //console.log(globals.svgInformation.stroke.length);
      canvasReload();                                        //canvasのリロード
-     //console.log(globals.svgFile);
      readerFile.readAsText(globals.svgFile);                    //svgファイルをテキストで取得
      readerFile.onload = function(ev){
-       //console.log(readerFile.result);
      }
     }
     drawCanvas();
 
     globals.simulationRunning = true;                       //シミュレーションをON
   })
+
+  /*
+  //canvas内のドラッグ判定 = mousedown + mousemove + mouseup
+  canvas.addEventListener("mousedown", e => {
+    dragging = true;
+  });
+  canvas.addEventListener("mousemove", e => {
+    if(dragging){
+      if(bezi){
+        dragList.push([e.offsetX,e.offsetY]);
+        console.log([e.offsetX,e.offsetY]);
+      }
+    }
+  });
+  canvas.addEventListener("mouseup", e => {
+    dragging = false;
+    if(dragList.length > 20){
+      globals.beziercurve.defineBeziPoint(dragList,beziList);
+      console.log("dragList");
+      console.log(dragList);
+      console.log("beziList");
+      console.log(beziList);
+      dragList = new Array();
+    }
+  });
+  */
 
   //ドローツール画面のリサイズ判定
   window.addEventListener("resize", function() {
@@ -56,23 +87,46 @@ function initDrawApp(globals){
   //直線ボタンが押された時の処理
   document.getElementById("sline-button").addEventListener("click", function(){
     if(straight === true){
-      console.log("straight line mode ended...");
+      //console.log("straight line mode ended...");
       straight = false;
       slineButton.style.backgroundColor = buttonColor;
     }else{
-      console.log("straight line mode started...");
+      //console.log("straight line mode started...");
       straight = true;
       slineButton.style.backgroundColor = '#aaaaaa';
+
+      bezi = false;
+      bcurveButton.style.backgroundColor = buttonColor;
+    }
+  });
+
+  //ベジェ曲線ボタンが押された時の処理
+  document.getElementById("bcurve-button").addEventListener("click", function(){
+    if(bezi === true){
+      //console.log("bezi curve mode ended...");
+      bezi = false;
+      bcurveButton.style.backgroundColor = buttonColor;
+    }else{
+      //console.log("bezi curve mode started...");
+      bezi = true;
+      bcurveButton.style.backgroundColor = '#aaaaaa';
+
+      straight = false;
+      slineButton.style.backgroundColor = buttonColor;
     }
   });
 
   //デリートボタンが押された時の処理
   document.getElementById("delete-button").addEventListener("click", function(){
     console.log("delete button pressed...");
-    cooX.pop();
-    cooY.pop();
-    console.log(cooX.length);
-    console.log(cooX);
+    if(straight === true){
+      cooX.pop();
+      cooY.pop();
+      //console.log(cooX.length);
+      //console.log(cooX);
+    }else if(bezi === true){
+      beziList.pop();
+    }
     canvasReload();
     drawCanvas();
   });
@@ -112,10 +166,29 @@ function initDrawApp(globals){
 
   function drawCanvas(){
     //点を描画
+    context.fillStyle = "rgb(255,0,0)";                   //点は基本赤
+    //直線ツールの点
     for(var i = 0; i < cooX.length; i+=2){
       context.fillRect(cooX[i],cooY[i],3,3);
+      context.fillRect(cooX[i+1],cooY[i+1],3,3);
       if(cooX[i+1] !== null){
         drawLine(context,"rgb(0, 255, 0)",2,cooX[i],cooY[i],cooX[i+1],cooY[i+1]);
+      }
+    }
+    //ベジェ曲線ツールの点
+    for(var i = 0; i < beziList.length; i++){
+      var coo = beziList[i];
+      context.fillRect(coo[0],coo[1],3,3);
+    }
+
+    //ベジェ曲線を描画
+    if(beziList.length > 0 && beziList.length % 4 === 0){
+      for(var i = 0; i < beziList.length; i+=4){
+        var cp1 = beziList[i];
+        var cp2 = beziList[i+1];
+        var cp3 = beziList[i+2];
+        var cp4 = beziList[i+3];
+        globals.beziercurve.drawBezier(context,cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
       }
     }
   }
