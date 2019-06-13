@@ -11,6 +11,7 @@ function initDrawApp(globals){
   var cooY = new Array();                                   //クリックしたY座標
 
   var beziList = new Array();                               //ベジェ曲線の座標を格納するリスト(配列を代用)
+  var beziDistList = new Array();                             //ベジェ曲線の長さを保存する
   //var dragList = new Array();                               //tmp
   var bezi = false;
   var bcurveButton = document.getElementById("bcurve-button");
@@ -31,6 +32,9 @@ function initDrawApp(globals){
   
   context.font = "30px serif";                              //canvasに表示させる文字のサイズ
   context.strokeText("Click here!",100,100);
+
+  var outX = new Array();                                   //出力の直線群のX座標
+  var outY = new Array();                                   //出力の直線群のY座標
   //----------------------------------------------------------------------
 
   //canvas内のクリック判定
@@ -133,9 +137,13 @@ function initDrawApp(globals){
 
   //svg出力ボタンが押された時の処理
   document.getElementById("go-simulation").addEventListener("click", function(){
+    for(var i = 0; i < cooX.length; i++){
+      outX.push(cooX[i]);
+      outY.push(cooY[i]);
+    }
     //修正した展開図をシミュレータへ投げる
     //console.log(globals.svgFile);
-    globals.importer.simulateAgain(globals.svgFile,cooX,cooY);  //再入力
+    globals.importer.simulateAgain(globals.svgFile,outX,outY);  //再入力
     globals.simulationRunning = true; 
 
     //Simulate Modeへ遷移する
@@ -165,6 +173,10 @@ function initDrawApp(globals){
   }
 
   function drawCanvas(){
+    //--------------------------------------------------------------
+    //変数の初期化
+    beziDistList = new Array();
+    //--------------------------------------------------------------
     //点を描画
     context.fillStyle = "rgb(255,0,0)";                   //点は基本赤
     //直線ツールの点
@@ -182,13 +194,17 @@ function initDrawApp(globals){
     }
 
     //ベジェ曲線を描画
+    //beziDistList = new Array();
     if(beziList.length > 0 && beziList.length % 4 === 0){
       for(var i = 0; i < beziList.length; i+=4){
         var cp1 = beziList[i];
         var cp2 = beziList[i+1];
         var cp3 = beziList[i+2];
         var cp4 = beziList[i+3];
-        globals.beziercurve.drawBezier(context,cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
+        globals.beziercurve.drawBezier(context,beziDistList,cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
+
+        //ruling描画
+        findRuling(context,beziDistList[beziDistList.length-1],cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
       }
     }
   }
@@ -241,5 +257,46 @@ function initDrawApp(globals){
     return [hex.slice(0,2), hex.slice(2,4), hex.slice(4,6)].map(function(str) {
       return parseInt(str,16);
     });
+  }
+
+  //入力曲線(4 control points)からRulingを求めるメソッド
+  function findRuling(ctx,curvelen,x1,y1,x2,y2,x3,y3,x4,y4){
+    ctx.strokeStyle = "rgb(100,100,100)";                    //描画の色
+    ctx.lineWidth = 2;                                      //描画する線の太さ
+
+    var tmpbunkatsu = 1;                                    //何番目の分割点か？
+    var tmpdist = 0.0;                                      //現在の距離の合計
+    var bunkatsu = 11;                                      //rulingは11-1本
+    var dividedPoints = parseInt(curvelen)/bunkatsu;
+    for(var t = 0.0; t <= 1.0 - 0.001; t += 0.001){
+      var tt = t + 0.001;
+      var bpx1 = Math.pow((1-t),3)*x1+3*t*Math.pow((1-t),2)*x2+3*(1-t)*Math.pow(t,2)*x3+Math.pow(t,3)*x4;
+      var bpy1 = Math.pow((1-t),3)*y1+3*t*Math.pow((1-t),2)*y2+3*(1-t)*Math.pow(t,2)*y3+Math.pow(t,3)*y4;
+      var bpx2 = Math.pow((1-tt),3)*x1+3*tt*Math.pow((1-tt),2)*x2+3*(1-tt)*Math.pow(tt,2)*x3+Math.pow(tt,3)*x4;
+      var bpy2 = Math.pow((1-tt),3)*y1+3*tt*Math.pow((1-tt),2)*y2+3*(1-tt)*Math.pow(tt,2)*y3+Math.pow(tt,3)*y4;
+      tmpdist += globals.beziercurve.dist(bpx1,bpy1,bpx2,bpy2);
+      if(parseInt(tmpdist)-1 <= dividedPoints*tmpbunkatsu && parseInt(tmpdist)+1 >= dividedPoints*tmpbunkatsu){
+        console.log("Reached Here!!");
+        var start = new THREE.Vector2(bpx1,bpy1);
+        var end = new THREE.Vector2(bpx2,bpy2);
+        var svec = end.sub(start);
+        var hvec = new THREE.Vector2(svec.y,-svec.x);
+        hvec.normalize();
+        //
+        ctx.strokeStyle = "rgb(0,255,0)";
+        ctx.beginPath();
+        ctx.moveTo(parseInt(bpx1+hvec.x*200), parseInt(bpy1+hvec.y*200));
+        ctx.lineTo(parseInt(bpx1-hvec.x*200), parseInt(bpy1-hvec.y*200));
+        ctx.closePath();
+        ctx.stroke();
+        //
+        outX.push(parseInt(bpx1+hvec.x*200));
+        outY.push(parseInt(bpy1+hvec.y*200));
+        outX.push(parseInt(bpx1-hvec.x*200));
+        outY.push(parseInt(bpy1-hvec.y*200));
+        //
+        tmpbunkatsu++;
+      }
+    }
   }
 }

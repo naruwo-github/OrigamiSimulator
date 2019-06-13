@@ -1,21 +1,24 @@
 function initBezierCurve(globals){
     //ベジェ曲線を描画する
-    function drawBezier(ctx,x1,y1,x2,y2,x3,y3,x4,y4){
+    function drawBezier(ctx,distList,x1,y1,x2,y2,x3,y3,x4,y4){
         //4点の座標から描画するよ
+        ctx.strokeStyle = "rgb(100,100,100)";
+        ctx.lineWidth = 2;
+        var kyori = 0.0;
         for(var t = 0.0; t <= 1.0 - 0.001; t += 0.001){
             var tt = t + 0.001;
             var bpx1 = Math.pow((1-t),3)*x1+3*t*Math.pow((1-t),2)*x2+3*(1-t)*Math.pow(t,2)*x3+Math.pow(t,3)*x4;
             var bpy1 = Math.pow((1-t),3)*y1+3*t*Math.pow((1-t),2)*y2+3*(1-t)*Math.pow(t,2)*y3+Math.pow(t,3)*y4;
             var bpx2 = Math.pow((1-tt),3)*x1+3*tt*Math.pow((1-tt),2)*x2+3*(1-tt)*Math.pow(tt,2)*x3+Math.pow(tt,3)*x4;
             var bpy2 = Math.pow((1-tt),3)*y1+3*tt*Math.pow((1-tt),2)*y2+3*(1-tt)*Math.pow(tt,2)*y3+Math.pow(tt,3)*y4;
-            ctx.strokeStyle = "rgb(100,100,100)";
-            ctx.lineWidth = 2;
+            kyori += dist(bpx1,bpy1,bpx2,bpy2);
             ctx.beginPath();
             ctx.moveTo(parseInt(bpx1), parseInt(bpy1));
             ctx.lineTo(parseInt(bpx2), parseInt(bpy2));
             ctx.closePath();
             ctx.stroke();
         }
+        distList.push(kyori);
     }
 
     //dragListに格納されている要素から制御点4点を求める
@@ -56,11 +59,6 @@ function initBezierCurve(globals){
     //2点間の距離を求めるメソッド
     function dist(x1,y1,x2,y2){
         return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
-    }
-
-    //入力曲線(4 control points)からRulingを求めるメソッド
-    function findRuling(){
-        //
     }
 
     return {
