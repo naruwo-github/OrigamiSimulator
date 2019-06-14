@@ -142,6 +142,7 @@ function initDrawApp(globals){
 
   //svg出力ボタンが押された時の処理
   document.getElementById("go-simulation").addEventListener("click", function(){
+    drawCanvas();
     for(var i = 0; i < cooX.length; i++){
       outX.push(cooX[i]);
       outY.push(cooY[i]);
@@ -181,8 +182,8 @@ function initDrawApp(globals){
     //--------------------------------------------------------------
     //変数の初期化
     beziDistList = new Array();
-    outX = new Array();
-    outY = new Array();
+    //outX = new Array();
+    //outY = new Array();
     //--------------------------------------------------------------
     //点を描画
     context.fillStyle = "rgb(255,0,0)";                   //点は基本赤
@@ -290,10 +291,10 @@ function initDrawApp(globals){
         var hvec = new THREE.Vector2(svec.y,-svec.x);
         hvec.normalize();
 
-        var rux1 = bpx1+hvec.x*10;
-        var ruy1 = bpy1+hvec.y*10;
-        var rux2 = bpx1-hvec.x*10;
-        var ruy2 = bpy1-hvec.y*10;
+        var rux1 = bpx1+hvec.x*15;
+        var ruy1 = bpy1+hvec.y*15;
+        var rux2 = bpx1-hvec.x*15;
+        var ruy2 = bpy1-hvec.y*15;
         //以下可展面内にrulingを伸ばす操作
         var imageData1 = ctx.getImageData(parseInt(rux1), parseInt(ruy1), 1, 1);
         var imageData2 = ctx.getImageData(parseInt(rux2), parseInt(ruy2), 1, 1);
@@ -322,10 +323,10 @@ function initDrawApp(globals){
         ctx.stroke();
         //
         //rulingを出力のために格納する
-        outX.push(parseInt(rux1+hvec.x));
-        outY.push(parseInt(ruy1+hvec.y));
-        outX.push(parseInt(rux2-hvec.x));
-        outY.push(parseInt(ruy2-hvec.y));
+        outX.push(parseInt(rux1));
+        outY.push(parseInt(ruy1));
+        outX.push(parseInt(rux2));
+        outY.push(parseInt(ruy2));
         //
         tmpbunkatsu++;
       }
