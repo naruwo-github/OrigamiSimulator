@@ -42,6 +42,11 @@ function initDrawApp(globals){
     if(straight === true){                                  //直線ツールがON!!
       cooX.push(event.offsetX);                              //座標を取得x&y
       cooY.push(event.offsetY);
+      var imageData = context.getImageData(e.offsetX,e.offsetY,1,1);
+      console.log(imageData.data[0]);
+      console.log(imageData.data[1]);
+      console.log(imageData.data[2]);
+      console.log(imageData.data[3]);
     }else if(bezi === true){                                //ベジェ曲線ツールがON!!
       beziList.push([e.offsetX,e.offsetY]);
       console.log(beziList);
@@ -176,6 +181,8 @@ function initDrawApp(globals){
     //--------------------------------------------------------------
     //変数の初期化
     beziDistList = new Array();
+    outX = new Array();
+    outY = new Array();
     //--------------------------------------------------------------
     //点を描画
     context.fillStyle = "rgb(255,0,0)";                   //点は基本赤
@@ -282,18 +289,43 @@ function initDrawApp(globals){
         var svec = end.sub(start);
         var hvec = new THREE.Vector2(svec.y,-svec.x);
         hvec.normalize();
-        //
+
+        var rux1 = bpx1+hvec.x*10;
+        var ruy1 = bpy1+hvec.y*10;
+        var rux2 = bpx1-hvec.x*10;
+        var ruy2 = bpy1-hvec.y*10;
+        //以下可展面内にrulingを伸ばす操作
+        var imageData1 = ctx.getImageData(parseInt(rux1), parseInt(ruy1), 1, 1);
+        var imageData2 = ctx.getImageData(parseInt(rux2), parseInt(ruy2), 1, 1);
+        /*
+        console.log(typeof imageData1);
+        console.log(typeof imageData1.data);
+        console.log(imageData1.data[0] === 0);
+        */
+        while(imageData1.data[0] < 255 && imageData1.data[1] < 255 && imageData1.data[2] < 255 && imageData1.data[3] < 255){
+          rux1+=hvec.x;
+          ruy1+=hvec.y;
+          imageData1 = ctx.getImageData(parseInt(rux1), parseInt(ruy1), 1, 1);
+          console.log("aaa");
+        }
+        while(imageData2.data[0] < 255 && imageData2.data[1] < 255 && imageData2.data[2] < 255 && imageData2.data[3] < 255){
+          rux2-=hvec.x;
+          ruy2-=hvec.y;
+          imageData2 = ctx.getImageData(parseInt(rux2), parseInt(ruy2), 1, 1);
+        }
+        //canvas上描画するやーつ
         ctx.strokeStyle = "rgb(0,255,0)";
         ctx.beginPath();
-        ctx.moveTo(parseInt(bpx1+hvec.x*200), parseInt(bpy1+hvec.y*200));
-        ctx.lineTo(parseInt(bpx1-hvec.x*200), parseInt(bpy1-hvec.y*200));
+        ctx.moveTo(parseInt(rux1), parseInt(ruy1));
+        ctx.lineTo(parseInt(rux2), parseInt(ruy2));
         ctx.closePath();
         ctx.stroke();
         //
-        outX.push(parseInt(bpx1+hvec.x*200));
-        outY.push(parseInt(bpy1+hvec.y*200));
-        outX.push(parseInt(bpx1-hvec.x*200));
-        outY.push(parseInt(bpy1-hvec.y*200));
+        //rulingを出力のために格納する
+        outX.push(parseInt(rux1+hvec.x));
+        outY.push(parseInt(ruy1+hvec.y));
+        outX.push(parseInt(rux2-hvec.x));
+        outY.push(parseInt(ruy2-hvec.y));
         //
         tmpbunkatsu++;
       }
