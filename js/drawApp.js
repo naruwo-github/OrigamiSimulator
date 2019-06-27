@@ -40,13 +40,10 @@ function initDrawApp(globals){
   //canvas内のクリック判定
   canvas.addEventListener("click", e => {
     if(straight === true){                                  //直線ツールがON!!
-      cooX.push(event.offsetX);                              //座標を取得x&y
-      cooY.push(event.offsetY);
-      var imageData = context.getImageData(e.offsetX,e.offsetY,1,1);
-      console.log(imageData.data[0]);
-      console.log(imageData.data[1]);
-      console.log(imageData.data[2]);
-      console.log(imageData.data[3]);
+      //var coxy = globals.beziercurve.returnCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
+      //context.fillRect(coxy[0]-5,coxy[1]-5,11,11);
+      cooX.push(e.offsetX);                              //座標を取得x&y
+      cooY.push(e.offsetY);
     }else if(bezi === true){                                //ベジェ曲線ツールがON!!
       beziList.push([e.offsetX,e.offsetY]);
       console.log(beziList);
@@ -60,32 +57,6 @@ function initDrawApp(globals){
 
     globals.simulationRunning = true;                       //シミュレーションをON
   })
-
-  /*
-  //canvas内のドラッグ判定 = mousedown + mousemove + mouseup
-  canvas.addEventListener("mousedown", e => {
-    dragging = true;
-  });
-  canvas.addEventListener("mousemove", e => {
-    if(dragging){
-      if(bezi){
-        dragList.push([e.offsetX,e.offsetY]);
-        console.log([e.offsetX,e.offsetY]);
-      }
-    }
-  });
-  canvas.addEventListener("mouseup", e => {
-    dragging = false;
-    if(dragList.length > 20){
-      globals.beziercurve.defineBeziPoint(dragList,beziList);
-      console.log("dragList");
-      console.log(dragList);
-      console.log("beziList");
-      console.log(beziList);
-      dragList = new Array();
-    }
-  });
-  */
 
   //ドローツール画面のリサイズ判定
   window.addEventListener("resize", function() {
@@ -182,8 +153,8 @@ function initDrawApp(globals){
     //--------------------------------------------------------------
     //変数の初期化
     beziDistList = new Array();
-    //outX = new Array();
-    //outY = new Array();
+    outX = new Array();
+    outY = new Array();
     //--------------------------------------------------------------
     //点を描画
     context.fillStyle = "rgb(255,0,0)";                   //点は基本赤
@@ -217,7 +188,7 @@ function initDrawApp(globals){
     }
   }
 
-  //ruling描画メソッド
+  //ruling描画メソッドないで用いる2点を結んで直線を描画するメソッド
   function drawLine(ctx, color, width, x1, y1, x2, y2){
     ctx.strokeStyle = color;     //線の色
     ctx.lineWidth = width;      //線の太さ
@@ -228,10 +199,15 @@ function initDrawApp(globals){
     ctx.stroke();               //描画！
   }
 
+  //展開図情報を描画するメソッド
   function drawDevelopment(info,ctx){
     for(var i = 0; i < info.stroke.length; i++){
       //drawLine(ctx,info.stroke[i],info.stroke_width[i],info.x1,info.y1,info.x2,info.y2);
       drawLine(ctx,"rgb("+String(hex2rgb(info.stroke[i]))+")",Number(info.stroke_width[i]),parseInt(info.x1[i]),parseInt(info.y1[i]),parseInt(info.x2[i]),parseInt(info.y2[i]));
+      //点を打つ
+      ctx.fillStyle = "rgb(0,255,255)";
+      ctx.fillRect(parseInt(info.x1[i])-3,parseInt(info.y1[i])-3,7,7);
+      ctx.fillRect(parseInt(info.x2[i])-3,parseInt(info.y2[i])-3,7,7);
     }
   }
   //パス
@@ -251,8 +227,8 @@ function initDrawApp(globals){
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);  
     }, 100);  
-    //document.body.removeChild(a);
-    //window.URL.revokeObjectURL(url);    
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);    
   }
 
   function hex2rgb(hex) {
@@ -291,18 +267,57 @@ function initDrawApp(globals){
         var hvec = new THREE.Vector2(svec.y,-svec.x);
         hvec.normalize();
 
+        //以下可展面内にrulingを伸ばす操作
+        //線群の交差判定を用い交点を検出する操作
+        var rux1 = bpx1+hvec.x*1000;
+        var ruy1 = bpy1+hvec.y*1000;
+        var rux2 = bpx1-hvec.x*1000;
+        var ruy2 = bpy1-hvec.y*1000;
+
+        var rulingStart = new Array();
+        var rulingEnd = new Array();
+
+        //交差判定を行う
+        for(var i = 0; i < globals.svgInformation.stroke.length; i++){
+          //法線方向に伸ばした時に交差しているかどうか
+          if(globals.beziercurve.judgeIntersect(bpx1,bpy1,rux1,ruy1,
+            globals.svgInformation.x1[i],globals.svgInformation.y1[i],globals.svgInformation.x2[i],globals.svgInformation.y2[i])){
+              rulingEnd.push(globals.beziercurve.getIntersectPoint(bpx1,bpy1,globals.svgInformation.x1[i],globals.svgInformation.y1[i],
+                rux1,ruy1,globals.svgInformation.x2[i],globals.svgInformation.y2[i]));
+            }
+          if(globals.beziercurve.judgeIntersect(bpx1,bpy1,rux2,ruy2,
+              globals.svgInformation.x1[i],globals.svgInformation.y1[i],globals.svgInformation.x2[i],globals.svgInformation.y2[i])){
+                rulingStart.push(globals.beziercurve.getIntersectPoint(bpx1,bpy1,globals.svgInformation.x1[i],globals.svgInformation.y1[i],
+                  rux2,ruy2,globals.svgInformation.x2[i],globals.svgInformation.y2[i]));
+            }
+        }
+
+        //Start,Endの要素の中から、それぞれ(bpx1,bpy1)に最短なものを選びそれらを結んだのがrulingとなる
+        var tmpDist = 1000;
+        for(var i = 0; i < rulingStart.length; i++){
+          var s = rulingStart[i];
+          for(var j = 0; j < rulingEnd.length; j++){
+            var e = rulingEnd[j];
+            if(tmpDist > globals.beziercurve.dist(s[0],s[1],e[0],e[1])){
+              tmpDist = globals.beziercurve.dist(s[0],s[1],e[0],e[1]);
+              rux1 = s[0];
+              ruy1 = s[1];
+              rux2 = e[0];
+              ruy2 = e[1];
+            }
+          }
+        }
+
+        /*
         var rux1 = bpx1+hvec.x*15;
         var ruy1 = bpy1+hvec.y*15;
         var rux2 = bpx1-hvec.x*15;
         var ruy2 = bpy1-hvec.y*15;
-        //以下可展面内にrulingを伸ばす操作
+
+        //imagedataを用いてピクセル単位で操作している描画方法
         var imageData1 = ctx.getImageData(parseInt(rux1), parseInt(ruy1), 1, 1);
         var imageData2 = ctx.getImageData(parseInt(rux2), parseInt(ruy2), 1, 1);
-        /*
-        console.log(typeof imageData1);
-        console.log(typeof imageData1.data);
-        console.log(imageData1.data[0] === 0);
-        */
+
         while(imageData1.data[0] < 255 && imageData1.data[1] < 255 && imageData1.data[2] < 255 && imageData1.data[3] < 255){
           rux1+=hvec.x;
           ruy1+=hvec.y;
@@ -314,6 +329,23 @@ function initDrawApp(globals){
           ruy2-=hvec.y;
           imageData2 = ctx.getImageData(parseInt(rux2), parseInt(ruy2), 1, 1);
         }
+
+        //canvas上描画するやーつ
+        ctx.strokeStyle = "rgb(0,255,0)";
+        ctx.beginPath();
+        ctx.moveTo(parseInt(rux1), parseInt(ruy1));
+        ctx.lineTo(parseInt(rux2), parseInt(ruy2));
+        ctx.closePath();
+        ctx.stroke();
+        //
+        //rulingを出力のために格納する
+        outX.push(parseInt(rux1));
+        outY.push(parseInt(ruy1));
+        outX.push(parseInt(rux2));
+        outY.push(parseInt(ruy2));
+        //
+        */
+
         //canvas上描画するやーつ
         ctx.strokeStyle = "rgb(0,255,0)";
         ctx.beginPath();
@@ -333,3 +365,29 @@ function initDrawApp(globals){
     }
   }
 }
+
+  /*
+  //canvas内のドラッグ判定 = mousedown + mousemove + mouseup
+  canvas.addEventListener("mousedown", e => {
+    dragging = true;
+  });
+  canvas.addEventListener("mousemove", e => {
+    if(dragging){
+      if(bezi){
+        dragList.push([e.offsetX,e.offsetY]);
+        console.log([e.offsetX,e.offsetY]);
+      }
+    }
+  });
+  canvas.addEventListener("mouseup", e => {
+    dragging = false;
+    if(dragList.length > 20){
+      globals.beziercurve.defineBeziPoint(dragList,beziList);
+      console.log("dragList");
+      console.log(dragList);
+      console.log("beziList");
+      console.log(beziList);
+      dragList = new Array();
+    }
+  });
+  */
