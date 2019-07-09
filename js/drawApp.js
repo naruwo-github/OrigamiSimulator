@@ -7,15 +7,14 @@
 function initDrawApp(globals){
   //----------------------------------------------------------------------
   //変数など各種定義
-  var cooX = new Array();                                   //クリックしたX座標
-  var cooY = new Array();                                   //クリックしたY座標
+  var cooX = new Array(); //直線描画のX座標
+  var cooY = new Array(); //直線描画のY座標
 
-  var beziList = new Array();                               //ベジェ曲線の座標を格納するリスト(配列を代用)
-  var beziDistList = new Array();                             //ベジェ曲線の長さを保存する
-  //var dragList = new Array();                               //tmp
-  var bezi = false;
-  var bcurveButton = document.getElementById("bcurve-button");
-  //var dragging = false;                                     //ドラッグ中かどうか
+  var beziList = new Array(); //ベジェ曲線の座標を格納するリスト(配列を代用)
+  var beziDistList = new Array(); //ベジェ曲線の長さを保存する
+
+  var ruling1 = false; //ruling1ツールのon/offを表すフラグ
+  var ruling1Button = document.getElementById("ruling1-button");
 
   var readerFile = new FileReader();                        //svgのdlに使う
 
@@ -51,14 +50,18 @@ function initDrawApp(globals){
         cooX.push(e.offsetX);                              //座標を取得x&y
         cooY.push(e.offsetY);
       }
-    }else if(bezi === true){                                //ベジェ曲線ツールがON!!
+    }else if(ruling1 === true){                                //ベジェ曲線ツールがON!!
       beziList.push([e.offsetX,e.offsetY]);
       console.log(beziList);
     }else{
      canvasReload();                                        //canvasのリロード
+
+     console.log(globals.svgFile)
+     console.log(globals.svgInformation)
      readerFile.readAsText(globals.svgFile);                    //svgファイルをテキストで取得
      readerFile.onload = function(ev){
      }
+
     }
     drawCanvas();
 
@@ -74,29 +77,29 @@ function initDrawApp(globals){
   //直線ボタンが押された時の処理
   document.getElementById("sline-button").addEventListener("click", function(){
     if(straight === true){
-      //console.log("straight line mode ended...");
+      console.log("straight line mode ended...");
       straight = false;
       slineButton.style.backgroundColor = buttonColor;
     }else{
-      //console.log("straight line mode started...");
+      console.log("straight line mode started...");
       straight = true;
       slineButton.style.backgroundColor = '#aaaaaa';
 
-      bezi = false;
-      bcurveButton.style.backgroundColor = buttonColor;
+      ruling1 = false;
+      ruling1Button.style.backgroundColor = buttonColor;
     }
   });
 
   //ベジェ曲線ボタンが押された時の処理
-  document.getElementById("bcurve-button").addEventListener("click", function(){
-    if(bezi === true){
-      //console.log("bezi curve mode ended...");
-      bezi = false;
-      bcurveButton.style.backgroundColor = buttonColor;
+  document.getElementById("ruling1-button").addEventListener("click", function(){
+    if(ruling1 === true){
+      console.log("ruling mode1 ended...");
+      ruling1 = false;
+      ruling1Button.style.backgroundColor = buttonColor;
     }else{
-      //console.log("bezi curve mode started...");
-      bezi = true;
-      bcurveButton.style.backgroundColor = '#aaaaaa';
+      console.log("ruling mode1 started...");
+      ruling1 = true;
+      ruling1Button.style.backgroundColor = '#aaaaaa';
 
       straight = false;
       slineButton.style.backgroundColor = buttonColor;
@@ -109,7 +112,7 @@ function initDrawApp(globals){
     if(straight === true){
       cooX.pop();
       cooY.pop();
-    }else if(bezi === true){
+    }else if(ruling1 === true){
       beziList.pop();
     }
     canvasReload();
@@ -146,11 +149,9 @@ function initDrawApp(globals){
     //canvas初期化
     $('#draw-area').attr('width', globals.svgimg.width);  //canvasリサイズ
     $('#draw-area').attr('height', globals.svgimg.height);
-    //context.drawImage(globals.svgimg,100,100,globals.svgimg.width,globals.svgimg.height);
-    //context.drawImage(globals.svgimg,0,0,globals.svgimg.width,globals.svgimg.height);
-    console.log("drawDevelopment began");
+
+    //展開図情報の描画
     drawDevelopment(globals.svgInformation,context);
-    console.log("drawDevelopment ended");
   }
 
 
