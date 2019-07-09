@@ -40,10 +40,17 @@ function initDrawApp(globals){
   //canvas内のクリック判定
   canvas.addEventListener("click", e => {
     if(straight === true){                                  //直線ツールがON!!
-      //var coxy = globals.beziercurve.returnCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
-      //context.fillRect(coxy[0]-5,coxy[1]-5,11,11);
-      cooX.push(e.offsetX);                              //座標を取得x&y
-      cooY.push(e.offsetY);
+      //クリックした点が展開図情報内の点のいずれかに近い場合、
+      //重ねて配置したいと判定する
+      var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
+      var tmpDist = globals.beziercurve.dist(e.offsetX,e.offsetY,ret[0],ret[1])
+      if(tmpDist < 10){
+        cooX.push(ret[0])
+        cooY.push(ret[1])
+      }else {
+        cooX.push(e.offsetX);                              //座標を取得x&y
+        cooY.push(e.offsetY);
+      }
     }else if(bezi === true){                                //ベジェ曲線ツールがON!!
       beziList.push([e.offsetX,e.offsetY]);
       console.log(beziList);
@@ -102,8 +109,6 @@ function initDrawApp(globals){
     if(straight === true){
       cooX.pop();
       cooY.pop();
-      //console.log(cooX.length);
-      //console.log(cooX);
     }else if(bezi === true){
       beziList.pop();
     }
@@ -119,7 +124,6 @@ function initDrawApp(globals){
       outY.push(cooY[i]);
     }
     //修正した展開図をシミュレータへ投げる
-    //console.log(globals.svgFile);
     globals.importer.simulateAgain(globals.svgFile,outX,outY);  //再入力
     globals.simulationRunning = true; 
 
@@ -149,6 +153,8 @@ function initDrawApp(globals){
     console.log("drawDevelopment ended");
   }
 
+
+  //キャンバスに描画する関数
   function drawCanvas(){
     //--------------------------------------------------------------
     //変数の初期化
@@ -188,16 +194,6 @@ function initDrawApp(globals){
     }
   }
 
-  //ruling描画メソッドないで用いる2点を結んで直線を描画するメソッド
-  function drawLine(ctx, color, width, x1, y1, x2, y2){
-    ctx.strokeStyle = color;     //線の色
-    ctx.lineWidth = width;      //線の太さ
-    ctx.beginPath();            //直線の開始
-    ctx.moveTo(x1, y1);         //開始点座標
-    ctx.lineTo(x2, y2);         //終了点座標
-    ctx.closePath();            //直線の終了
-    ctx.stroke();               //描画！
-  }
 
   //展開図情報を描画するメソッド
   function drawDevelopment(info,ctx){
@@ -210,6 +206,7 @@ function initDrawApp(globals){
       ctx.fillRect(parseInt(info.x2[i])-3,parseInt(info.y2[i])-3,7,7);
     }
   }
+
   //パス
   ///Users/naruchan/desktop/origamisimulator/assets
   //ダウンロードする関数
@@ -241,6 +238,18 @@ function initDrawApp(globals){
     return [hex.slice(0,2), hex.slice(2,4), hex.slice(4,6)].map(function(str) {
       return parseInt(str,16);
     });
+  }
+
+
+  //ruling描画メソッドないで用いる2点を結んで直線を描画するメソッド
+  function drawLine(ctx, color, width, x1, y1, x2, y2){
+    ctx.strokeStyle = color;     //線の色
+    ctx.lineWidth = width;      //線の太さ
+    ctx.beginPath();            //直線の開始
+    ctx.moveTo(x1, y1);         //開始点座標
+    ctx.lineTo(x2, y2);         //終了点座標
+    ctx.closePath();            //直線の終了
+    ctx.stroke();               //描画！
   }
 
   //入力曲線(4 control points)からRulingを求めるメソッド
