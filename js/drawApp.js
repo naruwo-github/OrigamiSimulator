@@ -231,13 +231,13 @@ function initDrawApp(globals){
       for(var i = 0; i < ru2array.length; i++){
         var aaa = ru2array[i]
         context.beginPath();
-        context.arc(aaa[0], aaa[1], 10, 10 * Math.PI / 180, 80 * Math.PI / 180, true);
+        context.arc(aaa[0], aaa[1], 14, 10 * Math.PI / 180, 80 * Math.PI / 180, true);
         context.closePath();
         context.stroke();
       }
 
-      /*
       if(ru2array.length > 2){
+        console.log()
         //点Pi、Pi+1、Pi+2について
         //直線Pi+1(Pi + Pi+2)/2 を描画する
         for(var i = 0; i < ru2array.length - 2; i++){
@@ -246,34 +246,44 @@ function initDrawApp(globals){
           var P2 = ru2array[i+2];
           var P3 = [(P0[0] + P2[0])/2, (P0[1] + P2[1])/2];
 
+          var vecP0 = new THREE.Vector2(P0[0], P0[1]);
           var vecP1 = new THREE.Vector2(P1[0], P1[1]);
+          var vecP2 = new THREE.Vector2(P2[0], P2[1]);
           var vecP3 = new THREE.Vector2(P3[0], P3[1]);
+          var vecP0P2 = new THREE.Vector2(vecP2.x - vecP0.x, vecP2.y - vecP0.y);
           var vecP1P3 = vecP3.sub(vecP1);
+          vecP0P2.normalize();
+          normalP0P2 = new THREE.Vector2(vecP0P2.y, -vecP0P2.x);
           vecP1P3.normalize();
-
+　
           //上方向
-          var vecUp = vecP1.add(vecP1P3.multiplyScalar(-1000));
+          //var vecUp = vecP1.add(vecP1P3.multiplyScalar(-1000));
+          var vecUp = new THREE.Vector2(vecP1.x + 1000 * normalP0P2.x, vecP1.y + 1000 * normalP0P2.y);
           //下方向
-          var vecDown = vecP1.add(vecP1P3.multiplyScalar(1000));
+          //var vecDown = vecP1.add(vecP1P3.multiplyScalar(1000));
+          var vecDown = new THREE.Vector2(vecP1.x - 1000 * normalP0P2.x, vecP1.y - 1000 * normalP0P2.y);
 
           var rulingStart = new Array();
           var rulingEnd = new Array();
 
           //交差判定を行う
-          for(var i = 0; i < globals.svgInformation.stroke.length; i++){
+          for(var j = 0; j < globals.svgInformation.stroke.length; j++){
             //上方向
-            if(globals.beziercurve.judgeIntersect(P1[0],P1[1],vecUp[0],vecUp[1],
-              globals.svgInformation.x1[i],globals.svgInformation.y1[i],globals.svgInformation.x2[i],globals.svgInformation.y2[i])){
-                rulingEnd.push(globals.beziercurve.getIntersectPoint(P1[0],P1[1],globals.svgInformation.x1[i],globals.svgInformation.y1[i],
-                vecUp[0],vecUp[1],globals.svgInformation.x2[i],globals.svgInformation.y2[i]));
+            if(globals.beziercurve.judgeIntersect(vecP1.x,vecP1.y,vecUp.x,vecUp.y,
+              globals.svgInformation.x1[j],globals.svgInformation.y1[j],globals.svgInformation.x2[j],globals.svgInformation.y2[j])){
+                rulingEnd.push(globals.beziercurve.getIntersectPoint(vecP1.x,vecP1.y,globals.svgInformation.x1[j],globals.svgInformation.y1[j],
+                vecUp.x,vecUp.y,globals.svgInformation.x2[j],globals.svgInformation.y2[j]));
             }
             //下方向
-            if(globals.beziercurve.judgeIntersect(P1[0],P1[1],vecDown[0],vecDown[1],
-              globals.svgInformation.x1[i],globals.svgInformation.y1[i],globals.svgInformation.x2[i],globals.svgInformation.y2[i])){
-                rulingStart.push(globals.beziercurve.getIntersectPoint(P1[0],P1[1],globals.svgInformation.x1[i],globals.svgInformation.y1[i],
-                vecDown[0],vecDown[1],globals.svgInformation.x2[i],globals.svgInformation.y2[i]));
+            if(globals.beziercurve.judgeIntersect(vecP1.x,vecP1.y,vecDown.x,vecDown.y,
+              globals.svgInformation.x1[j],globals.svgInformation.y1[j],globals.svgInformation.x2[j],globals.svgInformation.y2[j])){
+                rulingStart.push(globals.beziercurve.getIntersectPoint(vecP1.x,vecP1.y,globals.svgInformation.x1[j],globals.svgInformation.y1[j],
+                vecDown.x,vecDown.y,globals.svgInformation.x2[j],globals.svgInformation.y2[j]));
             }
           }
+
+          console.log(rulingStart);
+          console.log(rulingEnd);
 
           //Start,Endの要素の中から、それぞれ(bpx1,bpy1)に最短なものを選びそれらを結んだのがrulingとなる
           var tmpDist = 1000;
@@ -281,11 +291,13 @@ function initDrawApp(globals){
           var starty = 0;
           var endx = 0;
           var endy = 0;
-          for(var i = 0; i < rulingStart.length; i++){
-            var s = rulingStart[i];
-            for(var j = 0; j < rulingEnd.length; j++){
-              var e = rulingEnd[j];
-              if(tmpDist > globals.beziercurve.dist(s[0],s[1],e[0],e[1])){
+          for(var j = 0; j < rulingStart.length; j++){
+            var s = rulingStart[j];
+            for(var k = 0; k < rulingEnd.length; k++){
+              var e = rulingEnd[k];
+              if(tmpDist > globals.beziercurve.dist(s[0],s[1],e[0],e[1])
+              && s[0] != parseInt(vecP1.x) && s[1] != parseInt(vecP1.y)
+              && e[0] != parseInt(vecP1.x) && e[1] != parseInt(vecP1.y)){
                 tmpDist = globals.beziercurve.dist(s[0],s[1],e[0],e[1]);
                 startx = s[0];
                 starty = s[1];
@@ -302,10 +314,14 @@ function initDrawApp(globals){
           context.lineTo(parseInt(endx), parseInt(endy));
           context.closePath();
           context.stroke();
-          
+
+          //rulingを出力のために格納する
+          outX.push(parseInt(startx));
+          outY.push(parseInt(starty));
+          outX.push(parseInt(endx));
+          outY.push(parseInt(endy));
         }
       }
-      */
 
     }
   }
