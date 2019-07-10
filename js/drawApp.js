@@ -16,6 +16,10 @@ function initDrawApp(globals){
   var ruling1 = false; //ruling1ツールのon/offを表すフラグ
   var ruling1Button = document.getElementById("ruling1-button");
 
+  var ruling2 = false; //ruling2ツールのon/offを表すフラグ
+  var ruling2Button = document.getElementById("ruling2-button")
+  var ru2array = new Array(); //rulingツール2で使う配列
+
   var readerFile = new FileReader();                        //svgのdlに使う
 
   const canvas = document.querySelector('#draw-area');      //canvasを取得
@@ -53,11 +57,12 @@ function initDrawApp(globals){
     }else if(ruling1 === true){                                //ベジェ曲線ツールがON!!
       beziList.push([e.offsetX,e.offsetY]);
       console.log(beziList);
-    }else{
+    }else if(ruling2 === true){
+      var closest = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
+      ru2array.push(closest);
+    }else {
      canvasReload();                                        //canvasのリロード
 
-     console.log(globals.svgFile)
-     console.log(globals.svgInformation)
      readerFile.readAsText(globals.svgFile);                    //svgファイルをテキストで取得
      readerFile.onload = function(ev){
      }
@@ -87,10 +92,12 @@ function initDrawApp(globals){
 
       ruling1 = false;
       ruling1Button.style.backgroundColor = buttonColor;
+      ruling2 = false;
+      ruling2Button.style.backgroundColor = buttonColor;
     }
   });
 
-  //ベジェ曲線ボタンが押された時の処理
+  //rulingツール1ボタンが押された時の処理
   document.getElementById("ruling1-button").addEventListener("click", function(){
     if(ruling1 === true){
       console.log("ruling mode1 ended...");
@@ -103,6 +110,26 @@ function initDrawApp(globals){
 
       straight = false;
       slineButton.style.backgroundColor = buttonColor;
+      ruling2 = false;
+      ruling2Button.style.backgroundColor = buttonColor;
+    }
+  });
+
+  //rulingツール2ボタンが押された時の処理
+  document.getElementById("ruling2-button").addEventListener("click", function(){
+    if(ruling2 === true){
+      console.log("ruling mode2 ended...");
+      ruling2 = false;
+      ruling2Button.style.backgroundColor = buttonColor;
+    }else{
+      console.log("ruling mode2 started...");
+      ruling2 = true;
+      ruling2Button.style.backgroundColor = '#aaaaaa';
+
+      straight = false;
+      slineButton.style.backgroundColor = buttonColor;
+      ruling1 = false;
+      ruling1Button.style.backgroundColor = buttonColor;
     }
   });
 
@@ -114,6 +141,10 @@ function initDrawApp(globals){
       cooY.pop();
     }else if(ruling1 === true){
       beziList.pop();
+    }else if(ruling2 === true){
+      ru2array.pop();
+    }else{
+      //
     }
     canvasReload();
     drawCanvas();
@@ -173,7 +204,7 @@ function initDrawApp(globals){
         drawLine(context,"rgb(0, 255, 0)",2,cooX[i],cooY[i],cooX[i+1],cooY[i+1]);
       }
     }
-    //ベジェ曲線ツールの点
+    //rulingツール1の点
     for(var i = 0; i < beziList.length; i++){
       var coo = beziList[i];
       context.fillRect(coo[0],coo[1],3,3);
@@ -192,6 +223,90 @@ function initDrawApp(globals){
         //ruling描画
         findRuling(context,beziDistList[beziDistList.length-1],cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
       }
+    }
+
+    //rulingツール2のruling
+    context.strokeStyle = "rgb(50, 200, 255)"
+    if(ru2array.length > 0){
+      for(var i = 0; i < ru2array.length; i++){
+        var aaa = ru2array[i]
+        context.beginPath();
+        context.arc(aaa[0], aaa[1], 10, 10 * Math.PI / 180, 80 * Math.PI / 180, true);
+        context.closePath();
+        context.stroke();
+      }
+
+      /*
+      if(ru2array.length > 2){
+        //点Pi、Pi+1、Pi+2について
+        //直線Pi+1(Pi + Pi+2)/2 を描画する
+        for(var i = 0; i < ru2array.length - 2; i++){
+          var P0 = ru2array[i];
+          var P1 = ru2array[i+1];
+          var P2 = ru2array[i+2];
+          var P3 = [(P0[0] + P2[0])/2, (P0[1] + P2[1])/2];
+
+          var vecP1 = new THREE.Vector2(P1[0], P1[1]);
+          var vecP3 = new THREE.Vector2(P3[0], P3[1]);
+          var vecP1P3 = vecP3.sub(vecP1);
+          vecP1P3.normalize();
+
+          //上方向
+          var vecUp = vecP1.add(vecP1P3.multiplyScalar(-1000));
+          //下方向
+          var vecDown = vecP1.add(vecP1P3.multiplyScalar(1000));
+
+          var rulingStart = new Array();
+          var rulingEnd = new Array();
+
+          //交差判定を行う
+          for(var i = 0; i < globals.svgInformation.stroke.length; i++){
+            //上方向
+            if(globals.beziercurve.judgeIntersect(P1[0],P1[1],vecUp[0],vecUp[1],
+              globals.svgInformation.x1[i],globals.svgInformation.y1[i],globals.svgInformation.x2[i],globals.svgInformation.y2[i])){
+                rulingEnd.push(globals.beziercurve.getIntersectPoint(P1[0],P1[1],globals.svgInformation.x1[i],globals.svgInformation.y1[i],
+                vecUp[0],vecUp[1],globals.svgInformation.x2[i],globals.svgInformation.y2[i]));
+            }
+            //下方向
+            if(globals.beziercurve.judgeIntersect(P1[0],P1[1],vecDown[0],vecDown[1],
+              globals.svgInformation.x1[i],globals.svgInformation.y1[i],globals.svgInformation.x2[i],globals.svgInformation.y2[i])){
+                rulingStart.push(globals.beziercurve.getIntersectPoint(P1[0],P1[1],globals.svgInformation.x1[i],globals.svgInformation.y1[i],
+                vecDown[0],vecDown[1],globals.svgInformation.x2[i],globals.svgInformation.y2[i]));
+            }
+          }
+
+          //Start,Endの要素の中から、それぞれ(bpx1,bpy1)に最短なものを選びそれらを結んだのがrulingとなる
+          var tmpDist = 1000;
+          var startx = 0;
+          var starty = 0;
+          var endx = 0;
+          var endy = 0;
+          for(var i = 0; i < rulingStart.length; i++){
+            var s = rulingStart[i];
+            for(var j = 0; j < rulingEnd.length; j++){
+              var e = rulingEnd[j];
+              if(tmpDist > globals.beziercurve.dist(s[0],s[1],e[0],e[1])){
+                tmpDist = globals.beziercurve.dist(s[0],s[1],e[0],e[1]);
+                startx = s[0];
+                starty = s[1];
+                endx = e[0];
+                endy = e[1];
+              }
+            }
+          }
+
+          //いざ描画!!
+          context.strokeStyle = "rgb(0,255,0)";
+          context.beginPath();
+          context.moveTo(parseInt(startx), parseInt(starty));
+          context.lineTo(parseInt(endx), parseInt(endy));
+          context.closePath();
+          context.stroke();
+          
+        }
+      }
+      */
+
     }
   }
 
