@@ -72,6 +72,16 @@ function initBezierCurve(globals){
         return tc * td <= 0 && ta * tb <= 0; // 端点を含む場合
     }
 
+    //こっち端点含まないやつ
+    function judgeIntersect2(ax, ay, bx, by, cx, cy, dx, dy) {
+        var ta = (cx - dx) * (ay - cy) + (cy - dy) * (cx - ax);
+        var tb = (cx - dx) * (by - cy) + (cy - dy) * (cx - bx);
+        var tc = (ax - bx) * (cy - ay) + (ay - by) * (ax - cx);
+        var td = (ax - bx) * (dy - ay) + (ay - by) * (ax - dx);
+        return tc * td < 0 && ta * tb < 0; // 端点を含まない場合
+        //return tc * td <= 0 && ta * tb <= 0; // 端点を含む場合
+    }
+
     //4点P1~P4に対して、2直線P1P3、P2P4の交点の座標を求める関数
     //P1~P4はそれぞれ(x1,y1)~(x4,y4)で与えるものとする
     function getIntersectPoint(x1,y1,x2,y2,x3,y3,x4,y4){
@@ -119,6 +129,7 @@ function initBezierCurve(globals){
         defineBeziPoint: defineBeziPoint,
         dist: dist,
         judgeIntersect: judgeIntersect,
+        judgeIntersect2: judgeIntersect2,
         getIntersectPoint: getIntersectPoint,
         returnNearCoordinates: returnNearCoordinates
     }

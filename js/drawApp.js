@@ -269,21 +269,21 @@ function initDrawApp(globals){
           //交差判定を行う
           for(var j = 0; j < globals.svgInformation.stroke.length; j++){
             //上方向
-            if(globals.beziercurve.judgeIntersect(vecP1.x,vecP1.y,vecUp.x,vecUp.y,
+            if(globals.beziercurve.judgeIntersect2(vecP1.x,vecP1.y,vecUp.x,vecUp.y,
               globals.svgInformation.x1[j],globals.svgInformation.y1[j],globals.svgInformation.x2[j],globals.svgInformation.y2[j])){
                 rulingEnd.push(globals.beziercurve.getIntersectPoint(vecP1.x,vecP1.y,globals.svgInformation.x1[j],globals.svgInformation.y1[j],
                 vecUp.x,vecUp.y,globals.svgInformation.x2[j],globals.svgInformation.y2[j]));
             }
             //下方向
-            if(globals.beziercurve.judgeIntersect(vecP1.x,vecP1.y,vecDown.x,vecDown.y,
+            if(globals.beziercurve.judgeIntersect2(vecP1.x,vecP1.y,vecDown.x,vecDown.y,
               globals.svgInformation.x1[j],globals.svgInformation.y1[j],globals.svgInformation.x2[j],globals.svgInformation.y2[j])){
                 rulingStart.push(globals.beziercurve.getIntersectPoint(vecP1.x,vecP1.y,globals.svgInformation.x1[j],globals.svgInformation.y1[j],
                 vecDown.x,vecDown.y,globals.svgInformation.x2[j],globals.svgInformation.y2[j]));
             }
           }
 
-          console.log(rulingStart);
-          console.log(rulingEnd);
+          //console.log(rulingStart);
+          //console.log(rulingEnd);
 
           //Start,Endの要素の中から、それぞれ(bpx1,bpy1)に最短なものを選びそれらを結んだのがrulingとなる
           var tmpDist = 1000;
