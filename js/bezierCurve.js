@@ -39,16 +39,18 @@ function initBezierCurve(globals){
             var co2 = dragList[i+1];
             distanceTmp += dist(co1[0],co1[1],co2[0],co2[1]);
 
-            if(distanceTmp + 2 > distBetweenCP && distanceTmp - 2 < distBetweenCP){
+            if(distanceTmp + 5 > distBetweenCP && distanceTmp - 5 < distBetweenCP){
                 x2 = co1[0];
                 y2 = co1[1];
-            }else if(distanceTmp + 2 > distBetweenCP * 2.0 && distanceTmp - 2 < distBetweenCP * 2.0){
+            }
+            
+            if(distanceTmp + 5 > distBetweenCP * 2.0 && distanceTmp - 5 < distBetweenCP * 2.0){
                 x3 = co1[0];
                 y3 = co1[1];
             }
         }
 
-        if(x2 > 0 || y2 > 0 || x3 > 0 || y3 > 0){
+        if(x2 > 0 && y2 > 0 && x3 > 0 && y3 > 0){
             var co1 = dragList[0];
             var co4 = dragList[dragList.length - 1];
             //beziList.push([co1[0],co1[1],x2,y2,x3,y3,co4[0],co4[1]]);
