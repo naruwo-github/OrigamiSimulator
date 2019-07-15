@@ -15,9 +15,11 @@ function initDrawApp(globals){
 
   var ruling1 = false; //ruling1ツールのon/offを表すフラグ
   var ruling1Button = document.getElementById("ruling1-button");
+  var dragging = false; //ドラッグ中のフラグ
+  var tmpCooList = new Array(); //ドラッグで取得した座標を格納する配列
 
   var ruling2 = false; //ruling2ツールのon/offを表すフラグ
-  var ruling2Button = document.getElementById("ruling2-button")
+  var ruling2Button = document.getElementById("ruling2-button");
   var ru2array = new Array(); //rulingツール2で使う配列
 
   var readerFile = new FileReader(); //svgのdlに使う
@@ -73,6 +75,25 @@ function initDrawApp(globals){
     drawCanvas();
 
     globals.simulationRunning = true; //シミュレーションをON
+  })
+
+  canvas.addEventListener("mousedown", e => {
+    if(ruling1 == true){
+      dragging = true;
+    }
+  });
+
+  canvas.addEventListener("mousemove", e => {
+    if(dragging == true){
+      tmpCooList.push([e.offsetX, e.offsetY]);
+      console.log(tmpCooList.length);
+    }
+  });
+
+  canvas.addEventListener("mouseup", e => {
+    if(dragging == true){
+      dragging = false;
+    }
   })
 
   //直線ボタンが押された時の処理
