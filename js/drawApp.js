@@ -16,7 +16,7 @@ function initDrawApp(globals){
   var ruling1 = false; //ruling1ツールのon/offを表すフラグ
   var ruling1Button = document.getElementById("ruling1-button");
   var dragging = false; //ドラッグ中のフラグ
-  var tmpCooList = new Array(); //ドラッグで取得した座標を格納する配列
+  var dragList = new Array(); //ドラッグで取得した座標を格納する配列
 
   var ruling2 = false; //ruling2ツールのon/offを表すフラグ
   var ruling2Button = document.getElementById("ruling2-button");
@@ -41,172 +41,6 @@ function initDrawApp(globals){
   var outX = new Array(); //出力の直線群のX座標
   var outY = new Array(); //出力の直線群のY座標
   //----------------------------------------------------------------------
-
-
-
-  //canvas内のクリック判定
-  canvas.addEventListener("click", e => {
-    if(straight === true){ //直線ツールがON!!
-      //クリックした点が展開図情報内の点のいずれかに近い場合、
-      //重ねて配置したいと判定する
-      var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
-      var tmpDist = globals.beziercurve.dist(e.offsetX,e.offsetY,ret[0],ret[1])
-      if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
-        cooX.push(ret[0])
-        cooY.push(ret[1])
-      }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
-        cooX.push(e.offsetX);
-        cooY.push(e.offsetY);
-      }
-    }else if(ruling1 === true){ //ベジェ曲線ツールがON!!
-      beziList.push([e.offsetX,e.offsetY]);
-      //console.log(beziList);
-    }else if(ruling2 === true){
-      var closest = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
-      ru2array.push(closest);
-    }else {
-     canvasReload(); //canvasのリロード
-
-     readerFile.readAsText(globals.svgFile); //svgファイルをテキストで取得
-     readerFile.onload = function(ev){
-     }
-
-    }
-    drawCanvas();
-
-    globals.simulationRunning = true; //シミュレーションをON
-  })
-
-  canvas.addEventListener("mousedown", e => {
-    if(ruling1 == true){
-      dragging = true;
-    }
-  });
-
-  canvas.addEventListener("mousemove", e => {
-    if(dragging == true){
-      tmpCooList.push([e.offsetX, e.offsetY]);
-      console.log(tmpCooList.length);
-    }
-  });
-
-  canvas.addEventListener("mouseup", e => {
-    if(dragging == true){
-      dragging = false;
-    }
-  })
-
-  //直線ボタンが押された時の処理
-  document.getElementById("sline-button").addEventListener("click", function(){
-    if(straight === true){
-      console.log("straight line mode ended...");
-      straight = false;
-      slineButton.style.backgroundColor = buttonColor;
-    }else{
-      console.log("straight line mode started...");
-      straight = true;
-      slineButton.style.backgroundColor = '#aaaaaa';
-
-      ruling1 = false;
-      ruling1Button.style.backgroundColor = buttonColor;
-      ruling2 = false;
-      ruling2Button.style.backgroundColor = buttonColor;
-    }
-  });
-
-  //rulingツール1ボタンが押された時の処理
-  document.getElementById("ruling1-button").addEventListener("click", function(){
-    if(ruling1 === true){
-      console.log("ruling mode1 ended...");
-      ruling1 = false;
-      ruling1Button.style.backgroundColor = buttonColor;
-    }else{
-      console.log("ruling mode1 started...");
-      ruling1 = true;
-      ruling1Button.style.backgroundColor = '#aaaaaa';
-
-      straight = false;
-      slineButton.style.backgroundColor = buttonColor;
-      ruling2 = false;
-      ruling2Button.style.backgroundColor = buttonColor;
-    }
-  });
-
-  //rulingツール2ボタンが押された時の処理
-  document.getElementById("ruling2-button").addEventListener("click", function(){
-    if(ruling2 === true){
-      console.log("ruling mode2 ended...");
-      ruling2 = false;
-      ruling2Button.style.backgroundColor = buttonColor;
-    }else{
-      console.log("ruling mode2 started...");
-      ruling2 = true;
-      ruling2Button.style.backgroundColor = '#aaaaaa';
-
-      straight = false;
-      slineButton.style.backgroundColor = buttonColor;
-      ruling1 = false;
-      ruling1Button.style.backgroundColor = buttonColor;
-    }
-  });
-
-  //デリートボタンが押された時の処理
-  document.getElementById("delete-button").addEventListener("click", function(){
-    console.log("delete button pressed...");
-    if(straight === true){
-      cooX.pop();
-      cooY.pop();
-    }else if(ruling1 === true){
-      beziList.pop();
-    }else if(ruling2 === true){
-      ru2array.pop();
-    }else{
-      //
-    }
-    canvasReload();
-    drawCanvas();
-  });
-
-  //svg出力ボタンが押された時の処理
-  document.getElementById("go-simulation").addEventListener("click", function(){
-    drawCanvas();
-    for(var i = 0; i < cooX.length; i++){
-      outX.push(cooX[i]);
-      outY.push(cooY[i]);
-    }
-    //修正した展開図をシミュレータへ投げる
-    globals.importer.simulateAgain(globals.svgFile,outX,outY);  //再入力
-    globals.simulationRunning = true; 
-
-    //Simulate Modeへ遷移する
-    globals.navMode = "simulation";
-    $("#navSimulation").parent().addClass("open");
-    //$("#navPattern").parent().removeClass("open");
-    $("#navDrawApp").parent().removeClass("open");
-    $("#drawAppViewer").hide();
-  });
-
-  //現在読み込んであるsvgをダウンロードする
-  document.getElementById("dl-svg").addEventListener("click", function(){
-    //ダウンロード、シンプルな
-    downloadFile('sampleDL.svg',readerFile.result);
-  });
-
-  //ドローツール画面のリサイズ判定
-  window.addEventListener("resize", function() {
-    canvasReload();
-    drawCanvas();
-   });
-
-  //canvasリロードメソッド
-  //画面リサイズ時などに使う
-  function canvasReload(){
-    //canvas初期化
-    $('#draw-area').attr('width', globals.svgimg.width);  //canvasリサイズ
-    $('#draw-area').attr('height', globals.svgimg.height);
-    //展開図情報の描画
-    drawDevelopment(globals.svgInformation,context);
-  }
 
 
   //キャンバスに描画する関数
@@ -349,6 +183,181 @@ function initDrawApp(globals){
     }
   }
 
+
+
+  //canvas内のクリック判定
+  canvas.addEventListener("click", e => {
+    if(straight === true){ //直線ツールがON!!
+      //クリックした点が展開図情報内の点のいずれかに近い場合、
+      //重ねて配置したいと判定する
+      var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
+      var tmpDist = globals.beziercurve.dist(e.offsetX,e.offsetY,ret[0],ret[1])
+      if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
+        cooX.push(ret[0])
+        cooY.push(ret[1])
+      }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
+        cooX.push(e.offsetX);
+        cooY.push(e.offsetY);
+      }
+    }else if(ruling1 === true){ //ベジェ曲線ツールがON!!
+      //beziList.push([e.offsetX,e.offsetY]);
+    }else if(ruling2 === true){
+      var closest = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
+      ru2array.push(closest);
+    }else {
+     canvasReload(); //canvasのリロード
+
+     readerFile.readAsText(globals.svgFile); //svgファイルをテキストで取得
+     readerFile.onload = function(ev){
+     }
+
+    }
+    drawCanvas();
+
+    globals.simulationRunning = true; //シミュレーションをON
+  })
+
+  canvas.addEventListener("mousedown", e => {
+    if(ruling1 == true){
+      dragging = true;
+    }
+  });
+
+  canvas.addEventListener("mousemove", e => {
+    if(dragging == true){
+      dragList.push([e.offsetX, e.offsetY]);
+      console.log(dragList.length);
+    }
+  });
+
+  canvas.addEventListener("mouseup", e => {
+    if(dragging == true){
+      dragging = false;
+      //ここでベジェ曲線の制御点を求める処理を
+      globals.beziercurve.defineBeziPoint(dragList, beziList);
+      //tmpCooListの初期化
+      dragList = new Array();
+      console.log(beziList);
+
+      canvasReload();
+      drawCanvas();
+    }
+  })
+
+  //直線ボタンが押された時の処理
+  document.getElementById("sline-button").addEventListener("click", function(){
+    if(straight === true){
+      console.log("straight line mode ended...");
+      straight = false;
+      slineButton.style.backgroundColor = buttonColor;
+    }else{
+      console.log("straight line mode started...");
+      straight = true;
+      slineButton.style.backgroundColor = '#aaaaaa';
+
+      ruling1 = false;
+      ruling1Button.style.backgroundColor = buttonColor;
+      ruling2 = false;
+      ruling2Button.style.backgroundColor = buttonColor;
+    }
+  });
+
+  //rulingツール1ボタンが押された時の処理
+  document.getElementById("ruling1-button").addEventListener("click", function(){
+    if(ruling1 === true){
+      console.log("ruling mode1 ended...");
+      ruling1 = false;
+      ruling1Button.style.backgroundColor = buttonColor;
+    }else{
+      console.log("ruling mode1 started...");
+      ruling1 = true;
+      ruling1Button.style.backgroundColor = '#aaaaaa';
+
+      straight = false;
+      slineButton.style.backgroundColor = buttonColor;
+      ruling2 = false;
+      ruling2Button.style.backgroundColor = buttonColor;
+    }
+  });
+
+  //rulingツール2ボタンが押された時の処理
+  document.getElementById("ruling2-button").addEventListener("click", function(){
+    if(ruling2 === true){
+      console.log("ruling mode2 ended...");
+      ruling2 = false;
+      ruling2Button.style.backgroundColor = buttonColor;
+    }else{
+      console.log("ruling mode2 started...");
+      ruling2 = true;
+      ruling2Button.style.backgroundColor = '#aaaaaa';
+
+      straight = false;
+      slineButton.style.backgroundColor = buttonColor;
+      ruling1 = false;
+      ruling1Button.style.backgroundColor = buttonColor;
+    }
+  });
+
+  //デリートボタンが押された時の処理
+  document.getElementById("delete-button").addEventListener("click", function(){
+    console.log("delete button pressed...");
+    if(straight === true){
+      cooX.pop();
+      cooY.pop();
+    }else if(ruling1 === true){
+      beziList.pop();
+      beziList.pop();
+      beziList.pop();
+      beziList.pop();
+    }else if(ruling2 === true){
+      ru2array.pop();
+    }else{
+      //
+    }
+    canvasReload();
+    drawCanvas();
+  });
+
+  //svg出力ボタンが押された時の処理
+  document.getElementById("go-simulation").addEventListener("click", function(){
+    drawCanvas();
+    for(var i = 0; i < cooX.length; i++){
+      outX.push(cooX[i]);
+      outY.push(cooY[i]);
+    }
+    //修正した展開図をシミュレータへ投げる
+    globals.importer.simulateAgain(globals.svgFile,outX,outY);  //再入力
+    globals.simulationRunning = true; 
+
+    //Simulate Modeへ遷移する
+    globals.navMode = "simulation";
+    $("#navSimulation").parent().addClass("open");
+    //$("#navPattern").parent().removeClass("open");
+    $("#navDrawApp").parent().removeClass("open");
+    $("#drawAppViewer").hide();
+  });
+
+  //現在読み込んであるsvgをダウンロードする
+  document.getElementById("dl-svg").addEventListener("click", function(){
+    //ダウンロード、シンプルな
+    downloadFile('sampleDL.svg',readerFile.result);
+  });
+
+  //ドローツール画面のリサイズ判定
+  window.addEventListener("resize", function() {
+    canvasReload();
+    drawCanvas();
+   });
+
+  //canvasリロードメソッド
+  //画面リサイズ時などに使う
+  function canvasReload(){
+    //canvas初期化
+    $('#draw-area').attr('width', globals.svgimg.width);  //canvasリサイズ
+    $('#draw-area').attr('height', globals.svgimg.height);
+    //展開図情報の描画
+    drawDevelopment(globals.svgInformation,context);
+  }
 
   //展開図情報を描画するメソッド
   function drawDevelopment(info,ctx){

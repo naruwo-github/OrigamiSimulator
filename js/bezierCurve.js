@@ -25,29 +25,32 @@ function initBezierCurve(globals){
     //そしてbeziListに格納するメソッド
     function defineBeziPoint(dragList,beziList){
         var distanceAll = 0.0;
-        for(var i = 0; i < dragList.length; i+=2){
+        for(var i = 0; i < dragList.length - 1; i++){
             var co1 = dragList[i];
             var co2 = dragList[i+1];
             distanceAll += dist(co1[0],co1[1],co2[0],co2[1]);
         }
-        var distBetweenCP = Math.round(distanceAll/3);
+
+        var distBetweenCP = distanceAll / 3.0;
         var distanceTmp = 0.0;
-        var x2,y2,x3,y3;
-        for(var i = 0; i < dragList.length; i+=2){
+        var x2 = 0,y2 = 0,x3 = 0,y3 = 0;
+        for(var i = 0; i < dragList.length - 1; i++){
             var co1 = dragList[i];
             var co2 = dragList[i+1];
             distanceTmp += dist(co1[0],co1[1],co2[0],co2[1]);
-            if(Math.round(distanceTmp) === distBetweenCP){
-                x2 = co1;
-                y2 = co2;
-            }else if(Math.round(distanceTmp) === distBetweenCP*2){
-                x3 = co1;
-                y3 = co1;
+
+            if(distanceTmp + 2 > distBetweenCP && distanceTmp - 2 < distBetweenCP){
+                x2 = co1[0];
+                y2 = co1[1];
+            }else if(distanceTmp + 2 > distBetweenCP * 2.0 && distanceTmp - 2 < distBetweenCP * 2.0){
+                x3 = co1[0];
+                y3 = co1[1];
             }
         }
+
         if(x2 > 0 || y2 > 0 || x3 > 0 || y3 > 0){
             var co1 = dragList[0];
-            var co4 = dragList[-1];
+            var co4 = dragList[dragList.length - 1];
             //beziList.push([co1[0],co1[1],x2,y2,x3,y3,co4[0],co4[1]]);
             beziList.push([co1[0],co1[1]]);
             beziList.push([x2,y2]);
