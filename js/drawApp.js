@@ -10,7 +10,7 @@ function initDrawApp(globals){
   var cooX = new Array(); //直線描画のX座標
   var cooY = new Array(); //直線描画のY座標
 
-  var beziList = new Array(); //ベジェ曲線の座標を格納するリスト(配列を代用)
+  var beziList = new Array(); //ベジェ曲線の座標を格納する
   var beziDistList = new Array(); //ベジェ曲線の長さを保存する
 
   var ruling1 = false; //ruling1ツールのon/offを表すフラグ
@@ -20,64 +20,60 @@ function initDrawApp(globals){
   var ruling2Button = document.getElementById("ruling2-button")
   var ru2array = new Array(); //rulingツール2で使う配列
 
-  var readerFile = new FileReader();                        //svgのdlに使う
+  var readerFile = new FileReader(); //svgのdlに使う
 
-  const canvas = document.querySelector('#draw-area');      //canvasを取得
-  const context = canvas.getContext('2d');                  //描画準備のためcontextを取得
+  const canvas = document.querySelector('#draw-area'); //canvasを取得
+  const context = canvas.getContext('2d'); //描画準備のためcontextを取得
 
-  var straight = false;                                     //直線モードのかどうかの判定
-  var slineButton = document.getElementById("sline-button");//直線ボタン
-  var buttonColor = slineButton.style.backgroundColor;      //ボタンの元の色
+  var straight = false; //直線モードのフラグ
+  var slineButton = document.getElementById("sline-button"); //直線ボタン
+  var buttonColor = slineButton.style.backgroundColor; //ボタンの元の色
 
   //canvasの大きさをwindowと同じにする
   $('#draw-area').attr('width', $(window).width());
   $('#draw-area').attr('height', $(window).height());
   
-  context.font = "30px serif";                              //canvasに表示させる文字のサイズ
+  context.font = "30px serif"; //canvasに表示させる文字のサイズ
   context.strokeText("Click here!",100,100);
 
-  var outX = new Array();                                   //出力の直線群のX座標
-  var outY = new Array();                                   //出力の直線群のY座標
+  var outX = new Array(); //出力の直線群のX座標
+  var outY = new Array(); //出力の直線群のY座標
   //----------------------------------------------------------------------
+
+
 
   //canvas内のクリック判定
   canvas.addEventListener("click", e => {
-    if(straight === true){                                  //直線ツールがON!!
+    if(straight === true){ //直線ツールがON!!
       //クリックした点が展開図情報内の点のいずれかに近い場合、
       //重ねて配置したいと判定する
       var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
       var tmpDist = globals.beziercurve.dist(e.offsetX,e.offsetY,ret[0],ret[1])
-      if(tmpDist < 10){
+      if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
         cooX.push(ret[0])
         cooY.push(ret[1])
-      }else {
-        cooX.push(e.offsetX);                              //座標を取得x&y
+      }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
+        cooX.push(e.offsetX);
         cooY.push(e.offsetY);
       }
-    }else if(ruling1 === true){                                //ベジェ曲線ツールがON!!
+    }else if(ruling1 === true){ //ベジェ曲線ツールがON!!
       beziList.push([e.offsetX,e.offsetY]);
-      console.log(beziList);
+      //console.log(beziList);
     }else if(ruling2 === true){
       var closest = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
       ru2array.push(closest);
     }else {
-     canvasReload();                                        //canvasのリロード
+     canvasReload(); //canvasのリロード
 
-     readerFile.readAsText(globals.svgFile);                    //svgファイルをテキストで取得
+     readerFile.readAsText(globals.svgFile); //svgファイルをテキストで取得
      readerFile.onload = function(ev){
      }
 
     }
     drawCanvas();
 
-    globals.simulationRunning = true;                       //シミュレーションをON
+    globals.simulationRunning = true; //シミュレーションをON
   })
-
-  //ドローツール画面のリサイズ判定
-  window.addEventListener("resize", function() {
-   canvasReload();
-   drawCanvas();
-  });
 
   //直線ボタンが押された時の処理
   document.getElementById("sline-button").addEventListener("click", function(){
@@ -175,12 +171,18 @@ function initDrawApp(globals){
     downloadFile('sampleDL.svg',readerFile.result);
   });
 
+  //ドローツール画面のリサイズ判定
+  window.addEventListener("resize", function() {
+    canvasReload();
+    drawCanvas();
+   });
+
   //canvasリロードメソッド
+  //画面リサイズ時などに使う
   function canvasReload(){
     //canvas初期化
     $('#draw-area').attr('width', globals.svgimg.width);  //canvasリサイズ
     $('#draw-area').attr('height', globals.svgimg.height);
-
     //展開図情報の描画
     drawDevelopment(globals.svgInformation,context);
   }
@@ -360,6 +362,7 @@ function initDrawApp(globals){
     window.URL.revokeObjectURL(url);    
   }
 
+  //hexをgbaに変換する関数
   function hex2rgb(hex) {
     if(hex.slice(0,1) == "#"){
       hex = hex.slice(1);
@@ -506,29 +509,3 @@ function initDrawApp(globals){
     }
   }
 }
-
-  /*
-  //canvas内のドラッグ判定 = mousedown + mousemove + mouseup
-  canvas.addEventListener("mousedown", e => {
-    dragging = true;
-  });
-  canvas.addEventListener("mousemove", e => {
-    if(dragging){
-      if(bezi){
-        dragList.push([e.offsetX,e.offsetY]);
-        console.log([e.offsetX,e.offsetY]);
-      }
-    }
-  });
-  canvas.addEventListener("mouseup", e => {
-    dragging = false;
-    if(dragList.length > 20){
-      globals.beziercurve.defineBeziPoint(dragList,beziList);
-      console.log("dragList");
-      console.log(dragList);
-      console.log("beziList");
-      console.log(beziList);
-      dragList = new Array();
-    }
-  });
-  */
