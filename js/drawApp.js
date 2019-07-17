@@ -62,9 +62,10 @@ function initDrawApp(globals){
       }
     }
     //rulingツール1の点
+    context.fillStyle = "rgb(255,50,255)";
     for(var i = 0; i < beziList.length; i++){
       var coo = beziList[i];
-      context.fillRect(coo[0],coo[1],3,3);
+      context.fillRect(coo[0]-2,coo[1]-2,5,5);
     }
 
     //ベジェ曲線を描画
@@ -88,7 +89,7 @@ function initDrawApp(globals){
       for(var i = 0; i < ru2array.length; i++){
         var aaa = ru2array[i]
         context.beginPath();
-        context.arc(aaa[0], aaa[1], 14, 10 * Math.PI / 180, 80 * Math.PI / 180, true);
+        context.arc(aaa[0], aaa[1], 10, 10 * Math.PI / 180, 80 * Math.PI / 180, true);
         context.closePath();
         context.stroke();
       }
@@ -365,7 +366,8 @@ function initDrawApp(globals){
       //drawLine(ctx,info.stroke[i],info.stroke_width[i],info.x1,info.y1,info.x2,info.y2);
       drawLine(ctx,"rgb("+String(hex2rgb(info.stroke[i]))+")",Number(info.stroke_width[i]),parseInt(info.x1[i]),parseInt(info.y1[i]),parseInt(info.x2[i]),parseInt(info.y2[i]));
       //点を打つ
-      ctx.fillStyle = "rgb(0,255,255)";
+      //ctx.fillStyle = "rgb(0,255,255)";
+      ctx.fillStyle = "rgb(50, 200, 255)"
       ctx.fillRect(parseInt(info.x1[i])-3,parseInt(info.y1[i])-3,7,7);
       ctx.fillRect(parseInt(info.x2[i])-3,parseInt(info.y2[i])-3,7,7);
     }
