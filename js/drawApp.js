@@ -17,6 +17,8 @@ function initDrawApp(globals){
   var ruling1Button = document.getElementById("ruling1-button");
   var dragging = false; //ドラッグ中のフラグ
   var dragList = new Array(); //ドラッグで取得した座標を格納する配列
+  var cpMove = false; //ドラッグ操作が制御点を移動しているものかどうかのフラグ
+  var movedIndex = 10000; //移動する制御点のindexを保持
 
   var ruling2 = false; //ruling2ツールのon/offを表すフラグ
   var ruling2Button = document.getElementById("ruling2-button");
@@ -219,27 +221,61 @@ function initDrawApp(globals){
   })
 
   canvas.addEventListener("mousedown", e => {
-    if(ruling1 == true){
+    if(ruling1 == true){ //rulingツール1がon
       dragging = true;
+
+      //以下、移動する制御点を求める
+      if(beziList.length > 0){
+        var distance = 10000;
+        var tmp = 10000;
+        var ind = 10000;
+        for(var i = 0; i < beziList.length; i++){
+          var coo = beziList[i];
+          tmp = globals.beziercurve.dist(coo[0],coo[1],e.offsetX,e.offsetY);
+          if(tmp < distance){
+            distance = tmp;
+            ind = i;
+          }
+        }
+
+        if(distance < 10.0){
+          movedIndex = ind;
+          cpMove = true;
+        }
+
+      }
+
     }
   });
 
   canvas.addEventListener("mousemove", e => {
     if(dragging == true){
+      if(cpMove == true){
+        beziList.splice(movedIndex,1,[e.offsetX,e.offsetY]);
+        console.log(beziList.length);
+        canvasReload();
+        drawCanvas();
+      }else{
       dragList.push([e.offsetX, e.offsetY]);
-      console.log(dragList.length);
+      //console.log(dragList.length);
+      }
     }
   });
 
   canvas.addEventListener("mouseup", e => {
     if(dragging == true){
-      dragging = false;
-      //ここでベジェ曲線の制御点を求める処理を
-      globals.beziercurve.defineBeziPoint(dragList, beziList);
-      //tmpCooListの初期化
-      dragList = new Array();
-      console.log(beziList);
-
+      if(cpMove == true){
+        beziList.splice(movedIndex,1,[e.offsetX,e.offsetY]);
+        cpMove = false;
+        dragging = false;
+      }else{
+        dragging = false;
+        //ここでベジェ曲線の制御点を求める処理を
+        globals.beziercurve.defineBeziPoint(dragList, beziList);
+        //tmpCooListの初期化
+        dragList = new Array();
+        console.log(beziList);
+      }
       canvasReload();
       drawCanvas();
     }
