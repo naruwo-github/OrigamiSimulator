@@ -32,8 +32,39 @@ function initBezierCurve(globals){
         }
 
         var distBetweenCP = distanceAll / 3.0;
-        var distanceTmp = 0.0;
-        var x2 = 0,y2 = 0,x3 = 0,y3 = 0;
+        //var distanceTmp = 0.0;
+        //var x2 = 0,y2 = 0,x3 = 0,y3 = 0;
+
+        var index1 = 1;
+        var index2 = 1;
+        var co0 = dragList[0];
+        var co1 = dragList[1];
+        var preDist = dist(co0[0],co0[1],co1[0],co1[1]);
+        for(var i = 2; i < dragList.length; i++){
+            var preCo2 = dragList[i-1];
+            var co2 = dragList[i];
+            var postDist = preDist + dist(preCo2[0],preCo2[1],co2[0],co2[1]);
+            if(Math.abs(distBetweenCP - postDist) < Math.abs(distBetweenCP - preDist)){
+                index1 = i;
+                console.log(index1);
+            }
+            if(Math.abs(distBetweenCP * 2.0 - postDist) < Math.abs(distBetweenCP * 2.0 - preDist)){
+                index2 = i;
+                console.log(index2);
+            }
+            preDist = postDist;
+        }
+
+        //co0 = dragList[index1];
+        co1 = dragList[index1];
+        var co2 = dragList[index2];
+        var co3 = dragList[dragList.length - 1];
+
+        beziList.push([co0[0],co0[1]]);
+        beziList.push([co1[0],co1[1]]);
+        beziList.push([co2[0],co2[1]]);
+        beziList.push([co3[0],co3[1]]);
+        /*
         for(var i = 0; i < dragList.length - 1; i++){
             var co1 = dragList[i];
             var co2 = dragList[i+1];
@@ -59,6 +90,7 @@ function initBezierCurve(globals){
             beziList.push([x3,y3]);
             beziList.push([co4[0],co4[1]]);
         }
+        */
     }
 
     //2点間の距離を求めるメソッド
