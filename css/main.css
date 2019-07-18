@@ -122,14 +122,34 @@ p{
     width: 170px;
     height: 50px;
     left: 10px;
+
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
     background-color: rgb(255, 150, 100)
 }
 
+.drawAppButtons1:hover{
+    width: 176px;
+    height: 56px;
+    left: 7px;
+    background-color: rgb(255, 170, 120)
+}
 .drawAppButtons2{
     position: fixed;
     width: 80px;
     height: 50px;
+    
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
     background-color: rgb(255, 150, 100)
+}
+
+.drawAppButtons2:hover{
+    width: 86px;
+    height: 56px;
+    background-color: rgb(255, 170, 120)
 }
 
 #viewToggle{

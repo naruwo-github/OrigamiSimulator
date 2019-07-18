@@ -8,8 +8,6 @@ function initDrawApp(globals){
   //----------------------------------------------------------------------
   //変数など各種定義
   var straightLineList = new Array();
-  //var cooX = new Array(); //直線描画のX座標
-  //var cooY = new Array(); //直線描画のY座標
 
   var beziList = new Array(); //ベジェ曲線の座標を格納する
   var beziDistList = new Array(); //ベジェ曲線の長さを保存する
@@ -43,9 +41,6 @@ function initDrawApp(globals){
 
   //出力のリスト
   var outputList = new Array();
-
-  //var outX = new Array(); //出力の直線群のX座標
-  //var outY = new Array(); //出力の直線群のY座標
   //----------------------------------------------------------------------
 
 
@@ -55,9 +50,7 @@ function initDrawApp(globals){
     //変数の初期化
     beziDistList = new Array();
     outputList = new Array();
-    
-    //outX = new Array();
-    //outY = new Array();
+
     //--------------------------------------------------------------
     //点を描画
     context.fillStyle = "rgb(255,0,0)";                   //点は基本赤
@@ -71,15 +64,6 @@ function initDrawApp(globals){
         drawLine(context,"rgb(0, 255, 0)",2,stl1[0],stl1[1],stl2[0],stl2[1]);
       }
     }
-    /*
-    for(var i = 0; i < cooX.length; i+=2){
-      context.fillRect(cooX[i],cooY[i],3,3);
-      context.fillRect(cooX[i+1],cooY[i+1],3,3);
-      if(cooX[i+1] !== null){
-        drawLine(context,"rgb(0, 255, 0)",2,cooX[i],cooY[i],cooX[i+1],cooY[i+1]);
-      }
-    }
-    */
 
     //rulingツール1の点
     context.fillStyle = "rgb(255,50,255)";
@@ -160,9 +144,6 @@ function initDrawApp(globals){
             }
           }
 
-          //console.log(rulingStart);
-          //console.log(rulingEnd);
-
           //Start,Endの要素の中から、それぞれ(bpx1,bpy1)に最短なものを選びそれらを結んだのがrulingとなる
           var tmpDist = 1000;
           var startx = 0;
@@ -196,12 +177,6 @@ function initDrawApp(globals){
           //rulingを出力のために格納する
           outputList.push([parseInt(startx), parseInt(starty)]);
           outputList.push([parseInt(endx), parseInt(endy)]);
-          /*
-          outX.push(parseInt(startx));
-          outY.push(parseInt(starty));
-          outX.push(parseInt(endx));
-          outY.push(parseInt(endy));
-          */
         }
       }
 
@@ -219,12 +194,8 @@ function initDrawApp(globals){
       var tmpDist = globals.beziercurve.dist(e.offsetX,e.offsetY,ret[0],ret[1])
       if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
         straightLineList.push([ret[0], ret[1]]);
-        //cooX.push(ret[0])
-        //cooY.push(ret[1])
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         straightLineList.push([e.offsetX, e.offsetY]);
-        //cooX.push(e.offsetX);
-        //cooY.push(e.offsetY);
       }
     }else if(ruling1 === true){ //ベジェ曲線ツールがON!!
       //beziList.push([e.offsetX,e.offsetY]);
@@ -370,8 +341,6 @@ function initDrawApp(globals){
     console.log("delete button pressed...");
     if(straight === true){
       straightLineList.pop();
-      //cooX.pop();
-      //cooY.pop();
     }else if(ruling1 === true){
       beziList.pop();
       beziList.pop();
@@ -380,7 +349,6 @@ function initDrawApp(globals){
     }else if(ruling2 === true){
       ru2array.pop();
     }else{
-      //
     }
     canvasReload();
     drawCanvas();
@@ -392,17 +360,8 @@ function initDrawApp(globals){
     for(var i = 0; i < straightLineList.length; i++){
       var stl = straightLineList[i];
       outputList.push([stl[0], stl[1]]);
-      //outX.push(stl[0]);
-      //outY.push(stl[1]);
     }
-    /*
-    for(var i = 0; i < cooX.length; i++){
-      outX.push(cooX[i]);
-      outY.push(cooY[i]);
-    }
-    */
     //修正した展開図をシミュレータへ投げる
-    //globals.importer.simulateAgain(globals.svgFile,outX,outY);  //再入力
     globals.importer.simulateAgain(globals.svgFile,outputList);
     globals.simulationRunning = true; 
 
@@ -424,15 +383,11 @@ function initDrawApp(globals){
   document.getElementById("clear-button").addEventListener("click", function(){
     //初期化する
     straightLineList = new Array();
-    //cooX = new Array();
-    //cooY = new Array();
     beziDistList = new Array();
     beziList = new Array();
     ru2array = new Array();
     dragList = new Array();
     outputList = new Array();
-    //outX = new Array();
-    //outY = new Array();
     canvasReload();
     drawCanvas();
   });
@@ -577,44 +532,6 @@ function initDrawApp(globals){
           }
         }
 
-        /*
-        var rux1 = bpx1+hvec.x*15;
-        var ruy1 = bpy1+hvec.y*15;
-        var rux2 = bpx1-hvec.x*15;
-        var ruy2 = bpy1-hvec.y*15;
-
-        //imagedataを用いてピクセル単位で操作している描画方法
-        var imageData1 = ctx.getImageData(parseInt(rux1), parseInt(ruy1), 1, 1);
-        var imageData2 = ctx.getImageData(parseInt(rux2), parseInt(ruy2), 1, 1);
-
-        while(imageData1.data[0] < 255 && imageData1.data[1] < 255 && imageData1.data[2] < 255 && imageData1.data[3] < 255){
-          rux1+=hvec.x;
-          ruy1+=hvec.y;
-          imageData1 = ctx.getImageData(parseInt(rux1), parseInt(ruy1), 1, 1);
-          console.log("aaa");
-        }
-        while(imageData2.data[0] < 255 && imageData2.data[1] < 255 && imageData2.data[2] < 255 && imageData2.data[3] < 255){
-          rux2-=hvec.x;
-          ruy2-=hvec.y;
-          imageData2 = ctx.getImageData(parseInt(rux2), parseInt(ruy2), 1, 1);
-        }
-
-        //canvas上描画するやーつ
-        ctx.strokeStyle = "rgb(0,255,0)";
-        ctx.beginPath();
-        ctx.moveTo(parseInt(rux1), parseInt(ruy1));
-        ctx.lineTo(parseInt(rux2), parseInt(ruy2));
-        ctx.closePath();
-        ctx.stroke();
-        //
-        //rulingを出力のために格納する
-        outX.push(parseInt(rux1));
-        outY.push(parseInt(ruy1));
-        outX.push(parseInt(rux2));
-        outY.push(parseInt(ruy2));
-        //
-        */
-
         //canvas上描画するやーつ
         ctx.strokeStyle = "rgb(0,255,0)";
         ctx.beginPath();
@@ -626,12 +543,7 @@ function initDrawApp(globals){
         //rulingを出力のために格納する
         outputList.push([parseInt(rux1), parseInt(ruy1)]);
         outputList.push([parseInt(rux2), parseInt(ruy2)]);
-        /*
-        outX.push(parseInt(rux1));
-        outY.push(parseInt(ruy1));
-        outX.push(parseInt(rux2));
-        outY.push(parseInt(ruy2));
-        */
+
         tmpbunkatsu++;
       }
     }
