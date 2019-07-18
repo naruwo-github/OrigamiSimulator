@@ -41,8 +41,11 @@ function initDrawApp(globals){
   context.font = "30px serif"; //canvasに表示させる文字のサイズ
   context.strokeText("Click here!",100,100);
 
-  var outX = new Array(); //出力の直線群のX座標
-  var outY = new Array(); //出力の直線群のY座標
+  //出力のリスト
+  var outputList = new Array();
+
+  //var outX = new Array(); //出力の直線群のX座標
+  //var outY = new Array(); //出力の直線群のY座標
   //----------------------------------------------------------------------
 
 
@@ -51,8 +54,10 @@ function initDrawApp(globals){
     //--------------------------------------------------------------
     //変数の初期化
     beziDistList = new Array();
-    outX = new Array();
-    outY = new Array();
+    outputList = new Array();
+    
+    //outX = new Array();
+    //outY = new Array();
     //--------------------------------------------------------------
     //点を描画
     context.fillStyle = "rgb(255,0,0)";                   //点は基本赤
@@ -189,10 +194,14 @@ function initDrawApp(globals){
           context.stroke();
 
           //rulingを出力のために格納する
+          outputList.push([parseInt(startx), parseInt(starty)]);
+          outputList.push([parseInt(endx), parseInt(endy)]);
+          /*
           outX.push(parseInt(startx));
           outY.push(parseInt(starty));
           outX.push(parseInt(endx));
           outY.push(parseInt(endy));
+          */
         }
       }
 
@@ -382,8 +391,9 @@ function initDrawApp(globals){
     drawCanvas();
     for(var i = 0; i < straightLineList.length; i++){
       var stl = straightLineList[i];
-      outX.push(stl[0]);
-      outY.push(stl[1]);
+      outputList.push([stl[0], stl[1]]);
+      //outX.push(stl[0]);
+      //outY.push(stl[1]);
     }
     /*
     for(var i = 0; i < cooX.length; i++){
@@ -392,7 +402,8 @@ function initDrawApp(globals){
     }
     */
     //修正した展開図をシミュレータへ投げる
-    globals.importer.simulateAgain(globals.svgFile,outX,outY);  //再入力
+    //globals.importer.simulateAgain(globals.svgFile,outX,outY);  //再入力
+    globals.importer.simulateAgain(globals.svgFile,outputList);
     globals.simulationRunning = true; 
 
     //Simulate Modeへ遷移する
@@ -419,8 +430,9 @@ function initDrawApp(globals){
     beziList = new Array();
     ru2array = new Array();
     dragList = new Array();
-    outX = new Array();
-    outY = new Array();
+    outputList = new Array();
+    //outX = new Array();
+    //outY = new Array();
     canvasReload();
     drawCanvas();
   });
@@ -612,11 +624,14 @@ function initDrawApp(globals){
         ctx.stroke();
         //
         //rulingを出力のために格納する
+        outputList.push([parseInt(rux1), parseInt(ruy1)]);
+        outputList.push([parseInt(rux2), parseInt(ruy2)]);
+        /*
         outX.push(parseInt(rux1));
         outY.push(parseInt(ruy1));
         outX.push(parseInt(rux2));
         outY.push(parseInt(ruy2));
-        //
+        */
         tmpbunkatsu++;
       }
     }

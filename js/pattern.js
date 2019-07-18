@@ -490,7 +490,8 @@ function initPattern(globals){
     //------------------------------------------------------------------
     //------------------------------------------------------------------
     //svgを再シミュレートするやつ
-    function loadSVGAgain(url,cooX,cooY){
+    //function loadSVGAgain(url,cooX,cooY){
+    function loadSVGAgain(url,outputList){
         SVGloader.load(url, function(svg){
             //svgをimage形式でグローバル化する
             var img = new Image();
@@ -509,6 +510,7 @@ function initPattern(globals){
             var g = document.createElement("g");
             //ここでcoox,cooyの値を追加
             var ns = 'http://www.w3.org/2000/svg';
+            /*
             for(var i = 0; i < cooX.length; i+=2){
                 var line = document.createElementNS(ns, 'line');
                 line.setAttribute('stroke', "#ffff00");
@@ -519,6 +521,19 @@ function initPattern(globals){
                 line.setAttribute('y2', cooY[i+1]);
                 g.appendChild(line);
               }
+              */
+            for(var i = 0; i < outputList.length; i+=2){
+                var line = document.createElementNS(ns, 'line');
+                var stl1 = outputList[i];
+                var stl2 = outputList[i+1];
+                line.setAttribute('stroke', "#ffff00");
+                line.setAttribute('opacity', "1");
+                line.setAttribute('x1', stl1[0]);
+                line.setAttribute('y1', stl1[1]);
+                line.setAttribute('x2', stl2[0]);
+                line.setAttribute('y2', stl2[1]);
+                g.appendChild(line);
+            }
             _$svg.get()[0].appendChild(g);
             //------------------------------------------------------------
 
@@ -619,6 +634,7 @@ function initPattern(globals){
             //ここはただ、svgViewer表示にしか関係ない
 
             //ここでcoox,cooyのあたいも追加しようか
+            /*
             for(var i = 0; i < cooX.length; i+=2){
                 var line = document.createElementNS(ns, 'line');
                 line.setAttribute('stroke', "#ff0");
@@ -630,6 +646,20 @@ function initPattern(globals){
                 line.setAttribute('stroke-width', strokeWidth);
                 svg.appendChild(line);
               }
+              */
+            for(var i = 0; i < outputList.length; i+=2){
+                var line = document.createElementNS(ns, 'line');
+                var stl1 = outputList[i];
+                var stl2 = outputList[i+1];
+                line.setAttribute('stroke', "#ff0");
+                line.setAttribute('opacity', "1");
+                line.setAttribute('x1', stl1[0]);
+                line.setAttribute('y1', stl1[1]);
+                line.setAttribute('x2', stl2[0]);
+                line.setAttribute('y2', stl2[1]);
+                line.setAttribute('stroke-width', strokeWidth);
+                svg.appendChild(line);
+            }
             $("#svgViewer").html(svg);
 
             //----------------------------------------------------------
