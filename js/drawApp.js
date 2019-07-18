@@ -12,8 +12,8 @@ function initDrawApp(globals){
   var beziList = new Array(); //ベジェ曲線の座標を格納する
   var beziDistList = new Array(); //ベジェ曲線の長さを保存する
 
-  var rulingNum = 10;
-
+  var rulingNum = 10; //rulingの本数
+  var startEndInformation = new Array(); //rulingの始点と終点の情報を記憶する配列
   var ruling1 = false; //ruling1ツールのon/offを表すフラグ
   var ruling1Button = document.getElementById("ruling1-button");
   var dragging = false; //ドラッグ中のフラグ
