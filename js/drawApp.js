@@ -317,6 +317,12 @@ function initDrawApp(globals){
     }
   });
 
+  //optimize button
+  document.getElementById("optimize-button").addEventListener("click", function(){
+    //rulingの最適化動作を行う
+    console.log("ruling optimizing...");
+  });
+
   //rulingツール2ボタンが押された時の処理
   document.getElementById("ruling2-button").addEventListener("click", function(){
     if(ruling2 === true){
@@ -378,6 +384,21 @@ function initDrawApp(globals){
   document.getElementById("dl-svg").addEventListener("click", function(){
     //ダウンロード、シンプルな
     downloadFile('sampleDL.svg',readerFile.result);
+  });
+
+  //clear all button
+  document.getElementById("clear-button").addEventListener("click", function(){
+    //初期化する
+    cooX = new Array();
+    cooY = new Array();
+    beziDistList = new Array();
+    beziList = new Array();
+    ru2array = new Array();
+    dragList = new Array();
+    outX = new Array();
+    outY = new Array();
+    canvasReload();
+    drawCanvas();
   });
 
   //ドローツール画面のリサイズ判定
