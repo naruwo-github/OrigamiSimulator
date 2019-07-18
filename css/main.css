@@ -152,6 +152,20 @@ p{
     background-color: rgb(255, 170, 120)
 }
 
+.drawAppButtons3{
+    position: fixed;
+    width: 80px;
+
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    background-color: rgb(255, 150, 100)
+}
+.drawAppButtons3:hover{
+    width: 86px;
+    background-color: rgb(255, 170, 120)
+}
+
 #viewToggle{
     left: 30px;
 }

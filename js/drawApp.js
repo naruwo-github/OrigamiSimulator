@@ -12,6 +12,8 @@ function initDrawApp(globals){
   var beziList = new Array(); //ベジェ曲線の座標を格納する
   var beziDistList = new Array(); //ベジェ曲線の長さを保存する
 
+  var rulingNum = 10;
+
   var ruling1 = false; //ruling1ツールのon/offを表すフラグ
   var ruling1Button = document.getElementById("ruling1-button");
   var dragging = false; //ドラッグ中のフラグ
@@ -38,6 +40,14 @@ function initDrawApp(globals){
   
   context.font = "30px serif"; //canvasに表示させる文字のサイズ
   context.strokeText("Click here!",100,100);
+
+  //Num Buttonの数値を初期化
+  var displayRulingNum = document.getElementById("ruling-num");
+  displayRulingNum.innerText = String(rulingNum);
+  var upButton = document.getElementById("up-num");
+  upButton.innerHTML = "▲";
+  var downButton = document.getElementById("down-num");
+  downButton.innerHTML = "▼";
 
   //出力のリスト
   var outputList = new Array();
@@ -312,6 +322,24 @@ function initDrawApp(globals){
     }
   });
 
+  //ruling本数の増減
+  upButton.addEventListener("click", function(){
+    if(rulingNum < 20){
+      rulingNum++;
+      displayRulingNum.innerText = String(rulingNum);
+      canvasReload();
+      drawCanvas();
+    }
+  });
+  downButton.addEventListener("click", function(){
+    if(rulingNum > 0){
+      rulingNum--;
+      displayRulingNum.innerText = String(rulingNum);
+      canvasReload();
+      drawCanvas();
+    }
+  });
+
   //optimize button
   document.getElementById("optimize-button").addEventListener("click", function(){
     //rulingの最適化動作を行う
@@ -474,7 +502,8 @@ function initDrawApp(globals){
 
     var tmpbunkatsu = 1;                                    //何番目の分割点か？
     var tmpdist = 0.0;                                      //現在の距離の合計
-    var bunkatsu = 11;                                      //rulingは11-1本
+    //var bunkatsu = 11;                                      //rulingは11-1本
+    var bunkatsu = rulingNum;
     var dividedPoints = parseInt(curvelen)/bunkatsu;
     for(var t = 0.0; t <= 1.0 - 0.001; t += 0.001){
       var tt = t + 0.001;
