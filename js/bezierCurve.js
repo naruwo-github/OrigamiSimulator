@@ -1,3 +1,8 @@
+/*
+* Created by narumi nogawa on 6/21/19.
+*/
+//ドローソフトの中でベジェ曲線や曲線について扱う場合、このメソッドで処理を行う
+
 function initBezierCurve(globals){
     //ベジェ曲線を描画する
     function drawBezier(ctx,distList,x1,y1,x2,y2,x3,y3,x4,y4){
