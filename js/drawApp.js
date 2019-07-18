@@ -7,8 +7,9 @@
 function initDrawApp(globals){
   //----------------------------------------------------------------------
   //変数など各種定義
-  var cooX = new Array(); //直線描画のX座標
-  var cooY = new Array(); //直線描画のY座標
+  var straightLineList = new Array();
+  //var cooX = new Array(); //直線描画のX座標
+  //var cooY = new Array(); //直線描画のY座標
 
   var beziList = new Array(); //ベジェ曲線の座標を格納する
   var beziDistList = new Array(); //ベジェ曲線の長さを保存する
@@ -56,6 +57,16 @@ function initDrawApp(globals){
     //点を描画
     context.fillStyle = "rgb(255,0,0)";                   //点は基本赤
     //直線ツールの点
+    for(var i = 0; i < straightLineList.length; i+=2){
+      var stl1 = straightLineList[i];
+      var stl2 = straightLineList[i+1];
+      context.fillRect(stl1[0]-2,stl1[1]-2,5,5);
+      context.fillRect(stl2[0]-2,stl2[1]-2,5,5);
+      if(stl2[0] !== null){
+        drawLine(context,"rgb(0, 255, 0)",2,stl1[0],stl1[1],stl2[0],stl2[1]);
+      }
+    }
+    /*
     for(var i = 0; i < cooX.length; i+=2){
       context.fillRect(cooX[i],cooY[i],3,3);
       context.fillRect(cooX[i+1],cooY[i+1],3,3);
@@ -63,6 +74,8 @@ function initDrawApp(globals){
         drawLine(context,"rgb(0, 255, 0)",2,cooX[i],cooY[i],cooX[i+1],cooY[i+1]);
       }
     }
+    */
+
     //rulingツール1の点
     context.fillStyle = "rgb(255,50,255)";
     for(var i = 0; i < beziList.length; i++){
@@ -196,11 +209,13 @@ function initDrawApp(globals){
       var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
       var tmpDist = globals.beziercurve.dist(e.offsetX,e.offsetY,ret[0],ret[1])
       if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
-        cooX.push(ret[0])
-        cooY.push(ret[1])
+        straightLineList.push([ret[0], ret[1]]);
+        //cooX.push(ret[0])
+        //cooY.push(ret[1])
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
-        cooX.push(e.offsetX);
-        cooY.push(e.offsetY);
+        straightLineList.push([e.offsetX, e.offsetY]);
+        //cooX.push(e.offsetX);
+        //cooY.push(e.offsetY);
       }
     }else if(ruling1 === true){ //ベジェ曲線ツールがON!!
       //beziList.push([e.offsetX,e.offsetY]);
@@ -345,8 +360,9 @@ function initDrawApp(globals){
   document.getElementById("delete-button").addEventListener("click", function(){
     console.log("delete button pressed...");
     if(straight === true){
-      cooX.pop();
-      cooY.pop();
+      straightLineList.pop();
+      //cooX.pop();
+      //cooY.pop();
     }else if(ruling1 === true){
       beziList.pop();
       beziList.pop();
@@ -364,10 +380,17 @@ function initDrawApp(globals){
   //svg出力ボタンが押された時の処理
   document.getElementById("go-simulation").addEventListener("click", function(){
     drawCanvas();
+    for(var i = 0; i < straightLineList.length; i++){
+      var stl = straightLineList[i];
+      outX.push(stl[0]);
+      outY.push(stl[1]);
+    }
+    /*
     for(var i = 0; i < cooX.length; i++){
       outX.push(cooX[i]);
       outY.push(cooY[i]);
     }
+    */
     //修正した展開図をシミュレータへ投げる
     globals.importer.simulateAgain(globals.svgFile,outX,outY);  //再入力
     globals.simulationRunning = true; 
@@ -389,8 +412,9 @@ function initDrawApp(globals){
   //clear all button
   document.getElementById("clear-button").addEventListener("click", function(){
     //初期化する
-    cooX = new Array();
-    cooY = new Array();
+    straightLineList = new Array();
+    //cooX = new Array();
+    //cooY = new Array();
     beziDistList = new Array();
     beziList = new Array();
     ru2array = new Array();
