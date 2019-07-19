@@ -60,6 +60,7 @@ function initDrawApp(globals){
     //変数の初期化
     beziDistList = new Array();
     outputList = new Array();
+    startEndInformation = new Array();
 
     //--------------------------------------------------------------
     //点を描画
@@ -500,6 +501,9 @@ function initDrawApp(globals){
     ctx.strokeStyle = "rgb(100,100,100)";                    //描画の色
     ctx.lineWidth = 2;                                      //描画する線の太さ
 
+    //rulingの始点群と終点群の情報を保存するリストに格納するリスト
+    var childStartEndInformation = new Array();
+
     var tmpbunkatsu = 1;                                    //何番目の分割点か？
     var tmpdist = 0.0;                                      //現在の距離の合計
     //var bunkatsu = 11;                                      //rulingは11-1本
@@ -573,8 +577,13 @@ function initDrawApp(globals){
         outputList.push([parseInt(rux1), parseInt(ruy1)]);
         outputList.push([parseInt(rux2), parseInt(ruy2)]);
 
+        childStartEndInformation.push([[parseInt(rux1), parseInt(ruy1)], [parseInt(rux2), parseInt(ruy2)]]);
+
         tmpbunkatsu++;
       }
     }
+    //
+    startEndInformation.push(childStartEndInformation);
+    console.log(startEndInformation);
   }
 }
