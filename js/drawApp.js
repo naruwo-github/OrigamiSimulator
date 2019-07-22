@@ -100,6 +100,15 @@ function initDrawApp(globals){
       }
     }
 
+    //optimized rulingの描画
+    if(optimizedRuling.length > 0){
+      for(var i = 0; i < optimizedRuling.length - 1; i+=2){
+        var coo1 = optimizedRuling[i];
+        var coo2 = optimizedRuling[i+1];
+        drawLine(context,"rgb(255,0,0)",2,coo1[0],coo1[1],coo2[0],coo2[1]);
+      }
+    }
+
     //rulingツール2のruling
     context.strokeStyle = "rgb(50, 200, 255)"
     if(ru2array.length > 0){
@@ -347,6 +356,8 @@ function initDrawApp(globals){
   document.getElementById("optimize-button").addEventListener("click", function(){
     //rulingの最適化動作を行う
     console.log("ruling optimizing...");
+    optimizeRuling(context,startEndInformation);
+    console.log("ruling optimizing ended.");
   });
 
   //rulingツール2ボタンが押された時の処理
@@ -590,18 +601,65 @@ function initDrawApp(globals){
   }
 
   //rulingの最適化
-  function optimizeRuling(startEndInformation){
-    var segmentNum = startEndInformation.length();
+  function optimizeRuling(ctx,startEndInformation){
+    var segmentNum = startEndInformation.length;
     for(var i = segmentNum - 1; i > 0; i--){
       //end[segmentNum-1]から初める
-      var startEnd1 = startEndInformation[i];
-      for(var j = 0; j < startEnd1.length; j++){
-        var se1 = startEnd1[j];
-        //var start1 = se1[0];
-        //とりあえずse[0]se[1]の反対方向に伸ばして描画してみるか
-        var vecUpper = new THREE.Vector2(se1[0],se1[1]);
-        vecUpper.normalize();
+      var startEnd = startEndInformation[i];
+      for(var j = 0; j < startEnd.length; j++){
+        var se = startEnd[j];
+        var startSe = se[0];
+        var endSe = se[1];
+        var startVec = new THREE.Vector2(startSe[0],startSe[1]);
+        var endVec = new THREE.Vector2(endSe[0],endSe[1]);
+        var vecStartEnd = new THREE.Vector2(endVec.x - startVec.x, endVec.y - startVec.y);
+        var vecEndStart = new THREE.Vector2(-vecStartEnd.x, -vecStartEnd.y);
+        vecStartEnd.normalize();
+        vecEndStart.normalize();
+        //伸ばした先の座標
+        var vecExtraEnd = new THREE.Vector2(startVec.x + vecEndStart.x * 1000, startVec.y + vecEndStart.y * 1000);
         //ここで交差判定
+        //交差した点を保存するリスト
+        var intersected = new Array();
+        for(var k = 0; k < globals.svgInformation.stroke.length; k++){
+          //法線方向に伸ばした時に交差しているかどうか
+          if(globals.beziercurve.judgeIntersect(startVec.x + vecEndStart.x * 10,startVec.y + vecEndStart.y * 10,vecExtraEnd.x,vecExtraEnd.y,
+            globals.svgInformation.x1[k],globals.svgInformation.y1[k],globals.svgInformation.x2[k],globals.svgInformation.y2[k])){
+              intersected.push(globals.beziercurve.getIntersectPoint(startVec.x,startVec.y,globals.svgInformation.x1[k],globals.svgInformation.y1[k],
+                vecExtraEnd.x,vecExtraEnd.y,globals.svgInformation.x2[k],globals.svgInformation.y2[k]));
+              }
+        }
+
+        //interesectedの要素の中から、(startVec.x,startVec.y)に最短なものを選び
+        //(startVec.x,startVec.y)と結んだものが最適化されたruling
+        var extraX = 10000;
+        var extraY = 10000;
+        var tmpDist = 1000;
+        for(var k = 0; k < intersected.length; k++){
+          var is = intersected[k];
+          if(tmpDist > globals.beziercurve.dist(startVec.x,startVec.y,is[0],is[1])){
+            tmpDist = globals.beziercurve.dist(startVec.x,startVec.y,is[0],is[1]);
+            extraX = is[0];
+            extraY = is[1];
+          }
+        }
+
+        if(extraX != 10000){
+          //canvas上描画するやーつ
+          ctx.strokeStyle = "rgb(255,0,0)";
+          ctx.beginPath();
+          ctx.moveTo(parseInt(startVec.x), parseInt(startVec.y));
+          ctx.lineTo(parseInt(extraX), parseInt(extraY));
+          ctx.closePath();
+          ctx.stroke();
+
+          //保存
+          optimizedRuling.push([parseInt(startVec.x), parseInt(startVec.y)]);
+          optimizedRuling.push([parseInt(extraX), parseInt(extraY)]);
+        }
+        //
+        //
+        //
       }
     }
   }
