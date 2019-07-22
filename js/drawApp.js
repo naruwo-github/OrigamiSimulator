@@ -356,6 +356,7 @@ function initDrawApp(globals){
   document.getElementById("optimize-button").addEventListener("click", function(){
     //rulingの最適化動作を行う
     console.log("ruling optimizing...");
+    optimizedRuling = new Array();
     optimizeRuling(context,startEndInformation);
     console.log("ruling optimizing ended.");
   });
@@ -388,6 +389,8 @@ function initDrawApp(globals){
       beziList.pop();
       beziList.pop();
       beziList.pop();
+
+      optimizedRuling = new Array();
     }else if(ruling2 === true){
       ru2array.pop();
     }else{
@@ -399,9 +402,15 @@ function initDrawApp(globals){
   //svg出力ボタンが押された時の処理
   document.getElementById("go-simulation").addEventListener("click", function(){
     drawCanvas();
+    //直線ツールの描画結果を追加する
     for(var i = 0; i < straightLineList.length; i++){
       var stl = straightLineList[i];
       outputList.push([stl[0], stl[1]]);
+    }
+    //optimized rulingを追加する
+    for(var i = 0; i < optimizedRuling.length; i++){
+      var stl = optimizedRuling[i];
+      outputList.push([stl[0],stl[1]]);
     }
     //修正した展開図をシミュレータへ投げる
     globals.importer.simulateAgain(globals.svgFile,outputList);
