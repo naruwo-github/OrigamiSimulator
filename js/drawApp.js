@@ -51,6 +51,8 @@ function initDrawApp(globals){
 
   //出力のリスト
   var outputList = new Array();
+  //最適化されたrulingを保存するリスト
+  var optimizedRuling = new Array();
   //----------------------------------------------------------------------
 
 
@@ -585,5 +587,22 @@ function initDrawApp(globals){
     //
     startEndInformation.push(childStartEndInformation);
     console.log(startEndInformation);
+  }
+
+  //rulingの最適化
+  function optimizeRuling(startEndInformation){
+    var segmentNum = startEndInformation.length();
+    for(var i = segmentNum - 1; i > 0; i--){
+      //end[segmentNum-1]から初める
+      var startEnd1 = startEndInformation[i];
+      for(var j = 0; j < startEnd1.length; j++){
+        var se1 = startEnd1[j];
+        //var start1 = se1[0];
+        //とりあえずse[0]se[1]の反対方向に伸ばして描画してみるか
+        var vecUpper = new THREE.Vector2(se1[0],se1[1]);
+        vecUpper.normalize();
+        //ここで交差判定
+      }
+    }
   }
 }
