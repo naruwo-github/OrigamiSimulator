@@ -612,6 +612,8 @@ function initDrawApp(globals){
   //rulingの最適化
   function optimizeRuling(ctx,startEndInformation){
     var segmentNum = startEndInformation.length;
+
+    //最後に描画した部分から最初に描画した部分にかけて描画する
     for(var i = segmentNum - 1; i > 0; i--){
       //end[segmentNum-1]から初める
       var startEnd = startEndInformation[i];
@@ -671,5 +673,69 @@ function initDrawApp(globals){
         //
       }
     }
+
+    //最初に描画した方から最後に描画した方に向けて描画する
+    for(var i = 0; i < segmentNum - 1; i++){
+      //start[0]から初める
+      var startEnd = startEndInformation[i];
+      for(var j = 0; j < startEnd.length; j++){
+        var se = startEnd[j];
+        var startSe = se[0];
+        var endSe = se[1];
+        var startVec = new THREE.Vector2(startSe[0],startSe[1]);
+        var endVec = new THREE.Vector2(endSe[0],endSe[1]);
+        var vecStartEnd = new THREE.Vector2(endVec.x - startVec.x, endVec.y - startVec.y);
+        var vecEndStart = new THREE.Vector2(-vecStartEnd.x, -vecStartEnd.y);
+        vecStartEnd.normalize();
+        vecEndStart.normalize();
+        //伸ばした先の座標
+        //var vecExtraEnd = new THREE.Vector2(startVec.x + vecEndStart.x * 1000, startVec.y + vecEndStart.y * 1000);
+        var vecExtraEnd = new THREE.Vector2(startVec.x + vecStartEnd.x * 1000, startVec.y + vecStartEnd.y * 1000);
+        
+        //ここで交差判定
+        //交差した点を保存するリスト
+        var intersected = new Array();
+        for(var k = 0; k < globals.svgInformation.stroke.length; k++){
+          //法線方向に伸ばした時に交差しているかどうか
+          if(globals.beziercurve.judgeIntersect(endVec.x + vecStartEnd.x * 10,endVec.y + vecStartEnd.y * 10,vecExtraEnd.x,vecExtraEnd.y,
+            globals.svgInformation.x1[k],globals.svgInformation.y1[k],globals.svgInformation.x2[k],globals.svgInformation.y2[k])){
+              intersected.push(globals.beziercurve.getIntersectPoint(endVec.x,endVec.y,globals.svgInformation.x1[k],globals.svgInformation.y1[k],
+                vecExtraEnd.x,vecExtraEnd.y,globals.svgInformation.x2[k],globals.svgInformation.y2[k]));
+              }
+        }
+
+        //interesectedの要素の中から、(endVec.x,endVec.y)に最短なものを選び
+        //(endVec.x,endVec.y)と結んだものが最適化されたruling
+        var extraX = 10000;
+        var extraY = 10000;
+        var tmpDist = 1000;
+        for(var k = 0; k < intersected.length; k++){
+          var is = intersected[k];
+          if(tmpDist > globals.beziercurve.dist(endVec.x,endVec.y,is[0],is[1])){
+            tmpDist = globals.beziercurve.dist(endVec.x,endVec.y,is[0],is[1]);
+            extraX = is[0];
+            extraY = is[1];
+          }
+        }
+
+        if(extraX != 10000){
+          //canvas上描画するやーつ
+          ctx.strokeStyle = "rgb(255,0,0)";
+          ctx.beginPath();
+          ctx.moveTo(parseInt(endVec.x), parseInt(endVec.y));
+          ctx.lineTo(parseInt(extraX), parseInt(extraY));
+          ctx.closePath();
+          ctx.stroke();
+
+          //保存
+          optimizedRuling.push([parseInt(endVec.x), parseInt(endVec.y)]);
+          optimizedRuling.push([parseInt(extraX), parseInt(extraY)]);
+        }
+        //
+        //
+        //
+      }
+    }
+
   }
 }
