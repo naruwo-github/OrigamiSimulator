@@ -105,7 +105,7 @@ function initDrawApp(globals){
       for(var i = 0; i < optimizedRuling.length - 1; i+=2){
         var coo1 = optimizedRuling[i];
         var coo2 = optimizedRuling[i+1];
-        drawLine(context,"rgb(255,0,0)",2,coo1[0],coo1[1],coo2[0],coo2[1]);
+        drawLine(context,"rgb(0,0,0)",2,coo1[0],coo1[1],coo2[0],coo2[1]);
       }
     }
 
@@ -357,6 +357,8 @@ function initDrawApp(globals){
     //rulingの最適化動作を行う
     console.log("ruling optimizing...");
     optimizedRuling = new Array();
+    canvasReload();
+    drawCanvas();
     optimizeRuling(context,startEndInformation);
     console.log("ruling optimizing ended.");
   });
@@ -617,6 +619,8 @@ function initDrawApp(globals){
     for(var i = segmentNum - 1; i > 0; i--){
       //end[segmentNum-1]から初める
       var startEnd = startEndInformation[i];
+      //console.log("StartEndInfo");
+      //console.log(startEnd);
       for(var j = 0; j < startEnd.length; j++){
         var se = startEnd[j];
         var startSe = se[0];
@@ -657,7 +661,7 @@ function initDrawApp(globals){
 
         if(extraX != 10000){
           //canvas上描画するやーつ
-          ctx.strokeStyle = "rgb(255,0,0)";
+          ctx.strokeStyle = "rgb(0,0,0)";
           ctx.beginPath();
           ctx.moveTo(parseInt(startVec.x), parseInt(startVec.y));
           ctx.lineTo(parseInt(extraX), parseInt(extraY));
@@ -667,6 +671,10 @@ function initDrawApp(globals){
           //保存
           optimizedRuling.push([parseInt(startVec.x), parseInt(startVec.y)]);
           optimizedRuling.push([parseInt(extraX), parseInt(extraY)]);
+
+          //追加する
+          startEndInformation[i-1].push([[parseInt(startVec.x), parseInt(startVec.y)],
+          [parseInt(extraX), parseInt(extraY)]]);
         }
         //
         //
@@ -720,7 +728,7 @@ function initDrawApp(globals){
 
         if(extraX != 10000){
           //canvas上描画するやーつ
-          ctx.strokeStyle = "rgb(255,0,0)";
+          ctx.strokeStyle = "rgb(0,0,0)";
           ctx.beginPath();
           ctx.moveTo(parseInt(endVec.x), parseInt(endVec.y));
           ctx.lineTo(parseInt(extraX), parseInt(extraY));
@@ -730,6 +738,10 @@ function initDrawApp(globals){
           //保存
           optimizedRuling.push([parseInt(endVec.x), parseInt(endVec.y)]);
           optimizedRuling.push([parseInt(extraX), parseInt(extraY)]);
+
+          //追加する
+          startEndInformation[i+1].push([[parseInt(endVec.x), parseInt(endVec.y)],
+          [parseInt(extraX), parseInt(extraY)]]);
         }
         //
         //
