@@ -631,8 +631,14 @@ function initDrawApp(globals){
         var vecEndStart = new THREE.Vector2(-vecStartEnd.x, -vecStartEnd.y);
         vecStartEnd.normalize();
         vecEndStart.normalize();
+
+        /*
+        startEnd[i-1]のrulingのなかで最短のものと平行にする処理が必要
+        そのようにベクトルを選ぶ
+        */
         //伸ばした先の座標
         var vecExtraEnd = new THREE.Vector2(startVec.x + vecEndStart.x * 1000, startVec.y + vecEndStart.y * 1000);
+
         //ここで交差判定
         //交差した点を保存するリスト
         var intersected = new Array();
@@ -696,10 +702,14 @@ function initDrawApp(globals){
         var vecEndStart = new THREE.Vector2(-vecStartEnd.x, -vecStartEnd.y);
         vecStartEnd.normalize();
         vecEndStart.normalize();
+
+        /*
+        startEnd[i-1]のrulingのなかで最短のものと平行にする処理が必要
+        そのようにベクトルを選ぶ
+        */
         //伸ばした先の座標
-        //var vecExtraEnd = new THREE.Vector2(startVec.x + vecEndStart.x * 1000, startVec.y + vecEndStart.y * 1000);
         var vecExtraEnd = new THREE.Vector2(startVec.x + vecStartEnd.x * 1000, startVec.y + vecStartEnd.y * 1000);
-        
+
         //ここで交差判定
         //交差した点を保存するリスト
         var intersected = new Array();
