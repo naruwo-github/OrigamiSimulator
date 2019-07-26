@@ -611,6 +611,7 @@ function initDrawApp(globals){
     console.log(startEndInformation);
   }
 
+  //
   //rulingの最適化
   function optimizeRuling(ctx,startEndInformation){
     var segmentNum = startEndInformation.length;
@@ -631,13 +632,39 @@ function initDrawApp(globals){
         var vecEndStart = new THREE.Vector2(-vecStartEnd.x, -vecStartEnd.y);
         vecStartEnd.normalize();
         vecEndStart.normalize();
+        var vecExtraEnd = new THREE.Vector2(startVec.x + vecEndStart.x * 1000, startVec.y + vecEndStart.y * 1000);
+
+
 
         /*
-        startEnd[i-1]のrulingのなかで最短のものと平行にする処理が必要
-        そのようにベクトルを選ぶ
-        */
+        //startEnd[i-1]のrulingのなかで最短のものと平行にする処理が必要
+        //そのようにベクトルを選ぶ
+        var nextStartEnd = startEndInformation[i-1];
+        var tmpDist = 10000;
+        var index = 10000;
+        for(var k = 0; k < nextStartEnd.length; k++){
+          var nextSe = nextStartEnd[k];
+          var nextS = nextSe[0];
+          var nextE = nextSe[1];
+          if(tmpDist > globals.beziercurve.dist(startVec.x,startVec.y,nextE[0],nextE[1])
+          && globals.beziercurve.dist(startVec.x,startVec.y,nextE[0],nextE[1]) > 20){
+            tmpDist = globals.beziercurve.dist(startVec.x,startVec.y,nextE[0],nextE[1]);
+            index = k;
+          }
+        }
+        var next = nextStartEnd[index];
+        var nextStart = next[0];
+        var nextEnd = next[1];
+        var st = new THREE.Vector2(nextStart[0],nextStart[1]);
+        var en = new THREE.Vector2(nextEnd[0],nextEnd[1]);
+        var stToEn = new THREE.Vector2(en.x - st.x, en.y - st.y);
+        var enToSt = new THREE.Vector2(-stToEn.x, -stToEn.y);
+        stToEn.normalize();
+        enToSt.normalize();
+        
         //伸ばした先の座標
-        var vecExtraEnd = new THREE.Vector2(startVec.x + vecEndStart.x * 1000, startVec.y + vecEndStart.y * 1000);
+        var vecExtraEnd = new THREE.Vector2(startVec.x + enToSt.x * 1000, startVec.y + enToSt.y * 1000);
+*/
 
         //ここで交差判定
         //交差した点を保存するリスト
@@ -649,6 +676,13 @@ function initDrawApp(globals){
               intersected.push(globals.beziercurve.getIntersectPoint(startVec.x,startVec.y,globals.svgInformation.x1[k],globals.svgInformation.y1[k],
                 vecExtraEnd.x,vecExtraEnd.y,globals.svgInformation.x2[k],globals.svgInformation.y2[k]));
               }
+             /*
+            if(globals.beziercurve.judgeIntersect(startVec.x + enToSt.x * 10,startVec.y + enToSt.y * 10,vecExtraEnd.x,vecExtraEnd.y,
+            globals.svgInformation.x1[k],globals.svgInformation.y1[k],globals.svgInformation.x2[k],globals.svgInformation.y2[k])){
+              intersected.push(globals.beziercurve.getIntersectPoint(startVec.x,startVec.y,globals.svgInformation.x1[k],globals.svgInformation.y1[k],
+                vecExtraEnd.x,vecExtraEnd.y,globals.svgInformation.x2[k],globals.svgInformation.y2[k]));
+              }
+              */
         }
 
         //interesectedの要素の中から、(startVec.x,startVec.y)に最短なものを選び
@@ -688,6 +722,7 @@ function initDrawApp(globals){
       }
     }
 
+
     //最初に描画した方から最後に描画した方に向けて描画する
     for(var i = 0; i < segmentNum - 1; i++){
       //start[0]から初める
@@ -702,13 +737,37 @@ function initDrawApp(globals){
         var vecEndStart = new THREE.Vector2(-vecStartEnd.x, -vecStartEnd.y);
         vecStartEnd.normalize();
         vecEndStart.normalize();
+        var vecExtraEnd = new THREE.Vector2(startVec.x + vecStartEnd.x * 1000, startVec.y + vecStartEnd.y * 1000);
+
 
         /*
-        startEnd[i-1]のrulingのなかで最短のものと平行にする処理が必要
-        そのようにベクトルを選ぶ
-        */
+        //startEnd[i+1]のrulingのなかで最短のものと平行にする処理が必要
+        //そのようにベクトルを選ぶ
+       var nextStartEnd = startEndInformation[i+1];
+       var tmpDist = 10000;
+       var index = 10000;
+       for(var k = 0; k < nextStartEnd.length; k++){
+         var nextSe = nextStartEnd[k];
+         var nextS = nextSe[0];
+         var nextE = nextSe[1];
+         if(tmpDist > globals.beziercurve.dist(endVec.x,endVec.y,nextS[0],nextS[1])
+         && globals.beziercurve.dist(endVec.x,endVec.y,nextS[0],nextS[1]) > 20){
+           tmpDist = globals.beziercurve.dist(endVec.x,endVec.y,nextS[0],nextS[1]);
+           index = k;
+         }
+       }
+       var next = nextStartEnd[index];
+       var nextStart = next[0];
+       var nextEnd = next[1];
+       var st = new THREE.Vector2(nextStart[0],nextStart[1]);
+       var en = new THREE.Vector2(nextEnd[0],nextEnd[1]);
+       var stToEn = new THREE.Vector2(en.x - st.x, en.y - st.y);
+       var enToSt = new THREE.Vector2(-stToEn.x, -stToEn.y);
+       stToEn.normalize();
+       enToSt.normalize();
         //伸ばした先の座標
-        var vecExtraEnd = new THREE.Vector2(startVec.x + vecStartEnd.x * 1000, startVec.y + vecStartEnd.y * 1000);
+        var vecExtraEnd = new THREE.Vector2(startVec.x + stToEn.x * 1000, startVec.y + stToEn.y * 1000);
+*/
 
         //ここで交差判定
         //交差した点を保存するリスト
@@ -720,6 +779,13 @@ function initDrawApp(globals){
               intersected.push(globals.beziercurve.getIntersectPoint(endVec.x,endVec.y,globals.svgInformation.x1[k],globals.svgInformation.y1[k],
                 vecExtraEnd.x,vecExtraEnd.y,globals.svgInformation.x2[k],globals.svgInformation.y2[k]));
               }
+             /*
+          if(globals.beziercurve.judgeIntersect(endVec.x + stToEn.x * 10,endVec.y + stToEn.y * 10,vecExtraEnd.x,vecExtraEnd.y,
+          globals.svgInformation.x1[k],globals.svgInformation.y1[k],globals.svgInformation.x2[k],globals.svgInformation.y2[k])){
+            intersected.push(globals.beziercurve.getIntersectPoint(endVec.x,endVec.y,globals.svgInformation.x1[k],globals.svgInformation.y1[k],
+              vecExtraEnd.x,vecExtraEnd.y,globals.svgInformation.x2[k],globals.svgInformation.y2[k]));
+            }
+            */
         }
 
         //interesectedの要素の中から、(endVec.x,endVec.y)に最短なものを選び
