@@ -336,7 +336,7 @@ function initDrawApp(globals){
 
   //ruling本数の増減
   upButton.addEventListener("click", function(){
-    if(rulingNum < 20){
+    if(rulingNum < 100){
       rulingNum++;
       displayRulingNum.innerText = String(rulingNum);
       canvasReload();
@@ -613,10 +613,12 @@ function initDrawApp(globals){
     console.log(startEndInformation);
   }
 
-  //
+
+
   //rulingの最適化
   function optimizeRuling(ctx,startEndInformation){
     var segmentNum = startEndInformation.length;
+
 
     //最後に描画した部分から最初に描画した部分にかけて描画する
     for(var i = segmentNum - 1; i > 0; i--){
@@ -725,6 +727,7 @@ function initDrawApp(globals){
     }
 
 
+
     //最初に描画した方から最後に描画した方に向けて描画する
     for(var i = 0; i < segmentNum - 1; i++){
       //start[0]から初める
@@ -826,6 +829,7 @@ function initDrawApp(globals){
         //
       }
     }
+
 
   }
 }
