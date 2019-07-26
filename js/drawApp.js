@@ -387,12 +387,14 @@ function initDrawApp(globals){
     if(straight === true){
       straightLineList.pop();
     }else if(ruling1 === true){
-      beziList.pop();
-      beziList.pop();
-      beziList.pop();
-      beziList.pop();
-
-      optimizedRuling = new Array();
+      if(optimizedRuling.length > 0){
+        optimizedRuling = new Array();
+      }else{
+        beziList.pop();
+        beziList.pop();
+        beziList.pop();
+        beziList.pop();
+      }
     }else if(ruling2 === true){
       ru2array.pop();
     }else{
