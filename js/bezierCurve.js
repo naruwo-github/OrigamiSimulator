@@ -1,7 +1,7 @@
 /*
 * Created by narumi nogawa on 6/21/19.
 */
-//ドローソフトの中でベジェ曲線や曲線について扱う場合、このメソッドで処理を行う
+//ドローソフトの中でベジェ曲線や曲線について扱う場合、このメソッドで処理を行う   
 
 function initBezierCurve(globals){
     //ベジェ曲線を描画する
