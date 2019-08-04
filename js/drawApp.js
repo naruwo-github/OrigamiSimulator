@@ -359,7 +359,8 @@ function initDrawApp(globals){
     optimizedRuling = new Array();
     canvasReload();
     drawCanvas();
-    optimizeRuling(context,startEndInformation);
+    //optimizeRuling(context,startEndInformation);
+    extendRulings(context,startEndInformation);
     console.log("ruling optimizing ended.");
   });
 
@@ -614,7 +615,173 @@ function initDrawApp(globals){
   }
 
 
+  //extend rulingのその2
+  function extendRulings(ctx,startEndInformation) {
+    var regionNum = startEndInformation.length;
 
+    //----------------------------------------------------------
+    //最後の可展面領域から最初の可展面領域に向けて〜
+    for(var i = regionNum-1; i > 0; i--){
+      var element = startEndInformation[i];
+      for(j = 0; j < element.length; j++){
+        var coo = element[j];
+        //延長開始点の座標は(start[0],start[1])
+        var start = coo[0];
+
+        var startX = start[0];
+        var startY = start[1];
+        //延長処理を以下に記述
+        for(var k = i-1; k >= 0; k--){
+          var nextElement = startEndInformation[k];
+          var tmpDist = 10000;
+          var index = 10000;
+          for(var l = 0; l < nextElement.length; l++){
+            var nl = nextElement[l];
+            var end = nl[1];
+            if(tmpDist > globals.beziercurve.dist(startX,startY,end[0],end[1])){
+              tmpDist = globals.beziercurve.dist(startX,startY,end[0],end[1]);
+              index = l;
+            }
+          }
+
+          var next = nextElement[index];
+          var nextStart = next[0];
+          var nextEnd = next[1];
+
+          var vecEndToStart = new THREE.Vector2(nextStart[0] - nextEnd[0], nextStart[1] - nextEnd[1]);
+          vecEndToStart.normalize();
+          var extendedPoint = new THREE.Vector2(startX + vecEndToStart.x * 1000, startY + vecEndToStart.y * 1000);
+
+          //交差判定で交点を求める
+          var intersected = new Array();
+          for(var l = 0; l < globals.svgInformation.stroke.length; l++){
+            //法線方向に伸ばした時に交差しているかどうか
+            if(globals.beziercurve.judgeIntersect(startX + vecEndToStart.x * 10, startY + vecEndToStart.y * 10, extendedPoint.x, extendedPoint.y,
+            globals.svgInformation.x1[l], globals.svgInformation.y1[l], globals.svgInformation.x2[l], globals.svgInformation.y2[l])){
+              intersected.push(globals.beziercurve.getIntersectPoint(startX, startY, globals.svgInformation.x1[l], globals.svgInformation.y1[l],
+              extendedPoint.x, extendedPoint.y, globals.svgInformation.x2[l], globals.svgInformation.y2[l]));
+            }
+          }
+
+          //interesectedの要素の中から、(startX, startY)に最短なものを選び
+          //それらを結んだものが最適化されたruling
+          var extraX = 10000;
+          var extraY = 10000;
+          var tmpDist = 1000;
+          for(var l = 0; l < intersected.length; l++){
+            var is = intersected[l];
+            if(tmpDist > globals.beziercurve.dist(startX, startY, is[0], is[1])){
+              tmpDist = globals.beziercurve.dist(startX, startY, is[0], is[1]);
+              extraX = is[0];
+              extraY = is[1];
+            }
+          }
+          if(extraX != 10000){
+            //canvas上描画するやーつ
+            ctx.strokeStyle = "rgb(255,0,0)";
+            ctx.beginPath();
+            ctx.moveTo(parseInt(startX), parseInt(startY));
+            ctx.lineTo(parseInt(extraX), parseInt(extraY));
+            ctx.closePath();
+            ctx.stroke();
+
+            //保存
+            optimizedRuling.push([parseInt(startX), parseInt(startY)]);
+            optimizedRuling.push([parseInt(extraX), parseInt(extraY)]);
+          }
+
+          //終点が次の始点となる
+          startX = extraX;
+          startY = extraY;
+        }
+
+      }
+    }
+    //----------------------------------------------------------
+
+    //----------------------------------------------------------
+    //最初の可展面領域から最後の可展面領域に向けて〜
+    for(var i = 0; i < regionNum-1; i++){
+      var element = startEndInformation[i];
+      for(j = 0; j < element.length; j++){
+        var coo = element[j];
+        //延長開始点の座標は(start[0],start[1])
+        var end = coo[1];
+
+        var endX = end[0];
+        var endY = end[1];
+        //延長処理を以下に記述
+        for(var k = i+1; k <= regionNum-1; k++){
+          var nextElement = startEndInformation[k];
+          var tmpDist = 10000;
+          var index = 10000;
+          for(var l = 0; l < nextElement.length; l++){
+            var nl = nextElement[l];
+            var start = nl[0];
+            if(tmpDist > globals.beziercurve.dist(endX,endY,start[0],start[1])){
+              tmpDist = globals.beziercurve.dist(endX,endY,start[0],start[1]);
+              index = l;
+            }
+          }
+
+          var next = nextElement[index];
+          var nextStart = next[0];
+          var nextEnd = next[1];
+
+          var vecStartToEnd = new THREE.Vector2(nextEnd[0] - nextStart[0], nextEnd[1] - nextStart[1]);
+          vecStartToEnd.normalize();
+          var extendedPoint = new THREE.Vector2(endX + vecStartToEnd.x * 1000, endY + vecStartToEnd.y * 1000);
+
+          //交差判定で交点を求める
+          var intersected = new Array();
+          for(var l = 0; l < globals.svgInformation.stroke.length; l++){
+            //法線方向に伸ばした時に交差しているかどうか
+            if(globals.beziercurve.judgeIntersect(endX + vecStartToEnd.x * 10, endY + vecStartToEnd.y * 10, extendedPoint.x, extendedPoint.y,
+            globals.svgInformation.x1[l], globals.svgInformation.y1[l], globals.svgInformation.x2[l], globals.svgInformation.y2[l])){
+              intersected.push(globals.beziercurve.getIntersectPoint(endX, endY, globals.svgInformation.x1[l], globals.svgInformation.y1[l],
+              extendedPoint.x, extendedPoint.y, globals.svgInformation.x2[l], globals.svgInformation.y2[l]));
+            }
+          }
+
+          //interesectedの要素の中から、(startX, startY)に最短なものを選び
+          //それらを結んだものが最適化されたruling
+          var extraX = 10000;
+          var extraY = 10000;
+          var tmpDist = 1000;
+          for(var l = 0; l < intersected.length; l++){
+            var is = intersected[l];
+            if(tmpDist > globals.beziercurve.dist(endX, endY, is[0], is[1])){
+              tmpDist = globals.beziercurve.dist(endX, endY, is[0], is[1]);
+              extraX = is[0];
+              extraY = is[1];
+            }
+          }
+          if(extraX != 10000){
+            //canvas上描画するやーつ
+            ctx.strokeStyle = "rgb(255,0,0)";
+            ctx.beginPath();
+            ctx.moveTo(parseInt(endX), parseInt(endY));
+            ctx.lineTo(parseInt(extraX), parseInt(extraY));
+            ctx.closePath();
+            ctx.stroke();
+
+            //保存
+            optimizedRuling.push([parseInt(endX), parseInt(endY)]);
+            optimizedRuling.push([parseInt(extraX), parseInt(extraY)]);
+          }
+
+          //終点が次の始点となる
+          endX = extraX;
+          endY = extraY;
+        }
+
+      }
+    }
+    //----------------------------------------------------------
+    
+  }
+
+  /*
   //rulingの最適化
   function optimizeRuling(ctx,startEndInformation){
     var segmentNum = startEndInformation.length;
@@ -695,13 +862,11 @@ function initDrawApp(globals){
           optimizedRuling.push([parseInt(vecStart.x), parseInt(vecStart.y)]);
           optimizedRuling.push([parseInt(extraX), parseInt(extraY)]);
 
-          /*
           //追加
-          var nextInfo = startEndInformation[i-1];
-          nextInfo.push([[parseInt(vecStart.x), parseInt(vecStart.y)],
-          [parseInt(extraX), parseInt(extraY)]]);
-          startEndInformation[i-1] = nextInfo;
-          */
+          //var nextInfo = startEndInformation[i-1];
+          //nextInfo.push([[parseInt(vecStart.x), parseInt(vecStart.y)],
+          //[parseInt(extraX), parseInt(extraY)]]);
+          //startEndInformation[i-1] = nextInfo;
         }
         //
         //
@@ -782,19 +947,18 @@ function initDrawApp(globals){
           optimizedRuling.push([parseInt(vecEnd.x), parseInt(vecEnd.y)]);
           optimizedRuling.push([parseInt(extraX), parseInt(extraY)]);
 
-          /*
           //追加
-          var nextInfo = startEndInformation[i+1];
-          nextInfo.push([[parseInt(vecEnd.x), parseInt(vecEnd.y)],
-          [parseInt(extraX), parseInt(extraY)]]);
-          startEndInformation[i+1] = nextInfo;
-          */
+          //var nextInfo = startEndInformation[i+1];
+          //nextInfo.push([[parseInt(vecEnd.x), parseInt(vecEnd.y)],
+          //[parseInt(extraX), parseInt(extraY)]]);
+          //startEndInformation[i+1] = nextInfo;
         }
         //
         //
       }
     }
     //
-    //
   }
+  */
+
 }
