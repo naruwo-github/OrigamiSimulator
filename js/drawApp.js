@@ -678,7 +678,7 @@ function initDrawApp(globals){
           }
           if(extraX != 10000){
             //canvas上描画するやーつ
-            ctx.strokeStyle = "rgb(255,0,0)";
+            ctx.strokeStyle = "rgb(0,0,0)";
             ctx.beginPath();
             ctx.moveTo(parseInt(startX), parseInt(startY));
             ctx.lineTo(parseInt(extraX), parseInt(extraY));
@@ -758,7 +758,7 @@ function initDrawApp(globals){
           }
           if(extraX != 10000){
             //canvas上描画するやーつ
-            ctx.strokeStyle = "rgb(255,0,0)";
+            ctx.strokeStyle = "rgb(0,0,0)";
             ctx.beginPath();
             ctx.moveTo(parseInt(endX), parseInt(endY));
             ctx.lineTo(parseInt(extraX), parseInt(extraY));
