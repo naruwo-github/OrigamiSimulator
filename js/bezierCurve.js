@@ -69,33 +69,69 @@ function initBezierCurve(globals){
         beziList.push([co1[0],co1[1]]);
         beziList.push([co2[0],co2[1]]);
         beziList.push([co3[0],co3[1]]);
-        /*
+    }
+
+    function defineSplinePoint(dragList,splineList){
+        var distanceAll = 0.0;
         for(var i = 0; i < dragList.length - 1; i++){
             var co1 = dragList[i];
             var co2 = dragList[i+1];
-            distanceTmp += dist(co1[0],co1[1],co2[0],co2[1]);
-
-            if(distanceTmp + 5 > distBetweenCP && distanceTmp - 5 < distBetweenCP){
-                x2 = co1[0];
-                y2 = co1[1];
-            }
-            
-            if(distanceTmp + 5 > distBetweenCP * 2.0 && distanceTmp - 5 < distBetweenCP * 2.0){
-                x3 = co1[0];
-                y3 = co1[1];
-            }
+            distanceAll += dist(co1[0],co1[1],co2[0],co2[1]);
         }
 
-        if(x2 > 0 && y2 > 0 && x3 > 0 && y3 > 0){
-            var co1 = dragList[0];
-            var co4 = dragList[dragList.length - 1];
-            //beziList.push([co1[0],co1[1],x2,y2,x3,y3,co4[0],co4[1]]);
-            beziList.push([co1[0],co1[1]]);
-            beziList.push([x2,y2]);
-            beziList.push([x3,y3]);
-            beziList.push([co4[0],co4[1]]);
+        //7点にしよう。なので
+        var distBetweenCP = distanceAll / 6.0;
+
+        var index1 = 1;
+        var index2 = 1;
+        var index3 = 1;
+        var index4 = 1;
+        var index5 = 1;
+        var co0 = dragList[0];
+        var co1 = dragList[1];
+        var preDist = dist(co0[0],co0[1],co1[0],co1[1]);
+        for(var i = 2; i < dragList.length; i++){
+            var preCo2 = dragList[i-1];
+            var co2 = dragList[i];
+            var postDist = preDist + dist(preCo2[0],preCo2[1],co2[0],co2[1]);
+            if(Math.abs(distBetweenCP - postDist) < Math.abs(distBetweenCP - preDist)){
+                index1 = i;
+                console.log(index1);
+            }
+            if(Math.abs(distBetweenCP * 2.0 - postDist) < Math.abs(distBetweenCP * 2.0 - preDist)){
+                index2 = i;
+                console.log(index2);
+            }
+            if(Math.abs(distBetweenCP * 3.0 - postDist) < Math.abs(distBetweenCP * 3.0 - preDist)){
+                index3 = i;
+                console.log(index3);
+            }
+            if(Math.abs(distBetweenCP * 4.0 - postDist) < Math.abs(distBetweenCP * 4.0 - preDist)){
+                index4 = i;
+                console.log(index4);
+            }
+            if(Math.abs(distBetweenCP * 5.0 - postDist) < Math.abs(distBetweenCP * 5.0 - preDist)){
+                index5 = i;
+                console.log(index5);
+            }
+            preDist = postDist;
         }
-        */
+
+        //co0 = dragList[index1];
+        co1 = dragList[index1];
+        var co2 = dragList[index2];
+        var co3 = dragList[index3];
+        var co4 = dragList[index4];
+        var co5 = dragList[index5];
+        var co6 = dragList[dragList.length - 1];
+
+        splineList.push([co0[0],co0[1]]);
+        splineList.push([co1[0],co1[1]]);
+        splineList.push([co2[0],co2[1]]);
+        splineList.push([co3[0],co3[1]]);
+        splineList.push([co4[0],co4[1]]);
+        splineList.push([co5[0],co5[1]]);
+        splineList.push([co6[0],co6[1]]);
     }
 
     //2点間の距離を求めるメソッド
@@ -169,6 +205,7 @@ function initBezierCurve(globals){
     return {
         drawBezier: drawBezier,
         defineBeziPoint: defineBeziPoint,
+        defineSplinePoint: defineSplinePoint,
         dist: dist,
         judgeIntersect: judgeIntersect,
         judgeIntersect2: judgeIntersect2,
