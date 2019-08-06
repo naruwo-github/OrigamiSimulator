@@ -84,6 +84,7 @@ function initDrawApp(globals){
       }
     }
 
+    /*
     //rulingツール1の点
     context.fillStyle = "rgb(255,50,255)";
     for(var i = 0; i < beziList.length; i++){
@@ -105,6 +106,8 @@ function initDrawApp(globals){
         findBezierRuling(context,beziDistList[beziDistList.length-1],cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
       }
     }
+    */
+
 
     //スプライン曲線を描画
     if(splineList.length > 0 && splineList.length % 7 == 0){
@@ -144,6 +147,8 @@ function initDrawApp(globals){
           splineDist += globals.beziercurve.dist(p1[0], p1[1], p2[0], p2[1]);
         }
         splineDistList.push(splineDist);
+        //console.log(splineDistList);
+        findSplineRuling(context,splineDistList[splineDistList.length - 1],spline);
       }
     }
 
@@ -331,12 +336,13 @@ function initDrawApp(globals){
 
   canvas.addEventListener("mousemove", e => {
     if(dragging == true){
+      /*
       if(cpMove == true){
         beziList.splice(movedIndex,1,[e.offsetX,e.offsetY]);
         //console.log(beziList.length);
         canvasReload();
         drawCanvas();
-      }else if(cpMove2 == true){
+      }else */if(cpMove2 == true){
         splineList.splice(movedIndex2,1,[e.offsetX,e.offsetY]);
         canvasReload();
         drawCanvas();
@@ -349,18 +355,22 @@ function initDrawApp(globals){
 
   canvas.addEventListener("mouseup", e => {
     if(dragging == true){
+      /*
       if(cpMove == true){
         beziList.splice(movedIndex,1,[e.offsetX,e.offsetY]);
         cpMove = false;
         dragging = false;
-      }else if(cpMove2 == true){
+      }else */if(cpMove2 == true){
         splineList.splice(movedIndex2,1,[e.offsetX,e.offsetY])
         cpMove2 = false;
         dragging = false;
       }else{
         dragging = false;
+
+        /*
         //ここでベジェ曲線の制御点を求める処理を
         globals.beziercurve.defineBeziPoint(dragList, beziList);
+        */
 
         //ここでスプライン曲線の制御点を求める処理
         globals.beziercurve.defineSplinePoint(dragList, splineList);
@@ -411,7 +421,7 @@ function initDrawApp(globals){
 
   //ruling本数の増減
   upButton.addEventListener("click", function(){
-    if(rulingNum < 100){
+    if(rulingNum < 300){
       rulingNum++;
       displayRulingNum.innerText = String(rulingNum);
       canvasReload();
@@ -466,10 +476,12 @@ function initDrawApp(globals){
       if(optimizedRuling.length > 0){
         optimizedRuling = new Array();
       }else{
+        /*
         //ベジェ曲線の制御点を4つ消す
         for(var i = 0; i < 4; i++){
           beziList.pop();
         }
+        */
         //スプライン曲線の制御点を7つ消す
         for(var i = 0; i < 7; i++){
           splineList.pop();
@@ -694,6 +706,80 @@ function initDrawApp(globals){
     //
     startEndInformation.push(childStartEndInformation);
     console.log(startEndInformation);
+  }
+
+  function findSplineRuling(ctx,curvelen,spline){
+    //rulingの[始点,終点]群を保存するリスト
+    var childStartEndInformation = new Array();
+    var tmpbunkatsu = 1;
+    var tmpdist = 0.0;
+    var bunkatsu = rulingNum;
+    var dividedPoints = parseInt(curvelen)/bunkatsu;
+    for(var t = 0.0; t < 1.0; t += 0.001){
+      var p1 = spline.calcAt(t);
+      var p2 = spline.calcAt(t+0.001);
+      tmpdist += globals.beziercurve.dist(p1[0],p1[1],p2[0],p2[1]);
+
+      if(parseInt(tmpdist) - 1 <= dividedPoints * tmpbunkatsu && parseInt(tmpdist) + 1 >= dividedPoints * tmpbunkatsu){
+        var start = new THREE.Vector2(p1[0],p1[1]);
+        var end = new THREE.Vector2(p2[0],p2[1]);
+        var tangentVec = end.sub(start);
+        var normalVec = new THREE.Vector2(tangentVec.y, -tangentVec.x);
+        normalVec.normalize();
+
+        var rux1 = p1[0] + normalVec.x * 1000;
+        var ruy1 = p1[1] + normalVec.y * 1000;
+        var rux2 = p2[0] - normalVec.x * 1000;
+        var ruy2 = p2[1] - normalVec.y * 1000;
+
+        var rulingStart = new Array();
+        var rulingEnd = new Array();
+
+        //交差判定を行う
+        for(var i = 0; i < globals.svgInformation.stroke.length; i++){
+          //法線方向に伸ばした時に交差しているかどうか
+          if(globals.beziercurve.judgeIntersect(p1[0],p1[1],rux1,ruy1,
+            globals.svgInformation.x1[i],globals.svgInformation.y1[i],globals.svgInformation.x2[i],globals.svgInformation.y2[i])){
+              rulingEnd.push(globals.beziercurve.getIntersectPoint(p1[0],p1[1],globals.svgInformation.x1[i],globals.svgInformation.y1[i],
+                rux1,ruy1,globals.svgInformation.x2[i],globals.svgInformation.y2[i]));
+            }
+          if(globals.beziercurve.judgeIntersect(p1[0],p1[1],rux2,ruy2,
+              globals.svgInformation.x1[i],globals.svgInformation.y1[i],globals.svgInformation.x2[i],globals.svgInformation.y2[i])){
+                rulingStart.push(globals.beziercurve.getIntersectPoint(p1[0],p1[1],globals.svgInformation.x1[i],globals.svgInformation.y1[i],
+                  rux2,ruy2,globals.svgInformation.x2[i],globals.svgInformation.y2[i]));
+            }
+        }
+
+        var tmpDist = 1000;
+        for(var i = 0; i < rulingStart.length; i++){
+          var s = rulingStart[i];
+          for(var j = 0; j < rulingEnd.length; j++){
+            var e = rulingEnd[j];
+            if(tmpDist > globals.beziercurve.dist(s[0],s[1],e[0],e[1])){
+              tmpDist = globals.beziercurve.dist(s[0],s[1],e[0],e[1]);
+              rux1 = s[0];
+              ruy1 = s[1];
+              rux2 = e[0];
+              ruy2 = e[1];
+            }
+          }
+        }
+        ctx.strokeStyle = "rgb(0,255,0)";
+        ctx.beginPath();
+        ctx.moveTo(parseInt(rux1), parseInt(ruy1));
+        ctx.lineTo(parseInt(rux2), parseInt(ruy2));
+        ctx.closePath();
+        ctx.stroke();
+
+        outputList.push([parseInt(rux1), parseInt(ruy1)]);
+        outputList.push([parseInt(rux2), parseInt(ruy2)]);
+
+        childStartEndInformation.push([[parseInt(rux1), parseInt(ruy1)], [parseInt(rux2), parseInt(ruy2)]]);
+
+        tmpbunkatsu++;
+      }
+    }
+    startEndInformation.push(childStartEndInformation);
   }
 
 
