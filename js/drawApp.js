@@ -720,7 +720,7 @@ function initDrawApp(globals){
       var p2 = spline.calcAt(t+0.001);
       tmpdist += globals.beziercurve.dist(p1[0],p1[1],p2[0],p2[1]);
 
-      if(parseInt(tmpdist) - 1 <= dividedPoints * tmpbunkatsu && parseInt(tmpdist) + 1 >= dividedPoints * tmpbunkatsu){
+      if(parseInt(tmpdist) - 2 <= dividedPoints * tmpbunkatsu && parseInt(tmpdist) + 2 >= dividedPoints * tmpbunkatsu){
         var start = new THREE.Vector2(p1[0],p1[1]);
         var end = new THREE.Vector2(p2[0],p2[1]);
         var tangentVec = end.sub(start);
