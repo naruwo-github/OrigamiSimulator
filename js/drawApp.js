@@ -84,7 +84,6 @@ function initDrawApp(globals){
       }
     }
 
-    /*
     //rulingツール1の点
     context.fillStyle = "rgb(255,50,255)";
     for(var i = 0; i < beziList.length; i++){
@@ -106,9 +105,9 @@ function initDrawApp(globals){
         findBezierRuling(context,beziDistList[beziDistList.length-1],cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
       }
     }
-    */
 
 
+    /*
     //スプライン曲線を描画
     if(splineList.length > 0 && splineList.length % 7 == 0){
       //splineツールの制御点
@@ -151,6 +150,7 @@ function initDrawApp(globals){
         findSplineRuling(context,splineDistList[splineDistList.length - 1],spline);
       }
     }
+    */
 
     //optimized rulingの描画
     if(optimizedRuling.length > 0){
@@ -312,6 +312,7 @@ function initDrawApp(globals){
         }
       }
 
+      /*
       //移動する制御点(スプライン曲線の)を求める
       if(splineList.length > 0){
         var distance = 10000;
@@ -330,23 +331,25 @@ function initDrawApp(globals){
           cpMove2 = true;
         }
       }
+      */
 
     }
   });
 
   canvas.addEventListener("mousemove", e => {
     if(dragging == true){
-      /*
       if(cpMove == true){
+        //これはベジェ
         beziList.splice(movedIndex,1,[e.offsetX,e.offsetY]);
         //console.log(beziList.length);
         canvasReload();
         drawCanvas();
-      }else */if(cpMove2 == true){
+      }else /*if(cpMove2 == true){
+        //これはスプライン
         splineList.splice(movedIndex2,1,[e.offsetX,e.offsetY]);
         canvasReload();
         drawCanvas();
-      }else{
+      }else*/{
       dragList.push([e.offsetX, e.offsetY]);
       //console.log(dragList.length);
       }
@@ -355,25 +358,24 @@ function initDrawApp(globals){
 
   canvas.addEventListener("mouseup", e => {
     if(dragging == true){
-      /*
       if(cpMove == true){
+        //これはベジェ
         beziList.splice(movedIndex,1,[e.offsetX,e.offsetY]);
         cpMove = false;
         dragging = false;
-      }else */if(cpMove2 == true){
+      }else/*if(cpMove2 == true){
+        //これはスプライン
         splineList.splice(movedIndex2,1,[e.offsetX,e.offsetY])
         cpMove2 = false;
         dragging = false;
-      }else{
+      }else*/{
         dragging = false;
 
-        /*
         //ここでベジェ曲線の制御点を求める処理を
         globals.beziercurve.defineBeziPoint(dragList, beziList);
-        */
 
         //ここでスプライン曲線の制御点を求める処理
-        globals.beziercurve.defineSplinePoint(dragList, splineList);
+        //globals.beziercurve.defineSplinePoint(dragList, splineList);
 
         //tmpCooListの初期化
         dragList = new Array();
@@ -477,16 +479,16 @@ function initDrawApp(globals){
       if(optimizedRuling.length > 0){
         optimizedRuling = new Array();
       }else{
-        /*
         //ベジェ曲線の制御点を4つ消す
         for(var i = 0; i < 4; i++){
           beziList.pop();
         }
-        */
+       /*
         //スプライン曲線の制御点を7つ消す
         for(var i = 0; i < 7; i++){
           splineList.pop();
         }
+        */
 
       }
     }else if(ruling2 === true){
