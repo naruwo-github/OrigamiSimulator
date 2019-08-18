@@ -421,8 +421,9 @@ function initDrawApp(globals){
 
   //ruling本数の増減
   upButton.addEventListener("click", function(){
-    if(rulingNum < 300){
+    if(rulingNum < 1100){
       rulingNum++;
+      //rulingNum+=100;
       displayRulingNum.innerText = String(rulingNum);
       canvasReload();
       drawCanvas();
