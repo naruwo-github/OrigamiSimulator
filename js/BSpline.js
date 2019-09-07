@@ -1,7 +1,7 @@
 /*
 * Created by narumi nogawa on 8/5/19.
 */
-
+ 
 var BSpline = function(points,degree,copy){
     if(copy){
         this.points = []

@@ -1220,6 +1220,8 @@ function initPattern(globals){
                 if (!is2d) faceVert.push(vertex[2]);
             }
 
+            //ここで三角形分割を行なっている？
+            //三角メッシュを作っているのか？ 
             var triangles = earcut(faceVert, null, is2d? 2:3);
 
             for (var j=0;j<triangles.length;j+=3){
