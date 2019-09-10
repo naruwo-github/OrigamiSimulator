@@ -127,14 +127,14 @@ p{
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
-    background-color: rgb(255, 150, 100)
+    background-color: rgb(255, 150, 100);
 }
 
 .drawAppButtons1:hover{
     width: 176px;
     height: 56px;
     left: 7px;
-    background-color: rgb(255, 170, 120)
+    background-color: rgb(255, 170, 120);
 }
 .drawAppButtons2{
     position: fixed;
@@ -144,13 +144,13 @@ p{
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
-    background-color: rgb(255, 150, 100)
+    background-color: rgb(255, 150, 100);
 }
 
 .drawAppButtons2:hover{
     width: 86px;
     height: 56px;
-    background-color: rgb(255, 170, 120)
+    background-color: rgb(255, 170, 120);
 }
 
 .drawAppButtons3{
@@ -160,12 +160,21 @@ p{
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
-    background-color: rgb(255, 150, 100)
+    background-color: rgb(255, 150, 100);
 }
 .drawAppButtons3:hover{
     width: 86px;
-    background-color: rgb(255, 170, 120)
+    background-color: rgb(255, 170, 120);
 }
+
+/*
+.baseButton {
+    position: fixed;
+    background-color: #666;
+    width: 100px;
+    height: 500px;
+}
+*/
 /*-------------------------------------------------*/
 
 #viewToggle{
