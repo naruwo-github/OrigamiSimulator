@@ -43,8 +43,9 @@ function initDrawApp(globals){
   $('#draw-area').attr('width', $(window).width());
   $('#draw-area').attr('height', $(window).height());
   
-  context.font = "30px serif"; //canvasに表示させる文字のサイズ
-  context.strokeText("Click here!",100,100);
+  //context.font = "30px serif"; //canvasに表示させる文字のサイズ
+  context.font = "100px 'Century Gothic'";
+  context.strokeText("Click here",$(window).width()/2-100,$(window).height()/2);
 
   //Num Buttonの数値を初期化
   var displayRulingNum = document.getElementById("ruling-num");
