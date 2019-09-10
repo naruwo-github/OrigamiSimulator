@@ -1164,6 +1164,7 @@ function initPattern(globals){
         return FOLD.filter.remapField(fold, 'vertices', old2new);
     }
 
+    //ここの関数で、三角形分割の結果を持ってきている
     function triangulatePolys(fold, is2d){
         var vertices = fold.vertices_coords;
         var faces = fold.faces_vertices;
