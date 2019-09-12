@@ -64,6 +64,14 @@ function initDrawApp(globals){
 
   //キャンバスに描画する関数
   function drawCanvas(){
+    //console.log(globals.autoTriangulatedInfo);
+    var triInfo = globals.autoTriangulatedInfo;
+    for (let index = 0; index < triInfo.length; index+=2) {
+      const start = triInfo[index];
+      const end = triInfo[index+1];
+      drawLine(context,"rgb(255, 255, 0)",2,start[0],start[1],end[0],end[1]);
+    }
+    
     //--------------------------------------------------------------
     //変数の初期化
     splineDistList = new Array();
