@@ -1268,16 +1268,22 @@ function initPattern(globals){
                         edges.push([tri[0], tri[1]]);
                         foldAngles.push(0);
                         assignments.push("F");
+
+                        //console.log([tri[0], tri[1]]);
                     } else if (k==1){
                         faceEdges.push(edges.length);
                         edges.push([tri[2], tri[1]]);
                         foldAngles.push(0);
                         assignments.push("F");
+
+                        //console.log([tri[2], tri[1]]);
                     } else if (k==2){
                         faceEdges.push(edges.length);
                         edges.push([tri[2], tri[0]]);
                         foldAngles.push(0);
                         assignments.push("F");
+
+                        //console.log([tri[2], tri[0]]);
                     }
                 }
 
@@ -1285,6 +1291,7 @@ function initPattern(globals){
             }
         }
         fold.faces_vertices = triangulatedFaces;
+        //console.log(fold);
         return fold;
     }
 
