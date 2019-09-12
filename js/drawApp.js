@@ -533,6 +533,7 @@ function initDrawApp(globals){
     //$("#navPattern").parent().removeClass("open");
     $("#navDrawApp").parent().removeClass("open");
     $("#drawAppViewer").hide();
+    drawCanvas();
   });
 
   //現在読み込んであるsvgをダウンロードする
