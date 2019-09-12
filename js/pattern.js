@@ -1166,6 +1166,10 @@ function initPattern(globals){
 
     //ここの関数で、三角形分割の結果を持ってきている
     function triangulatePolys(fold, is2d){
+        //分割情報を取得するglobal変数に格納する？
+        globals.autoTriangulatedInfo = [];
+
+
         var vertices = fold.vertices_coords;
         var faces = fold.faces_vertices;
         var edges = fold.edges_vertices;
@@ -1269,21 +1273,27 @@ function initPattern(globals){
                         foldAngles.push(0);
                         assignments.push("F");
 
+                        //取得
                         //console.log([tri[0], tri[1]]);
+                        globals.autoTriangulatedInfo.push([tri[0], tri[1]]);
                     } else if (k==1){
                         faceEdges.push(edges.length);
                         edges.push([tri[2], tri[1]]);
                         foldAngles.push(0);
                         assignments.push("F");
 
+                        //取得
                         //console.log([tri[2], tri[1]]);
+                        globals.autoTriangulatedInfo.push([tri[2], tri[1]]);
                     } else if (k==2){
                         faceEdges.push(edges.length);
                         edges.push([tri[2], tri[0]]);
                         foldAngles.push(0);
                         assignments.push("F");
 
+                        //取得
                         //console.log([tri[2], tri[0]]);
+                        globals.autoTriangulatedInfo.push([tri[2], tri[0]]);
                     }
                 }
 
@@ -1291,7 +1301,20 @@ function initPattern(globals){
             }
         }
         fold.faces_vertices = triangulatedFaces;
+
         //console.log(fold);
+        //ここでautoTriInfoを加工しよう
+        var returnInfo = [];
+        for (let index = 0; index < globals.autoTriangulatedInfo.length; index++) {
+            const element = globals.autoTriangulatedInfo[index];
+            const start = element[0];
+            const end = element[1];
+            
+            returnInfo.push(fold.vertices_coords[start]);
+            returnInfo.push(fold.vertices_coords[end]);
+        }
+        globals.autoTriangulatedInfo = returnInfo;
+
         return fold;
     }
 

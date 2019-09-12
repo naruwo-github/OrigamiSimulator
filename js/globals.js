@@ -13,6 +13,8 @@ function initGlobals(){
         svgFile: null,
         //svg形式の正確な座標や色情報
         svgInformation: [],
+        //分割線情報持ってくるやーつ
+        autoTriangulatedInfo: [],
 
         navMode: "simulation",
         scale: 1,
