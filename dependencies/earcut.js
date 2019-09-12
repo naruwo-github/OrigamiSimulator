@@ -97,13 +97,16 @@ function earcutLinked(ear, triangles, dim, minX, minY, size, pass) {
         next = ear.next;
 
         if (size ? isEarHashed(ear, minX, minY, size) : isEar(ear)) {
-            console.log("CCC");
+            //console.log("CCC");
             //ここで分割してるよね
             
             // cut off the triangle
             triangles.push(prev.i / dim);
             triangles.push(ear.i / dim);
             triangles.push(next.i / dim);
+
+            //
+            //console.log(prev.i / dim +" , "+ ear.i / dim +" , "+ next.i / dim);
 
             removeNode(ear);
 
