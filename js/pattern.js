@@ -1181,6 +1181,7 @@ function initPattern(globals){
                 continue;
             }
 
+            //ここで、四角形パネルを検出したら三角形パネルにする処理をしている？
             //check for quad and solve manually
             if (face.length == 4){
                 var faceV1 = makeVector(vertices[face[0]]);
