@@ -85,7 +85,6 @@ function filterPoints(start, end) {
 // main ear slicing loop which triangulates a polygon (given as a linked list)
 function earcutLinked(ear, triangles, dim, minX, minY, size, pass) {
     if (!ear) return;
-
     // interlink polygon nodes in z-order
     if (!pass && size) indexCurve(ear, minX, minY, size);
 
@@ -98,6 +97,9 @@ function earcutLinked(ear, triangles, dim, minX, minY, size, pass) {
         next = ear.next;
 
         if (size ? isEarHashed(ear, minX, minY, size) : isEar(ear)) {
+            console.log("CCC");
+            //ここで分割してるよね
+            
             // cut off the triangle
             triangles.push(prev.i / dim);
             triangles.push(ear.i / dim);
@@ -537,6 +539,8 @@ function splitPolygon(a, b) {
     bp.next = b2;
     b2.prev = bp;
 
+    console.log("splitPolygon")
+    console.log(b2);
     return b2;
 }
 

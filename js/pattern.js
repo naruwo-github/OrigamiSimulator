@@ -1196,12 +1196,18 @@ function initPattern(globals){
                     assignments.push("F");
                     triangulatedFaces.push([face[0], face[1], face[3]]);
                     triangulatedFaces.push([face[1], face[2], face[3]]);
+
+                    //これが分割するために追加した直線?
+                    console.log([face[1], face[3]]);
                 } else {
                     edges.push([face[0], face[2]]);
                     foldAngles.push(0);
                     assignments.push("F");
                     triangulatedFaces.push([face[0], face[1], face[2]]);
                     triangulatedFaces.push([face[0], face[2], face[3]]);
+
+                    //これが分割するために追加した直線?
+                    console.log([face[0], face[2]]);
                 }
                 continue;
             }
