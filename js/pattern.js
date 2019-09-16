@@ -1302,6 +1302,8 @@ function initPattern(globals){
         }
         fold.faces_vertices = triangulatedFaces;
 
+        //
+        //
         //console.log(fold);
         //ここでautoTriInfoを加工しよう
         var returnInfo = [];
@@ -1314,6 +1316,9 @@ function initPattern(globals){
             returnInfo.push(fold.vertices_coords[end]);
         }
         globals.autoTriangulatedInfo = returnInfo;
+        //
+        //
+        //
 
         return fold;
     }
