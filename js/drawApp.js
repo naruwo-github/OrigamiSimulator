@@ -156,7 +156,6 @@ function initDrawApp(globals){
           splineDist += globals.beziercurve.dist(p1[0], p1[1], p2[0], p2[1]);
         }
         splineDistList.push(splineDist);
-        //console.log(splineDistList);
         findSplineRuling(context,splineDistList[splineDistList.length - 1],spline);
       }
     }
@@ -202,10 +201,8 @@ function initDrawApp(globals){
           vecP1P3.normalize();
 　
           //上方向
-          //var vecUp = vecP1.add(vecP1P3.multiplyScalar(-1000));
           var vecUp = new THREE.Vector2(vecP1.x + 1000 * normalP0P2.x, vecP1.y + 1000 * normalP0P2.y);
           //下方向
-          //var vecDown = vecP1.add(vecP1P3.multiplyScalar(1000));
           var vecDown = new THREE.Vector2(vecP1.x - 1000 * normalP0P2.x, vecP1.y - 1000 * normalP0P2.y);
 
           var rulingStart = new Array();
