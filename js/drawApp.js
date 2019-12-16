@@ -639,7 +639,6 @@ function initDrawApp(globals){
 
     var tmpbunkatsu = 1;                                    //何番目の分割点か？
     var tmpdist = 0.0;                                      //現在の距離の合計
-    //var bunkatsu = 11;                                      //rulingは11-1本
     var bunkatsu = rulingNum;
     var dividedPoints = parseInt(curvelen)/bunkatsu;
     for(var t = 0.0; t <= 1.0 - 0.001; t += 0.001){
@@ -698,14 +697,14 @@ function initDrawApp(globals){
           }
         }
 
-        //canvas上描画するやーつ
+        //canvas上へ描画するやーつ
         ctx.strokeStyle = "rgb(0,255,0)";
         ctx.beginPath();
         ctx.moveTo(parseInt(rux1), parseInt(ruy1));
         ctx.lineTo(parseInt(rux2), parseInt(ruy2));
         ctx.closePath();
         ctx.stroke();
-        //
+
         //rulingを出力のために格納する
         outputList.push([parseInt(rux1), parseInt(ruy1)]);
         outputList.push([parseInt(rux2), parseInt(ruy2)]);
@@ -715,7 +714,7 @@ function initDrawApp(globals){
         tmpbunkatsu++;
       }
     }
-    //
+    
     startEndInformation.push(childStartEndInformation);
     console.log(startEndInformation);
   }
