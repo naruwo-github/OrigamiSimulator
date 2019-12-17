@@ -112,7 +112,7 @@ function initDrawApp(globals){
         globals.beziercurve.drawBezier(context,beziDistList,cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
 
         //ruling描画
-        findBezierRuling(context,beziDistList[beziDistList.length-1],cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
+        globals.ruling.findBezierRuling(rulingNum,startEndInformation,outputList,context,beziDistList[beziDistList.length-1],cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
       }
     }
     */
@@ -632,6 +632,7 @@ function initDrawApp(globals){
     ctx.stroke();               //描画！
   }
 
+  /*
   //入力曲線(4 control points)からRulingを求めるメソッド
   function findBezierRuling(ctx,curvelen,x1,y1,x2,y2,x3,y3,x4,y4){
     ctx.strokeStyle = "rgb(100,100,100)";                    //描画の色
@@ -721,6 +722,7 @@ function initDrawApp(globals){
     startEndInformation.push(childStartEndInformation);
     console.log(startEndInformation);
   }
+  */
 
   /*
   function findSplineRuling(ctx,curvelen,spline){
