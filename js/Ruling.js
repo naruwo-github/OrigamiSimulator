@@ -3,9 +3,87 @@
 */
 //Ruling描画関連のメソッドをまとめたファイル
 
-function RulingMethods() {
+function initRulings(globals) {
 
+    function findSplineRuling(rulingnum,startEndInformation,outputList,ctx,curvelen,spline){
+        //rulingの[始点,終点]群を保存するリスト
+        var childStartEndInformation = new Array();
+        var tmpbunkatsu = 1;
+        var tmpdist = 0.0;
+        var bunkatsu = rulingnum;
+        var dividedPoints = parseInt(curvelen)/bunkatsu;
+        for(var t = 0.0; t < 1.0; t += 0.001){
+          var p1 = spline.calcAt(t);
+          var p2 = spline.calcAt(t+0.001);
+          tmpdist += globals.beziercurve.dist(p1[0],p1[1],p2[0],p2[1]);
     
+          if(parseInt(tmpdist) - 2 <= dividedPoints * tmpbunkatsu && parseInt(tmpdist) + 2 >= dividedPoints * tmpbunkatsu){
+            var start = new THREE.Vector2(p1[0],p1[1]);
+            var end = new THREE.Vector2(p2[0],p2[1]);
+            var tangentVec = end.sub(start);
+            var normalVec = new THREE.Vector2(tangentVec.y, -tangentVec.x);
+            normalVec.normalize();
+    
+            var rux1 = p1[0] + normalVec.x * 1000;
+            var ruy1 = p1[1] + normalVec.y * 1000;
+            var rux2 = p2[0] - normalVec.x * 1000;
+            var ruy2 = p2[1] - normalVec.y * 1000;
+    
+            var rulingStart = new Array();
+            var rulingEnd = new Array();
+    
+            //交差判定を行う
+            for(var i = 0; i < globals.svgInformation.stroke.length; i++){
+              //法線方向に伸ばした時に交差しているかどうか
+              if(globals.beziercurve.judgeIntersect(p1[0],p1[1],rux1,ruy1,
+                globals.svgInformation.x1[i],globals.svgInformation.y1[i],globals.svgInformation.x2[i],globals.svgInformation.y2[i])){
+                  rulingEnd.push(globals.beziercurve.getIntersectPoint(p1[0],p1[1],globals.svgInformation.x1[i],globals.svgInformation.y1[i],
+                    rux1,ruy1,globals.svgInformation.x2[i],globals.svgInformation.y2[i]));
+                }
+              if(globals.beziercurve.judgeIntersect(p1[0],p1[1],rux2,ruy2,
+                  globals.svgInformation.x1[i],globals.svgInformation.y1[i],globals.svgInformation.x2[i],globals.svgInformation.y2[i])){
+                    rulingStart.push(globals.beziercurve.getIntersectPoint(p1[0],p1[1],globals.svgInformation.x1[i],globals.svgInformation.y1[i],
+                      rux2,ruy2,globals.svgInformation.x2[i],globals.svgInformation.y2[i]));
+                }
+            }
+    
+            var tmpDist = 1000;
+            for(var i = 0; i < rulingStart.length; i++){
+              var s = rulingStart[i];
+              for(var j = 0; j < rulingEnd.length; j++){
+                var e = rulingEnd[j];
+                if(tmpDist > globals.beziercurve.dist(s[0],s[1],e[0],e[1])){
+                  tmpDist = globals.beziercurve.dist(s[0],s[1],e[0],e[1]);
+                  rux1 = s[0];
+                  ruy1 = s[1];
+                  rux2 = e[0];
+                  ruy2 = e[1];
+                }
+              }
+            }
+            ctx.strokeStyle = "rgb(0,255,0)";
+            ctx.beginPath();
+            ctx.moveTo(parseInt(rux1), parseInt(ruy1));
+            ctx.lineTo(parseInt(rux2), parseInt(ruy2));
+            ctx.closePath();
+            ctx.stroke();
+    
+            outputList.push([parseInt(rux1), parseInt(ruy1)]);
+            outputList.push([parseInt(rux2), parseInt(ruy2)]);
+    
+            childStartEndInformation.push([[parseInt(rux1), parseInt(ruy1)], [parseInt(rux2), parseInt(ruy2)]]);
+    
+            tmpbunkatsu++;
+          }
+        }
+        startEndInformation.push(childStartEndInformation);
+    }
+
+    return {
+          findSplineRuling: findSplineRuling
+    }
+}
+
     /*
   //rulingの最適化
   function optimizeRuling(ctx,startEndInformation){
@@ -185,4 +263,3 @@ function RulingMethods() {
     //
   }
   */
-}
