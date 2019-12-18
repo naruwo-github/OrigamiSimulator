@@ -47,6 +47,10 @@ function initDrawApp(globals){
   context.font = "100px 'Century Gothic'";
   context.strokeText("Click here",$(window).width()/2-100,$(window).height()/2);
 
+  var lineColor = "rgb(0, 255, 0)";
+  var colorButton = document.getElementById("ruling1-color");
+  colorButton.style.backgroundColor = lineColor;
+
   //Num Buttonの数値を初期化
   var displayRulingNum = document.getElementById("ruling-num");
   displayRulingNum.innerText = String(rulingNum);
