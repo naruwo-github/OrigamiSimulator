@@ -4,9 +4,17 @@
 //ドローアプリの部分
 //展開図の修正機能の追加を目的としている
 
-function initDrawApp(globals){
+function initDrawApp(globals) {
   //----------------------------------------------------------------------
   //変数など各種定義
+  //canvasの大きさをwindowと同じにする
+  $('#draw-area').attr('width', $(window).width());
+  $('#draw-area').attr('height', $(window).height());
+
+  //context.font = "30px serif"; //canvasに表示させる文字のサイズ
+  context.font = "40px 'Century Gothic'";
+  context.strokeText("Click here",$(window).width()/2-100,$(window).height()/2);
+
   //座標[x,y]のリスト。例えば0番目の要素と1番目の要素の点を結ぶように扱う
   var straightLineList = new Array(); //直線の座標を格納する
 
@@ -39,14 +47,6 @@ function initDrawApp(globals){
   var buttonColor = slineButton.style.backgroundColor; //ボタンの元の色
 
   var readerFile = new FileReader(); //svgのdlに使う
-
-  //canvasの大きさをwindowと同じにする
-  $('#draw-area').attr('width', $(window).width());
-  $('#draw-area').attr('height', $(window).height());
-  
-  //context.font = "30px serif"; //canvasに表示させる文字のサイズ
-  context.font = "40px 'Century Gothic'";
-  context.strokeText("Click here",$(window).width()/2-100,$(window).height()/2);
 
   //順に山、分割線(Ruling)、谷、分割線(ただの線)、切り取り線
   const lineColors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", "rgb(0, 0, 255)", 
@@ -412,33 +412,8 @@ function initDrawApp(globals){
     }
   });
 
-  //デリートボタンが押された時の処理
-  document.getElementById("delete-button").addEventListener("click", function(){
-    console.log("delete button pressed...");
-    if(straight === true){
-      straightLineList.pop();
-    }else if(ruling1 === true){
-      if(optimizedRuling.length > 0){
-        optimizedRuling = new Array();
-      }else{
-        /*
-        //ベジェ曲線の制御点を4つ消す
-        for(var i = 0; i < 4; i++){
-          beziList.pop();
-        }
-        */
-        //スプライン曲線の制御点を7つ消す
-        for(var i = 0; i < 7; i++){
-          splineList.pop();
-        }
-
-      }
-    }else if(ruling2 === true){
-      ru2array.pop();
-    }else{
-    }
-    canvasReload();
-    drawCanvas();
+  //grid linesボタンが押された時の処理
+  document.getElementById("grid-button").addEventListener("click", function() {
   });
 
   //svg出力ボタンが押された時の処理
@@ -466,6 +441,35 @@ function initDrawApp(globals){
     drawCanvas();
 
     canvasReload();
+  });
+
+  //デリートボタンが押された時の処理
+  document.getElementById("delete-button").addEventListener("click", function(){
+    console.log("delete button pressed...");
+    if(straight === true){
+      straightLineList.pop();
+    }else if(ruling1 === true){
+      if(optimizedRuling.length > 0){
+        optimizedRuling = new Array();
+      }else{
+        /*
+        //ベジェ曲線の制御点を4つ消す
+        for(var i = 0; i < 4; i++){
+          beziList.pop();
+        }
+        */
+        //スプライン曲線の制御点を7つ消す
+        for(var i = 0; i < 7; i++){
+          splineList.pop();
+        }
+
+      }
+    }else if(ruling2 === true){
+      ru2array.pop();
+    }else{
+    }
+    canvasReload();
+    drawCanvas();
   });
 
   //現在読み込んであるsvgをダウンロードする

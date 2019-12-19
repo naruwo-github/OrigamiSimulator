@@ -144,7 +144,7 @@ p{
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
-    background-color: rgb(255, 150, 100);
+    background-color: rgb(150, 150, 150);
 }
 
 .drawAppButtons2:hover{
@@ -160,7 +160,7 @@ p{
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
-    background-color: rgb(255, 150, 100);
+    background-color: rgb(150, 150, 150);
 }
 .drawAppButtons3:hover{
     width: 86px;
