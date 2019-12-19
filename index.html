@@ -1232,8 +1232,7 @@
 
     <div class="extraSpace"></div>
 </div>
-<!---->
-<!-- svgViewer使われてるけどなんでだろう？？ -->
+
 <div class="drawApp" id="drawAppViewer">
         <!--
         <b>DRAWING APPLICATION FOR EDITTING</b><br/>
@@ -1250,20 +1249,22 @@
             style="border: 1px solid #000000;"></canvas>
         </div>
         <div>
+            <!-- ここで各種ボタンを設定する -->
             <button class="drawAppButtons1" id="sline-button" style="top:70px; font-family: 'Century Gothic'">StraightLine</button>
             <button class="drawAppButtons1" id="ruling1-button" style="top:130px; font-family: 'Century Gothic'">Ruling (B-Spline)</button>
+            <button class="drawAppButtons1" id="ruling1-color" style="top:190px; font-family: 'Century Gothic'">Ruling Color</button>
+            
+            <button class="drawAppButtons3" id="ruling-num" style="left: 10px; height: 50px; top:250px; font-family: 'Century Gothic'">Num</button>
+            <button class="drawAppButtons3" id="up-num" style="left: 100px; height: 22px; top:250px; font-family: 'Century Gothic'">Up</button>
+            <button class="drawAppButtons3" id="down-num" style="left: 100px; height: 22px; top:275px; font-family: 'Century Gothic'">Down</button>
 
-            <button class="drawAppButtons3" id="ruling-num" style="left: 10px; height: 50px; top:190px; font-family: 'Century Gothic'">Num</button>
-            <button class="drawAppButtons3" id="up-num" style="left: 100px; height: 22px; top:190px; font-family: 'Century Gothic'">Up</button>
-            <button class="drawAppButtons3" id="down-num" style="left: 100px; height: 22px; top:215px; font-family: 'Century Gothic'">Down</button>
+            <button class="drawAppButtons1" id="optimize-button" style="top:310px; font-family: 'Century Gothic'">Ruling Optimize</button>
+            <button class="drawAppButtons1" id="ruling2-button" style="top:370px; font-family: 'Century Gothic'">Ruling Vertex Use</button>
+            <button class="drawAppButtons1" id="delete-button" style="top:430px; font-family: 'Century Gothic'">Delete</button>
+            <button class="drawAppButtons1" id="go-simulation" style="top:490px; font-family: 'Century Gothic'">Go Simulation</button>
 
-            <button class="drawAppButtons1" id="optimize-button" style="top:250px; font-family: 'Century Gothic'">Ruling Optimize</button>
-            <button class="drawAppButtons1" id="ruling2-button" style="top:310px; font-family: 'Century Gothic'">Ruling Vertex Use</button>
-            <button class="drawAppButtons1" id="delete-button" style="top:370px; font-family: 'Century Gothic'">Delete</button>
-            <button class="drawAppButtons1" id="go-simulation" style="top:430px; font-family: 'Century Gothic'">Go Simulation</button>
-
-            <button class="drawAppButtons2" id="dl-svg" style="left: 10px; top:490px; font-family: 'Century Gothic'">DL Svg</button>
-            <button class="drawAppButtons2" id="clear-button" style="left: 100px; top:490px; font-family: 'Century Gothic'">Clear</button>
+            <button class="drawAppButtons2" id="dl-svg" style="left: 10px; top:550px; font-family: 'Century Gothic'">DL Svg</button>
+            <button class="drawAppButtons2" id="clear-button" style="left: 100px; top:550px; font-family: 'Century Gothic'">Clear</button>
         </div>
 </div>
 

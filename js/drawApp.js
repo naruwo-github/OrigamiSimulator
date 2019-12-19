@@ -44,8 +44,14 @@ function initDrawApp(globals){
   $('#draw-area').attr('height', $(window).height());
   
   //context.font = "30px serif"; //canvasに表示させる文字のサイズ
-  context.font = "100px 'Century Gothic'";
+  context.font = "80px 'Century Gothic'";
   context.strokeText("Click here",$(window).width()/2-100,$(window).height()/2);
+
+  //順に山、分割線(Ruling)、谷、分割線(ただの線)、切り取り線
+  const lineColors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", 
+  "rgb(0, 0, 255)", "rgb(255, 0, 255)", "rgb(0, 255, 255)"];
+  var colorButton = document.getElementById("ruling1-color");
+  colorButton.style.backgroundColor = lineColors[1];
 
   //Num Buttonの数値を初期化
   var displayRulingNum = document.getElementById("ruling-num");
@@ -169,98 +175,9 @@ function initDrawApp(globals){
       }
     }
 
-    //rulingツール2のruling
-    context.strokeStyle = "rgb(50, 200, 255)"
-    if(ru2array.length > 0){
-      for(var i = 0; i < ru2array.length; i++){
-        var aaa = ru2array[i]
-        context.beginPath();
-        context.arc(aaa[0], aaa[1], 10, 10 * Math.PI / 180, 80 * Math.PI / 180, true);
-        context.closePath();
-        context.stroke();
-      }
-
-      if(ru2array.length > 2){
-        console.log()
-        //点Pi、Pi+1、Pi+2について
-        //直線Pi+1(Pi + Pi+2)/2 を描画する
-        for(var i = 0; i < ru2array.length - 2; i++){
-          var P0 = ru2array[i];
-          var P1 = ru2array[i+1];
-          var P2 = ru2array[i+2];
-          var P3 = [(P0[0] + P2[0])/2, (P0[1] + P2[1])/2];
-
-          var vecP0 = new THREE.Vector2(P0[0], P0[1]);
-          var vecP1 = new THREE.Vector2(P1[0], P1[1]);
-          var vecP2 = new THREE.Vector2(P2[0], P2[1]);
-          var vecP3 = new THREE.Vector2(P3[0], P3[1]);
-          var vecP0P2 = new THREE.Vector2(vecP2.x - vecP0.x, vecP2.y - vecP0.y);
-          var vecP1P3 = vecP3.sub(vecP1);
-          vecP0P2.normalize();
-          normalP0P2 = new THREE.Vector2(vecP0P2.y, -vecP0P2.x);
-          vecP1P3.normalize();
-　
-          //上方向
-          var vecUp = new THREE.Vector2(vecP1.x + 1000 * normalP0P2.x, vecP1.y + 1000 * normalP0P2.y);
-          //下方向
-          var vecDown = new THREE.Vector2(vecP1.x - 1000 * normalP0P2.x, vecP1.y - 1000 * normalP0P2.y);
-
-          var rulingStart = new Array();
-          var rulingEnd = new Array();
-
-          //交差判定を行う
-          for(var j = 0; j < globals.svgInformation.stroke.length; j++){
-            //上方向
-            if(globals.beziercurve.judgeIntersect2(vecP1.x,vecP1.y,vecUp.x,vecUp.y,
-              globals.svgInformation.x1[j],globals.svgInformation.y1[j],globals.svgInformation.x2[j],globals.svgInformation.y2[j])){
-                rulingEnd.push(globals.beziercurve.getIntersectPoint(vecP1.x,vecP1.y,globals.svgInformation.x1[j],globals.svgInformation.y1[j],
-                vecUp.x,vecUp.y,globals.svgInformation.x2[j],globals.svgInformation.y2[j]));
-            }
-            //下方向
-            if(globals.beziercurve.judgeIntersect2(vecP1.x,vecP1.y,vecDown.x,vecDown.y,
-              globals.svgInformation.x1[j],globals.svgInformation.y1[j],globals.svgInformation.x2[j],globals.svgInformation.y2[j])){
-                rulingStart.push(globals.beziercurve.getIntersectPoint(vecP1.x,vecP1.y,globals.svgInformation.x1[j],globals.svgInformation.y1[j],
-                vecDown.x,vecDown.y,globals.svgInformation.x2[j],globals.svgInformation.y2[j]));
-            }
-          }
-
-          //Start,Endの要素の中から、それぞれ(bpx1,bpy1)に最短なものを選びそれらを結んだのがrulingとなる
-          var tmpDist = 1000;
-          var startx = 0;
-          var starty = 0;
-          var endx = 0;
-          var endy = 0;
-          for(var j = 0; j < rulingStart.length; j++){
-            var s = rulingStart[j];
-            for(var k = 0; k < rulingEnd.length; k++){
-              var e = rulingEnd[k];
-              if(tmpDist > globals.beziercurve.dist(s[0],s[1],e[0],e[1])
-              && s[0] != parseInt(vecP1.x) && s[1] != parseInt(vecP1.y)
-              && e[0] != parseInt(vecP1.x) && e[1] != parseInt(vecP1.y)){
-                tmpDist = globals.beziercurve.dist(s[0],s[1],e[0],e[1]);
-                startx = s[0];
-                starty = s[1];
-                endx = e[0];
-                endy = e[1];
-              }
-            }
-          }
-
-          //いざ描画!!
-          context.strokeStyle = "rgb(0,255,0)";
-          context.beginPath();
-          context.moveTo(parseInt(startx), parseInt(starty));
-          context.lineTo(parseInt(endx), parseInt(endy));
-          context.closePath();
-          context.stroke();
-
-          //rulingを出力のために格納する
-          outputList.push([parseInt(startx), parseInt(starty)]);
-          outputList.push([parseInt(endx), parseInt(endy)]);
-        }
-      }
-
-    }
+    //rulingツール2のrulingを描画する
+    context.strokeStyle = "rgb(50, 200, 255)";
+    globals.ruling.drawRulingVertexUse(ru2array,context,outputList);
   }
 
 
@@ -425,6 +342,25 @@ function initDrawApp(globals){
       slineButton.style.backgroundColor = buttonColor;
       ruling2 = false;
       ruling2Button.style.backgroundColor = buttonColor;
+    }
+  });
+
+  colorButton.addEventListener("click", function() {
+    if(colorButton.innerText == "Mountain Fold Color") {
+      colorButton.innerText = "Ruling Color";
+      colorButton.style.backgroundColor = lineColors[1];
+    } else if(colorButton.innerText == "Ruling Color") {
+      colorButton.innerText = "Valley Fold Color";
+      colorButton.style.backgroundColor = lineColors[2];
+    } else if(colorButton.innerText == "Valley Fold Color") {
+      colorButton.innerText = "Undriven Crease Color";
+      colorButton.style.backgroundColor = lineColors[3];
+    } else if(colorButton.innerText == "Undriven Crease Color") {
+      colorButton.innerText = "Cut Line Color";
+      colorButton.style.backgroundColor = lineColors[4];
+    } else if(colorButton.innerText == "Cut Line Color") {
+      colorButton.innerText = "Mountain Fold Color";
+      colorButton.style.backgroundColor = lineColors[0];
     }
   });
 
