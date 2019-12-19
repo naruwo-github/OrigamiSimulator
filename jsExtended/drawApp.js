@@ -183,16 +183,15 @@ function initDrawApp(globals) {
     context.strokeStyle = "rgb(50, 200, 255)";
     globals.ruling.drawRulingVertexUse(ru2array,context,outputList);
 
+    //格子を描画する(デフォルトはマゼンタ？)
     if (gridTool.points.length > 0) {
       context.fillStyle = lineColors[0];
-
-      for (var i = 0; i < straightLineList.length; i+=2) {
-        var stl1 = straightLineList[i];
-        var stl2 = straightLineList[i+1];
-        context.fillRect(stl1[0]-2,stl1[1]-2,5,5);
-        context.fillRect(stl2[0]-2,stl2[1]-2,5,5);
+      for (var i = 0; i < gridTool.points.length; i+=2) {
+        const stl1 = gridTool.points[i];
+        const stl2 = gridTool.points[i+1];
+        context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
+        context.fillRect(stl2[0]-3, stl2[1]-3, 7, 7);
       }
-      
       if(gridTool.points.length%4 == 0) {
         drawGrid(context, gridTool.points);
       }
@@ -613,7 +612,7 @@ function initDrawApp(globals) {
     for (let index = 0; index < array.length; index+=2) {
       const element1 = array[index];
       const element2 = array[index+1];
-      drawLine(ctx, "rgb(255, 0, 255)", 2, element1[0], element1[1], element2[0], element2[1]);
+      drawLine(ctx, lineColors[3], 2, element1[0], element1[1], element2[0], element2[1]);
     }
   }
 
