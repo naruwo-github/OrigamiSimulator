@@ -52,6 +52,8 @@ function initDrawApp(globals) {
   gridTool.flag = false;
   gridTool.points = new Array();
   var gridButton = document.getElementById("grid-button");
+  //gridLineList = ([[x0,y0],[x1,y1],color,,,[[xn-1,yn-1],[xn,yn],color])
+  var gridLineList = new Array();
 
   var readerFile = new FileReader(); //svgのdlに使う
 
@@ -87,6 +89,7 @@ function initDrawApp(globals) {
     beziDistList = new Array();
     outputList = new Array();
     startEndInformation = new Array();
+    gridLineList = new Array();
     
     //三角形分割の結果の描画
     drawTrianglationResult(context, globals.autoTriangulatedInfo);
@@ -193,7 +196,7 @@ function initDrawApp(globals) {
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
       if(gridTool.points.length%4 == 0) {
-        drawGrid(context, lineColors[3], gridTool.points);
+        drawGrid(gridLineList, context, lineColors[3], gridTool.points);
       }
     }
   }
@@ -479,7 +482,7 @@ function initDrawApp(globals) {
       outputList.push([stl[0],stl[1]]);
     }
     //修正した展開図をシミュレータへ投げる
-    globals.importer.simulateAgain(globals.svgFile,outputList);
+    globals.importer.simulateAgain(globals.svgFile,outputList,gridLineList);
     globals.simulationRunning = true; 
 
     //Simulate Modeへ遷移する
@@ -613,7 +616,7 @@ function initDrawApp(globals) {
   }
 
   //格子を描画する
-  function drawGrid(ctx, color, array) {
+  function drawGrid(list, ctx, color, array) {
     const lines = 10;
     for (let index = 0; index < array.length; index+=4) {
       const element0 = array[index];
@@ -637,10 +640,12 @@ function initDrawApp(globals) {
         var start = [vectorP0.x+vectorP0P1.x*index, vectorP0.y+vectorP0P1.y*index];
         var end = [vectorP2.x+vectorP2P3.x*(10-index), vectorP2.y+vectorP2P3.y*(10-index)];
         drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
+        list.push([[start[0], start[1]], [end[0], end[1]], color]);
 
         start = [vectorP1.x+vectorP1P2.x*index, vectorP1.y+vectorP1P2.y*index];
         end = [vectorP3.x+vectorP3P0.x*(10-index), vectorP3.y+vectorP3P0.y*(10-index)];
         drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
+        list.push([[start[0], start[1]], [end[0], end[1]], color]);
       }
     }
   }
