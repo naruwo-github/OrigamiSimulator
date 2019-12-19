@@ -44,7 +44,7 @@ function initDrawApp(globals){
   $('#draw-area').attr('height', $(window).height());
   
   //context.font = "30px serif"; //canvasに表示させる文字のサイズ
-  context.font = "80px 'Century Gothic'";
+  context.font = "40px 'Century Gothic'";
   context.strokeText("Click here",$(window).width()/2-100,$(window).height()/2);
 
   //順に山、分割線(Ruling)、谷、分割線(ただの線)、切り取り線
@@ -562,4 +562,30 @@ function initDrawApp(globals){
     ctx.closePath();            //直線の終了
     ctx.stroke();               //描画！
   }
+
+  /*
+  document.addEventListener('keydown', (event) => {
+    var keyName = event.key;
+
+    if (event.ctrlKey) {
+      console.log(`keydown:Ctrl + ${keyName}`);
+    } else if (event.shiftKey) {
+      console.log(`keydown:Shift + ${keyName}`);
+    } else {
+      console.log(`keydown:${keyName}`);
+    }
+  });
+
+  document.addEventListener('keypress', (event) => {
+    var keyName = event.key;
+
+    if (event.ctrlKey) {
+      console.log(`keypress:Ctrl + ${keyName}`);
+    } else if (event.shiftKey) {
+      console.log(`keypress:Shift + ${keyName}`);
+    } else {
+      console.log(`keypress:${keyName}`);
+    }
+  });
+  */
 }
