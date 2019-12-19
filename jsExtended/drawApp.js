@@ -21,6 +21,10 @@ function initDrawApp(globals) {
 
   //座標[x,y]のリスト。例えば0番目の要素と1番目の要素の点を結ぶように扱う
   var straightLineList = new Array(); //直線の座標を格納する
+  var straight = false; //直線モードのフラグ
+  var slineButton = document.getElementById("sline-button"); //直線ボタン
+
+  var buttonColor = slineButton.style.backgroundColor; //ボタンの元の色
 
   var splineList = new Array(); //スプライン曲線の座標を格納する
   var splineDistList = new Array(); //スプライン曲線の長さを保存する
@@ -42,10 +46,6 @@ function initDrawApp(globals) {
   var ruling2 = false; //ruling2ツールのon/offを表すフラグ
   var ruling2Button = document.getElementById("ruling2-button");
   var ru2array = new Array(); //rulingツール2で使う配列
-
-  var straight = false; //直線モードのフラグ
-  var slineButton = document.getElementById("sline-button"); //直線ボタン
-  var buttonColor = slineButton.style.backgroundColor; //ボタンの元の色
 
   //グリッドツールを使っている時の情報
   var gridTool = new Object();
@@ -77,8 +77,10 @@ function initDrawApp(globals) {
   //----------------------------------------------------------------------
 
 
+
+  //=====================================================
   //キャンバスに描画する関数
-  function drawCanvas(){
+  function drawCanvas() {
 
     //変数の初期化
     splineDistList = new Array();
@@ -86,22 +88,17 @@ function initDrawApp(globals) {
     outputList = new Array();
     startEndInformation = new Array();
     
-    //三角形分割の結果を取得し、描画する
-    var trianglationInformation = globals.autoTriangulatedInfo;
-    for (let index = 0; index < trianglationInformation.length; index+=2) {
-      const start = trianglationInformation[index];
-      const end = trianglationInformation[index+1];
-      drawLine(context,"rgb(255, 255, 0)",2,start[0],start[1],end[0],end[1]);
-    }
+    //三角形分割の結果の描画
+    drawTrianglationResult(context, globals.autoTriangulatedInfo);
 
-    context.fillStyle = lineColors[0];
     //直線ツールの点
-    for(var i = 0; i < straightLineList.length; i+=2) {
+    context.fillStyle = lineColors[0];
+    for (var i = 0; i < straightLineList.length; i+=2) {
       var stl1 = straightLineList[i];
       var stl2 = straightLineList[i+1];
       context.fillRect(stl1[0]-2,stl1[1]-2,5,5);
       context.fillRect(stl2[0]-2,stl2[1]-2,5,5);
-      if(stl2[0] !== null){
+      if(stl2[0] !== null) {
         drawLine(context,lineColors[1],2,stl1[0],stl1[1],stl2[0],stl2[1]);
       }
     }
@@ -157,7 +154,7 @@ function initDrawApp(globals) {
 
         context.strokeStyle = "rgb(0,0,0)";
         context.lineWidth = 2;
-        for(var t = 0; t < 1; t+=0.01){
+        for(var t = 0; t < 1; t+=0.01) {
           var p1 = spline.calcAt(t);
           var p2 = spline.calcAt(t+0.01);
           context.beginPath();
@@ -185,7 +182,23 @@ function initDrawApp(globals) {
     //rulingツール2のrulingを描画する
     context.strokeStyle = "rgb(50, 200, 255)";
     globals.ruling.drawRulingVertexUse(ru2array,context,outputList);
+
+    //格子を描画する(デフォルトはマゼンタ？)
+    if (gridTool.points.length > 0) {
+      context.fillStyle = lineColors[0];
+      for (var i = 0; i < gridTool.points.length; i+=2) {
+        const stl1 = gridTool.points[i];
+        const stl2 = gridTool.points[i+1];
+        context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
+        context.fillRect(stl2[0]-3, stl2[1]-3, 7, 7);
+      }
+      if(gridTool.points.length%4 == 0) {
+        drawGrid(context, gridTool.points);
+      }
+    }
   }
+  //=====================================================
+
 
 
   //canvas内のクリック判定
@@ -200,12 +213,15 @@ function initDrawApp(globals) {
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         straightLineList.push([e.offsetX, e.offsetY]);
       }
-    }else if(ruling1 === true) { //ベジェ曲線ツールがON!!
+    } else if(ruling1 === true) { //ベジェ曲線ツールがON!!
       //
-    }else if(ruling2 === true) {
+    } else if(ruling2 === true) {
       var closest = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
       ru2array.push(closest);
-    }else {
+    } else if(gridTool.flag === true) {
+      gridTool.points.push([e.offsetX, e.offsetY]);
+      
+    } else {
      canvasReload(); //canvasのリロード
 
      readerFile.readAsText(globals.svgFile); //svgファイルをテキストで取得
@@ -471,14 +487,13 @@ function initDrawApp(globals) {
     $("#navSimulation").parent().addClass("open");
     $("#navDrawApp").parent().removeClass("open");
     $("#drawAppViewer").hide();
-    drawCanvas();
 
     canvasReload();
+    drawCanvas();
   });
 
   //デリートボタンが押された時の処理
   document.getElementById("delete-button").addEventListener("click", function(){
-    console.log("delete button pressed...");
     if(straight === true) {
       straightLineList.pop();
     } else if(ruling1 === true) {
@@ -499,8 +514,9 @@ function initDrawApp(globals) {
       }
     }else if(ruling2 === true) {
       ru2array.pop();
+    } else if(gridTool.flag === true) {
+      gridTool.points.pop();
     } else {
-      //
     }
     canvasReload();
     drawCanvas();
@@ -523,6 +539,7 @@ function initDrawApp(globals) {
     ru2array = new Array();
     dragList = new Array();
     outputList = new Array();
+    gridTool = new Object();
     canvasReload();
     drawCanvas();
   });
@@ -588,6 +605,24 @@ function initDrawApp(globals) {
     return [hex.slice(0,2), hex.slice(2,4), hex.slice(4,6)].map(function(str) {
       return parseInt(str,16);
     });
+  }
+
+  //格子を描画する
+  function drawGrid(ctx, array) {
+    for (let index = 0; index < array.length; index+=2) {
+      const element1 = array[index];
+      const element2 = array[index+1];
+      drawLine(ctx, lineColors[3], 2, element1[0], element1[1], element2[0], element2[1]);
+    }
+  }
+
+  //三角形分割の結果を取得し描画する
+  function drawTrianglationResult(ctx, trianglatedInformation) {
+    for (let index = 0; index < trianglatedInformation.length; index+=2) {
+      const start = trianglatedInformation[index];
+      const end = trianglatedInformation[index+1];
+      drawLine(ctx,"rgb(255, 255, 0)",2,start[0],start[1],end[0],end[1]);
+    }
   }
 
   //ruling描画メソッドないで用いる2点を結んで直線を描画するメソッド
