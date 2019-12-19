@@ -7,7 +7,8 @@
 function initDrawApp(globals){
   //----------------------------------------------------------------------
   //変数など各種定義
-  var straightLineList = new Array();
+  //座標[x,y]のリスト。例えば0番目の要素と1番目の要素の点を結ぶように扱う
+  var straightLineList = new Array(); //直線の座標を格納する
 
   var splineList = new Array(); //スプライン曲線の座標を格納する
   var splineDistList = new Array(); //スプライン曲線の長さを保存する
@@ -30,14 +31,14 @@ function initDrawApp(globals){
   var ruling2Button = document.getElementById("ruling2-button");
   var ru2array = new Array(); //rulingツール2で使う配列
 
-  var readerFile = new FileReader(); //svgのdlに使う
-
   const canvas = document.querySelector('#draw-area'); //canvasを取得
   const context = canvas.getContext('2d'); //描画準備のためcontextを取得
 
   var straight = false; //直線モードのフラグ
   var slineButton = document.getElementById("sline-button"); //直線ボタン
   var buttonColor = slineButton.style.backgroundColor; //ボタンの元の色
+
+  var readerFile = new FileReader(); //svgのdlに使う
 
   //canvasの大きさをwindowと同じにする
   $('#draw-area').attr('width', $(window).width());
@@ -48,9 +49,10 @@ function initDrawApp(globals){
   context.strokeText("Click here",$(window).width()/2-100,$(window).height()/2);
 
   //順に山、分割線(Ruling)、谷、分割線(ただの線)、切り取り線
-  const lineColors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", 
-  "rgb(0, 0, 255)", "rgb(255, 0, 255)", "rgb(0, 255, 255)"];
+  const lineColors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", "rgb(0, 0, 255)", 
+  "rgb(255, 0, 255)", "rgb(0, 255, 255)"];
   var colorButton = document.getElementById("ruling1-color");
+  colorButton.style.color = "rgb(255, 255, 255)";
   colorButton.style.backgroundColor = lineColors[1];
 
   //Num Buttonの数値を初期化
@@ -70,24 +72,22 @@ function initDrawApp(globals){
 
   //キャンバスに描画する関数
   function drawCanvas(){
-    //console.log(globals.autoTriangulatedInfo);
-    var triInfo = globals.autoTriangulatedInfo;
-    for (let index = 0; index < triInfo.length; index+=2) {
-      const start = triInfo[index];
-      const end = triInfo[index+1];
-      drawLine(context,"rgb(255, 255, 0)",2,start[0],start[1],end[0],end[1]);
-    }
-    
-    //--------------------------------------------------------------
+
     //変数の初期化
     splineDistList = new Array();
     beziDistList = new Array();
     outputList = new Array();
     startEndInformation = new Array();
+    
+    //三角形分割の結果を取得し、描画する
+    var trianglationInformation = globals.autoTriangulatedInfo;
+    for (let index = 0; index < trianglationInformation.length; index+=2) {
+      const start = trianglationInformation[index];
+      const end = trianglationInformation[index+1];
+      drawLine(context,"rgb(255, 255, 0)",2,start[0],start[1],end[0],end[1]);
+    }
 
-    //--------------------------------------------------------------
-    //点を描画
-    context.fillStyle = "rgb(255,0,0)";                   //点は基本赤
+    context.fillStyle = lineColors[0];
     //直線ツールの点
     for(var i = 0; i < straightLineList.length; i+=2){
       var stl1 = straightLineList[i];
@@ -95,18 +95,18 @@ function initDrawApp(globals){
       context.fillRect(stl1[0]-2,stl1[1]-2,5,5);
       context.fillRect(stl2[0]-2,stl2[1]-2,5,5);
       if(stl2[0] !== null){
-        drawLine(context,"rgb(0, 255, 0)",2,stl1[0],stl1[1],stl2[0],stl2[1]);
+        drawLine(context,lineColors[1],2,stl1[0],stl1[1],stl2[0],stl2[1]);
       }
     }
 
-    //rulingツール1の点
-    context.fillStyle = "rgb(255,50,255)";
+    /*
+    //rulingツールの点(ベジェ曲線)
+    context.fillStyle = lineColors[4];
     for(var i = 0; i < beziList.length; i++){
       var coo = beziList[i];
-      context.fillRect(coo[0]-2,coo[1]-2,5,5);
+      context.fillRect(coo[0]-3,coo[1]-3,7,7);
     }
 
-    /*
     //ベジェ曲線を描画
     //beziDistList = new Array();
     if(beziList.length > 0 && beziList.length % 4 === 0){
@@ -129,7 +129,7 @@ function initDrawApp(globals){
       //splineツールの制御点
       for(var i = 0; i < splineList.length; i++){
         var coo = splineList[i];
-        context.fillStyle = "rgb(255,50,255)";
+        context.fillStyle = lineColors[4];
         context.fillRect(coo[0]-3,coo[1]-3,7,7);
       }
 
@@ -273,7 +273,6 @@ function initDrawApp(globals){
         drawCanvas();
       }else{
       dragList.push([e.offsetX, e.offsetY]);
-      //console.log(dragList.length);
       }
     }
   });
@@ -462,10 +461,11 @@ function initDrawApp(globals){
     //Simulate Modeへ遷移する
     globals.navMode = "simulation";
     $("#navSimulation").parent().addClass("open");
-    //$("#navPattern").parent().removeClass("open");
     $("#navDrawApp").parent().removeClass("open");
     $("#drawAppViewer").hide();
     drawCanvas();
+
+    canvasReload();
   });
 
   //現在読み込んであるsvgをダウンロードする
@@ -510,9 +510,9 @@ function initDrawApp(globals){
     for(var i = 0; i < info.stroke.length; i++){
       //drawLine(ctx,info.stroke[i],info.stroke_width[i],info.x1,info.y1,info.x2,info.y2);
       drawLine(ctx,"rgb("+String(hex2rgb(info.stroke[i]))+")",Number(info.stroke_width[i]),parseInt(info.x1[i]),parseInt(info.y1[i]),parseInt(info.x2[i]),parseInt(info.y2[i]));
-      //点を打つ
-      //ctx.fillStyle = "rgb(0,255,255)";
-      ctx.fillStyle = "rgb(50, 200, 255)"
+      //点
+      //ctx.fillStyle = "rgb(50, 200, 255)";
+      ctx.fillStyle = "rgb(134, 74, 43)";
       ctx.fillRect(parseInt(info.x1[i])-3,parseInt(info.y1[i])-3,7,7);
       ctx.fillRect(parseInt(info.x2[i])-3,parseInt(info.y2[i])-3,7,7);
     }
