@@ -165,7 +165,7 @@ function initDrawApp(globals) {
           context.closePath();
           context.stroke();
 
-          splineDist += globals.beziercurve.dist(p1[0], p1[1], p2[0], p2[1]);
+          splineDist += dist(p1[0], p1[1], p2[0], p2[1]);
         }
         splineDistList.push(splineDist);
         globals.ruling.findSplineRuling(rulingNum,startEndInformation,outputList,context,splineDistList[splineDistList.length - 1],spline);
@@ -209,7 +209,7 @@ function initDrawApp(globals) {
       //クリックした点が展開図情報内の点のいずれかに近い場合、
       //重ねて配置したいと判定する
       var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
-      var tmpDist = globals.beziercurve.dist(e.offsetX,e.offsetY,ret[0],ret[1])
+      var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1])
       if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
         straightLineList.push([ret[0], ret[1]]);
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
@@ -248,7 +248,7 @@ function initDrawApp(globals) {
         var ind = 10000;
         for(var i = 0; i < beziList.length; i++){
           var coo = beziList[i];
-          tmp = globals.beziercurve.dist(coo[0],coo[1],e.offsetX,e.offsetY);
+          tmp = dist(coo[0],coo[1],e.offsetX,e.offsetY);
           if(tmp < distance){
             distance = tmp;
             ind = i;
@@ -268,7 +268,7 @@ function initDrawApp(globals) {
         var ind = 10000;
         for(var i = 0; i < splineList.length; i++){
           var coo = splineList[i];
-          tmp = globals.beziercurve.dist(coo[0],coo[1],e.offsetX,e.offsetY);
+          tmp = dist(coo[0],coo[1],e.offsetX,e.offsetY);
           if(tmp < distance){
             distance = tmp;
             ind = i;
@@ -609,11 +609,20 @@ function initDrawApp(globals) {
     });
   }
 
+  //2点間の距離を求める
+  function dist(x1,y1,x2,y2){
+    return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
+  }
+
   //格子を描画する
   function drawGrid(ctx, array) {
     for (let index = 0; index < array.length; index+=2) {
       const element1 = array[index];
       const element2 = array[index+1];
+      const p0 = element1[0];
+      const p1 = element1[1];
+      const p2 = element2[0];
+      const p3 = element2[1];
       drawLine(ctx, lineColors[3], 2, element1[0], element1[1], element2[0], element2[1]);
     }
   }
