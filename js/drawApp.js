@@ -44,12 +44,14 @@ function initDrawApp(globals){
   $('#draw-area').attr('height', $(window).height());
   
   //context.font = "30px serif"; //canvasに表示させる文字のサイズ
-  context.font = "100px 'Century Gothic'";
+  context.font = "80px 'Century Gothic'";
   context.strokeText("Click here",$(window).width()/2-100,$(window).height()/2);
 
-  var lineColor = "rgb(0, 255, 0)";
+  //順に山、分割線(Ruling)、谷、分割線(ただの線)、切り取り線
+  const lineColors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", 
+  "rgb(0, 0, 255)", "rgb(255, 0, 255)", "rgb(0, 255, 255)"];
   var colorButton = document.getElementById("ruling1-color");
-  colorButton.style.backgroundColor = lineColor;
+  colorButton.style.backgroundColor = lineColors[1];
 
   //Num Buttonの数値を初期化
   var displayRulingNum = document.getElementById("ruling-num");
@@ -340,6 +342,25 @@ function initDrawApp(globals){
       slineButton.style.backgroundColor = buttonColor;
       ruling2 = false;
       ruling2Button.style.backgroundColor = buttonColor;
+    }
+  });
+
+  colorButton.addEventListener("click", function() {
+    if(colorButton.innerText == "Mountain Fold Color") {
+      colorButton.innerText = "Ruling Color";
+      colorButton.style.backgroundColor = lineColors[1];
+    } else if(colorButton.innerText == "Ruling Color") {
+      colorButton.innerText = "Valley Fold Color";
+      colorButton.style.backgroundColor = lineColors[2];
+    } else if(colorButton.innerText == "Valley Fold Color") {
+      colorButton.innerText = "Undriven Crease Color";
+      colorButton.style.backgroundColor = lineColors[3];
+    } else if(colorButton.innerText == "Undriven Crease Color") {
+      colorButton.innerText = "Cut Line Color";
+      colorButton.style.backgroundColor = lineColors[4];
+    } else if(colorButton.innerText == "Cut Line Color") {
+      colorButton.innerText = "Mountain Fold Color";
+      colorButton.style.backgroundColor = lineColors[0];
     }
   });
 
