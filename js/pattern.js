@@ -491,7 +491,7 @@ function initPattern(globals){
     //------------------------------------------------------------------
     //svgを再シミュレートするやつ
     //function loadSVGAgain(url,cooX,cooY){
-    function loadSVGAgain(url,outputList){
+    function loadSVGAgain(url,outputList,gridList){
         SVGloader.load(url, function(svg){
             //svgをimage形式でグローバル化する
             var img = new Image();
@@ -534,6 +534,20 @@ function initPattern(globals){
                 line.setAttribute('y2', stl2[1]);
                 g.appendChild(line);
             }
+
+            //grid line
+            for(let i = 0; i < gridList.length; i++){
+                var line = document.createElementNS(ns, 'line');
+                const element = gridList[i];
+                line.setAttribute('stroke', "#ff00ff");
+                line.setAttribute('opacity', "1");
+                line.setAttribute('x1', element[0][0]);
+                line.setAttribute('y1', element[0][1]);
+                line.setAttribute('x2', element[1][0]);
+                line.setAttribute('y2', element[1][1]);
+                g.appendChild(line);
+            }
+
             _$svg.get()[0].appendChild(g);
             //------------------------------------------------------------
 

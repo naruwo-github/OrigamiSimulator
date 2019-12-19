@@ -52,6 +52,8 @@ function initDrawApp(globals) {
   gridTool.flag = false;
   gridTool.points = new Array();
   var gridButton = document.getElementById("grid-button");
+  //gridLineList = ([[x0,y0],[x1,y1],color,,,[[xn-1,yn-1],[xn,yn],color])
+  var gridLineList = new Array();
 
   var readerFile = new FileReader(); //svgのdlに使う
 
@@ -87,42 +89,45 @@ function initDrawApp(globals) {
     beziDistList = new Array();
     outputList = new Array();
     startEndInformation = new Array();
+    gridLineList = new Array();
     
     //三角形分割の結果の描画
     drawTrianglationResult(context, globals.autoTriangulatedInfo);
 
     //直線ツールの点
     context.fillStyle = lineColors[0];
-    for (var i = 0; i < straightLineList.length; i+=2) {
-      var stl1 = straightLineList[i];
-      var stl2 = straightLineList[i+1];
-      context.fillRect(stl1[0]-2,stl1[1]-2,5,5);
-      context.fillRect(stl2[0]-2,stl2[1]-2,5,5);
+    for (let index = 0; index < straightLineList.length; index+=2) {
+      const stl1 = straightLineList[index];
+      const stl2 = straightLineList[index+1];
+      context.fillRect(stl1[0]-3, stl1[1]-3, 5, 5);
+      context.fillRect(stl2[0]-3, stl2[1]-3, 5, 5);
       if(stl2[0] !== null) {
-        drawLine(context,lineColors[1],2,stl1[0],stl1[1],stl2[0],stl2[1]);
+        drawLine(context, lineColors[1], 2, stl1[0], stl1[1], stl2[0], stl2[1]);
       }
     }
 
     /*
     //rulingツールの点(ベジェ曲線)
     context.fillStyle = lineColors[4];
-    for(var i = 0; i < beziList.length; i++) {
-      var coo = beziList[i];
-      context.fillRect(coo[0]-3,coo[1]-3,7,7);
+    for(let index = 0; index < beziList.length; index++) {
+      const coo = beziList[index];
+      context.fillRect(coo[0]-3, coo[1]-3, 7, 7);
     }
 
     //ベジェ曲線を描画
     //beziDistList = new Array();
     if(beziList.length > 0 && beziList.length % 4 === 0) {
-      for(var i = 0; i < beziList.length; i+=4){
-        var cp1 = beziList[i];
-        var cp2 = beziList[i+1];
-        var cp3 = beziList[i+2];
-        var cp4 = beziList[i+3];
-        globals.beziercurve.drawBezier(context,beziDistList,cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
+      for(let index = 0; index < beziList.length; index+=4) {
+        const cp1 = beziList[index];
+        const cp2 = beziList[index+1];
+        const cp3 = beziList[index+2];
+        const cp4 = beziList[index+3];
+        globals.beziercurve.drawBezier(context, beziDistList, 
+          cp1[0], cp1[1], cp2[0], cp2[1], cp3[0], cp3[1], cp4[0], cp4[1]);
 
         //ruling描画
-        globals.ruling.findBezierRuling(rulingNum,startEndInformation,outputList,context,beziDistList[beziDistList.length-1],cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
+        globals.ruling.findBezierRuling(rulingNum, startEndInformation, outputList, context, 
+          beziDistList[beziDistList.length-1], cp1[0], cp1[1], cp2[0], cp2[1], cp3[0], cp3[1], cp4[0], cp4[1]);
       }
     }
     */
@@ -163,7 +168,7 @@ function initDrawApp(globals) {
           context.closePath();
           context.stroke();
 
-          splineDist += globals.beziercurve.dist(p1[0], p1[1], p2[0], p2[1]);
+          splineDist += dist(p1[0], p1[1], p2[0], p2[1]);
         }
         splineDistList.push(splineDist);
         globals.ruling.findSplineRuling(rulingNum,startEndInformation,outputList,context,splineDistList[splineDistList.length - 1],spline);
@@ -186,14 +191,12 @@ function initDrawApp(globals) {
     //格子を描画する(デフォルトはマゼンタ？)
     if (gridTool.points.length > 0) {
       context.fillStyle = lineColors[0];
-      for (var i = 0; i < gridTool.points.length; i+=2) {
+      for (let i = 0; i < gridTool.points.length; i++) {
         const stl1 = gridTool.points[i];
-        const stl2 = gridTool.points[i+1];
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
-        context.fillRect(stl2[0]-3, stl2[1]-3, 7, 7);
       }
       if(gridTool.points.length%4 == 0) {
-        drawGrid(context, gridTool.points);
+        drawGrid(gridLineList, context, lineColors[3], gridTool.points);
       }
     }
   }
@@ -207,7 +210,7 @@ function initDrawApp(globals) {
       //クリックした点が展開図情報内の点のいずれかに近い場合、
       //重ねて配置したいと判定する
       var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
-      var tmpDist = globals.beziercurve.dist(e.offsetX,e.offsetY,ret[0],ret[1])
+      var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1])
       if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
         straightLineList.push([ret[0], ret[1]]);
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
@@ -246,7 +249,7 @@ function initDrawApp(globals) {
         var ind = 10000;
         for(var i = 0; i < beziList.length; i++){
           var coo = beziList[i];
-          tmp = globals.beziercurve.dist(coo[0],coo[1],e.offsetX,e.offsetY);
+          tmp = dist(coo[0],coo[1],e.offsetX,e.offsetY);
           if(tmp < distance){
             distance = tmp;
             ind = i;
@@ -266,7 +269,7 @@ function initDrawApp(globals) {
         var ind = 10000;
         for(var i = 0; i < splineList.length; i++){
           var coo = splineList[i];
-          tmp = globals.beziercurve.dist(coo[0],coo[1],e.offsetX,e.offsetY);
+          tmp = dist(coo[0],coo[1],e.offsetX,e.offsetY);
           if(tmp < distance){
             distance = tmp;
             ind = i;
@@ -479,7 +482,7 @@ function initDrawApp(globals) {
       outputList.push([stl[0],stl[1]]);
     }
     //修正した展開図をシミュレータへ投げる
-    globals.importer.simulateAgain(globals.svgFile,outputList);
+    globals.importer.simulateAgain(globals.svgFile,outputList,gridLineList);
     globals.simulationRunning = true; 
 
     //Simulate Modeへ遷移する
@@ -607,12 +610,43 @@ function initDrawApp(globals) {
     });
   }
 
+  //2点間の距離を求める
+  function dist(x1,y1,x2,y2){
+    return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
+  }
+
   //格子を描画する
-  function drawGrid(ctx, array) {
-    for (let index = 0; index < array.length; index+=2) {
-      const element1 = array[index];
-      const element2 = array[index+1];
-      drawLine(ctx, lineColors[3], 2, element1[0], element1[1], element2[0], element2[1]);
+  function drawGrid(list, ctx, color, array) {
+    const lines = 10;
+    for (let index = 0; index < array.length; index+=4) {
+      const element0 = array[index];
+      const element1 = array[index+1];
+      const element2 = array[index+2];
+      const element3 = array[index+3];
+      const vectorP0 = new THREE.Vector2(element0[0], element0[1]);
+      const vectorP1 = new THREE.Vector2(element1[0], element1[1]);
+      const vectorP2 = new THREE.Vector2(element2[0], element2[1]);
+      const vectorP3 = new THREE.Vector2(element3[0], element3[1]);
+      const vectorP0P1 = new THREE.Vector2(vectorP1.x-vectorP0.x, vectorP1.y-vectorP0.y);
+      const vectorP1P2 = new THREE.Vector2(vectorP2.x-vectorP1.x, vectorP2.y-vectorP1.y);
+      const vectorP2P3 = new THREE.Vector2(vectorP3.x-vectorP2.x, vectorP3.y-vectorP2.y);
+      const vectorP3P0 = new THREE.Vector2(vectorP0.x-vectorP3.x, vectorP0.y-vectorP3.y);
+      vectorP0P1.divideScalar(lines);
+      vectorP1P2.divideScalar(lines);
+      vectorP2P3.divideScalar(lines);
+      vectorP3P0.divideScalar(lines);
+
+      for (let index = 1; index < lines; index++) {
+        var start = [vectorP0.x+vectorP0P1.x*index, vectorP0.y+vectorP0P1.y*index];
+        var end = [vectorP2.x+vectorP2P3.x*(10-index), vectorP2.y+vectorP2P3.y*(10-index)];
+        drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
+        list.push([[start[0], start[1]], [end[0], end[1]], color]);
+
+        start = [vectorP1.x+vectorP1P2.x*index, vectorP1.y+vectorP1P2.y*index];
+        end = [vectorP3.x+vectorP3P0.x*(10-index), vectorP3.y+vectorP3P0.y*(10-index)];
+        drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
+        list.push([[start[0], start[1]], [end[0], end[1]], color]);
+      }
     }
   }
 
