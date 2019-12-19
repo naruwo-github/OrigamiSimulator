@@ -93,36 +93,38 @@ function initDrawApp(globals) {
 
     //直線ツールの点
     context.fillStyle = lineColors[0];
-    for (var i = 0; i < straightLineList.length; i+=2) {
-      var stl1 = straightLineList[i];
-      var stl2 = straightLineList[i+1];
-      context.fillRect(stl1[0]-2,stl1[1]-2,5,5);
-      context.fillRect(stl2[0]-2,stl2[1]-2,5,5);
+    for (let index = 0; index < straightLineList.length; index+=2) {
+      const stl1 = straightLineList[index];
+      const stl2 = straightLineList[index+1];
+      context.fillRect(stl1[0]-3, stl1[1]-3, 5, 5);
+      context.fillRect(stl2[0]-3, stl2[1]-3, 5, 5);
       if(stl2[0] !== null) {
-        drawLine(context,lineColors[1],2,stl1[0],stl1[1],stl2[0],stl2[1]);
+        drawLine(context, lineColors[1], 2, stl1[0], stl1[1], stl2[0], stl2[1]);
       }
     }
 
     /*
     //rulingツールの点(ベジェ曲線)
     context.fillStyle = lineColors[4];
-    for(var i = 0; i < beziList.length; i++) {
-      var coo = beziList[i];
-      context.fillRect(coo[0]-3,coo[1]-3,7,7);
+    for(let index = 0; index < beziList.length; index++) {
+      const coo = beziList[index];
+      context.fillRect(coo[0]-3, coo[1]-3, 7, 7);
     }
 
     //ベジェ曲線を描画
     //beziDistList = new Array();
     if(beziList.length > 0 && beziList.length % 4 === 0) {
-      for(var i = 0; i < beziList.length; i+=4){
-        var cp1 = beziList[i];
-        var cp2 = beziList[i+1];
-        var cp3 = beziList[i+2];
-        var cp4 = beziList[i+3];
-        globals.beziercurve.drawBezier(context,beziDistList,cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
+      for(let index = 0; index < beziList.length; index+=4) {
+        const cp1 = beziList[index];
+        const cp2 = beziList[index+1];
+        const cp3 = beziList[index+2];
+        const cp4 = beziList[index+3];
+        globals.beziercurve.drawBezier(context, beziDistList, 
+          cp1[0], cp1[1], cp2[0], cp2[1], cp3[0], cp3[1], cp4[0], cp4[1]);
 
         //ruling描画
-        globals.ruling.findBezierRuling(rulingNum,startEndInformation,outputList,context,beziDistList[beziDistList.length-1],cp1[0],cp1[1],cp2[0],cp2[1],cp3[0],cp3[1],cp4[0],cp4[1]);
+        globals.ruling.findBezierRuling(rulingNum, startEndInformation, outputList, context, 
+          beziDistList[beziDistList.length-1], cp1[0], cp1[1], cp2[0], cp2[1], cp3[0], cp3[1], cp4[0], cp4[1]);
       }
     }
     */
