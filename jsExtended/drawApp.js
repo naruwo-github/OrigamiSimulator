@@ -88,13 +88,8 @@ function initDrawApp(globals) {
     outputList = new Array();
     startEndInformation = new Array();
     
-    //三角形分割の結果を取得し、描画する
-    var trianglationInformation = globals.autoTriangulatedInfo;
-    for (let index = 0; index < trianglationInformation.length; index+=2) {
-      const start = trianglationInformation[index];
-      const end = trianglationInformation[index+1];
-      drawLine(context,"rgb(255, 255, 0)",2,start[0],start[1],end[0],end[1]);
-    }
+    //三角形分割の結果の描画
+    drawTrianglationResult(context, globals.autoTriangulatedInfo);
 
     context.fillStyle = lineColors[0];
     //直線ツールの点
@@ -478,9 +473,9 @@ function initDrawApp(globals) {
     $("#navSimulation").parent().addClass("open");
     $("#navDrawApp").parent().removeClass("open");
     $("#drawAppViewer").hide();
-    drawCanvas();
 
     canvasReload();
+    drawCanvas();
   });
 
   //デリートボタンが押された時の処理
@@ -596,6 +591,15 @@ function initDrawApp(globals) {
     return [hex.slice(0,2), hex.slice(2,4), hex.slice(4,6)].map(function(str) {
       return parseInt(str,16);
     });
+  }
+
+  //三角形分割の結果を取得し描画する
+  function drawTrianglationResult(ctx, trianglatedInformation) {
+    for (let index = 0; index < trianglatedInformation.length; index+=2) {
+      const start = trianglatedInformation[index];
+      const end = trianglatedInformation[index+1];
+      drawLine(ctx,"rgb(255, 255, 0)",2,start[0],start[1],end[0],end[1]);
+    }
   }
 
   //ruling描画メソッドないで用いる2点を結んで直線を描画するメソッド
