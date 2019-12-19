@@ -173,6 +173,7 @@ function initRulings(globals) {
   //ruling vertex use
   function drawRulingVertexUse(ru2array,ctx,outputList) {
     if(ru2array.length > 0){
+      ctx.strokeStyle = "rgb(50,200,255)";
       for(var i = 0; i < ru2array.length; i++){
         var aaa = ru2array[i];
         ctx.beginPath();
