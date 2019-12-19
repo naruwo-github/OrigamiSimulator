@@ -91,9 +91,9 @@ function initDrawApp(globals) {
     //三角形分割の結果の描画
     drawTrianglationResult(context, globals.autoTriangulatedInfo);
 
-    context.fillStyle = lineColors[0];
     //直線ツールの点
-    for(var i = 0; i < straightLineList.length; i+=2) {
+    context.fillStyle = lineColors[0];
+    for (var i = 0; i < straightLineList.length; i+=2) {
       var stl1 = straightLineList[i];
       var stl2 = straightLineList[i+1];
       context.fillRect(stl1[0]-2,stl1[1]-2,5,5);
@@ -182,6 +182,21 @@ function initDrawApp(globals) {
     //rulingツール2のrulingを描画する
     context.strokeStyle = "rgb(50, 200, 255)";
     globals.ruling.drawRulingVertexUse(ru2array,context,outputList);
+
+    if (gridTool.points.length > 0) {
+      context.fillStyle = lineColors[0];
+
+      for (var i = 0; i < straightLineList.length; i+=2) {
+        var stl1 = straightLineList[i];
+        var stl2 = straightLineList[i+1];
+        context.fillRect(stl1[0]-2,stl1[1]-2,5,5);
+        context.fillRect(stl2[0]-2,stl2[1]-2,5,5);
+      }
+      
+      if(gridTool.points.length%4 == 0) {
+        drawGrid(context, gridTool.points);
+      }
+    }
   }
   //=====================================================
 
@@ -591,6 +606,15 @@ function initDrawApp(globals) {
     return [hex.slice(0,2), hex.slice(2,4), hex.slice(4,6)].map(function(str) {
       return parseInt(str,16);
     });
+  }
+
+  //格子を描画する
+  function drawGrid(ctx, array) {
+    for (let index = 0; index < array.length; index+=2) {
+      const element1 = array[index];
+      const element2 = array[index+1];
+      drawLine(ctx, "rgb(255, 0, 255)", 2, element1[0], element1[1], element2[0], element2[1]);
+    }
   }
 
   //三角形分割の結果を取得し描画する
