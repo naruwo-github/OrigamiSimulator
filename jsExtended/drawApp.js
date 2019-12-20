@@ -222,8 +222,15 @@ function initDrawApp(globals) {
       var closest = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
       ru2array.push(closest);
     } else if(gridTool.flag === true) {
-      gridTool.points.push([e.offsetX, e.offsetY]);
-      
+      //クリックした点が展開図情報内の点のいずれかに近い場合、
+      //重ねて配置したいと判定する
+      var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
+      var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1])
+      if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
+        gridTool.points.push([ret[0], ret[1]]);
+      }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
+        gridTool.points.push([e.offsetX, e.offsetY]);
+      }
     } else {
      canvasReload(); //canvasのリロード
 
