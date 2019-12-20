@@ -54,6 +54,25 @@ function initDrawApp(globals) {
   var gridButton = document.getElementById("grid-button");
   //gridLineList = ([[x0,y0],[x1,y1],color,,,[[xn-1,yn-1],[xn,yn],color])
   var gridLineList = new Array();
+  var gridnumber = 10;
+  var gridNum = document.getElementById("grid-num");
+  gridNum.innerText = gridnumber;
+  var gridNumUp = document.getElementById("grid-up");
+  gridNumUp.innerText = "▲";
+  gridNumUp.addEventListener("click", function() {
+    gridnumber++;
+    gridNum.innerText = gridnumber;
+    canvasReload();
+    drawCanvas();
+  });
+  var gridNumDown = document.getElementById("grid-down");
+  gridNumDown.addEventListener("click", function() {
+    gridnumber--;
+    gridNum.innerText = gridnumber;
+    canvasReload();
+    drawCanvas();
+  });
+  gridNumDown.innerText = "▼";
 
   var readerFile = new FileReader(); //svgのdlに使う
 
@@ -624,7 +643,7 @@ function initDrawApp(globals) {
 
   //格子を描画する
   function drawGrid(list, ctx, color, array) {
-    const lines = 10;
+    const lines = gridnumber;
     for (let index = 0; index < array.length; index+=4) {
       const element0 = array[index];
       const element1 = array[index+1];
@@ -645,12 +664,12 @@ function initDrawApp(globals) {
 
       for (let index = 1; index < lines; index++) {
         var start = [vectorP0.x+vectorP0P1.x*index, vectorP0.y+vectorP0P1.y*index];
-        var end = [vectorP2.x+vectorP2P3.x*(10-index), vectorP2.y+vectorP2P3.y*(10-index)];
+        var end = [vectorP2.x+vectorP2P3.x*(lines-index), vectorP2.y+vectorP2P3.y*(lines-index)];
         drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
         list.push([[start[0], start[1]], [end[0], end[1]], color]);
 
         start = [vectorP1.x+vectorP1P2.x*index, vectorP1.y+vectorP1P2.y*index];
-        end = [vectorP3.x+vectorP3P0.x*(10-index), vectorP3.y+vectorP3P0.y*(10-index)];
+        end = [vectorP3.x+vectorP3P0.x*(lines-index), vectorP3.y+vectorP3P0.y*(lines-index)];
         drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
         list.push([[start[0], start[1]], [end[0], end[1]], color]);
       }
