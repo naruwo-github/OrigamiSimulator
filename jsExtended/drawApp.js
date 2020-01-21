@@ -403,20 +403,20 @@ function initDrawApp(globals) {
   });
 
   colorButton.addEventListener("click", function() {
-    if(colorButton.innerText == "Mountain Fold Color") {
-      colorButton.innerText = "Ruling Color";
+    if(colorButton.innerText == "Mount Fold") {
+      colorButton.innerText = "Ruling";
       colorButton.style.backgroundColor = lineColors[1];
-    } else if(colorButton.innerText == "Ruling Color") {
-      colorButton.innerText = "Valley Fold Color";
+    } else if(colorButton.innerText == "Ruling") {
+      colorButton.innerText = "Valley Fold";
       colorButton.style.backgroundColor = lineColors[2];
-    } else if(colorButton.innerText == "Valley Fold Color") {
-      colorButton.innerText = "Undriven Crease Color";
+    } else if(colorButton.innerText == "Valley Fold") {
+      colorButton.innerText = "Undriven Crease";
       colorButton.style.backgroundColor = lineColors[3];
-    } else if(colorButton.innerText == "Undriven Crease Color") {
-      colorButton.innerText = "Cut Line Color";
+    } else if(colorButton.innerText == "Undriven Crease") {
+      colorButton.innerText = "Cut Line";
       colorButton.style.backgroundColor = lineColors[4];
-    } else if(colorButton.innerText == "Cut Line Color") {
-      colorButton.innerText = "Mountain Fold Color";
+    } else if(colorButton.innerText == "Cut Line") {
+      colorButton.innerText = "Mount Fold";
       colorButton.style.backgroundColor = lineColors[0];
     }
   });
