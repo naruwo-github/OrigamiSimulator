@@ -167,6 +167,25 @@ p{
     background-color: rgb(255, 170, 120);
 }
 
+.drawAppButtons4{
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    left: 10px;
+
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    background-color: rgb(255, 150, 100);
+}
+
+.drawAppButtons4:hover{
+    width: 56px;
+    height: 56px;
+    left: 7px;
+    background-color: rgb(255, 170, 120);
+}
+
 /*
 .baseButton {
     position: fixed;
