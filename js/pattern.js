@@ -539,9 +539,9 @@ function initPattern(globals){
             for(let i = 0; i < gridList.length; i++){
                 var line = document.createElementNS(ns, 'line');
                 const element = gridList[i];
-                //line.setAttribute('stroke', "#ff00ff");
+                line.setAttribute('stroke', "#ff00ff");
                 //格子ツールの色を指定
-                line.setAttribute('stroke', "#ffff00");
+                //line.setAttribute('stroke', "#ffff00");
                 line.setAttribute('opacity', "1");
                 line.setAttribute('x1', element[0][0]);
                 line.setAttribute('y1', element[0][1]);
