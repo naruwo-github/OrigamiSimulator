@@ -6,20 +6,16 @@
 
 function initDrawApp(globals) {
   //----------------------------------------------------------------------
-  //変数など各種定義
-
+  //========== キャンバスの宣言 ==========
   const canvas = document.querySelector('#draw-area'); //canvasを取得
   const context = canvas.getContext('2d'); //描画準備のためcontextを取得
-
   //canvasの大きさをwindowと同じにする
   $('#draw-area').attr('width', $(window).width());
   $('#draw-area').attr('height', $(window).height());
-
-  //context.font = "30px serif"; //canvasに表示させる文字のサイズ
   context.font = "40px 'Century Gothic'";
   context.strokeText("Click here",$(window).width()/2-100,$(window).height()/2);
+  //===================================
 
-  //座標[x,y]のリスト。例えば0番目の要素と1番目の要素の点を結ぶように扱う
   var straightLineList = new Array(); //直線の座標を格納する
   var straight = false; //直線モードのフラグ
   var slineButton = document.getElementById("sline-button"); //直線ボタン
@@ -47,7 +43,8 @@ function initDrawApp(globals) {
   var ruling2Button = document.getElementById("ruling2-button");
   var ru2array = new Array(); //rulingツール2で使う配列
 
-  //グリッドツールを使っている時の情報
+
+  //===== Grid Tool Information ======
   var gridTool = new Object();
   gridTool.flag = false;
   gridTool.points = new Array();
@@ -73,6 +70,10 @@ function initDrawApp(globals) {
     drawCanvas();
   });
   gridNumDown.innerText = "▼";
+  var gridMode = document.getElementById("grid-mode");
+  gridMode.mode = 0;
+  //===================================
+
 
   var readerFile = new FileReader(); //svgのdlに使う
 
@@ -98,9 +99,7 @@ function initDrawApp(globals) {
   //----------------------------------------------------------------------
 
 
-
-  //=====================================================
-  //キャンバスに描画する関数
+  //================= キャンバスの描画関数 ==================
   function drawCanvas() {
 
     //変数の初期化
@@ -215,12 +214,11 @@ function initDrawApp(globals) {
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
       if(gridTool.points.length%4 == 0) {
-        globals.grids.drawGrid(gridnumber, gridLineList, context, lineColors[3], gridTool.points);
+        globals.grids.drawGrid(gridMode.mode, gridnumber, gridLineList, context, lineColors[3], gridTool.points);
       }
     }
   }
   //=====================================================
-
 
 
   //canvas内のクリック判定
@@ -361,7 +359,7 @@ function initDrawApp(globals) {
   })
 
   //直線ボタンが押された時の処理
-  document.getElementById("sline-button").addEventListener("click", function(){
+  slineButton.addEventListener("click", function(){
     if(straight === true) {
       console.log("straight line mode ended...");
       straight = false;
@@ -382,7 +380,7 @@ function initDrawApp(globals) {
   });
 
   //rulingツール1ボタンが押された時の処理
-  document.getElementById("ruling1-button").addEventListener("click", function(){
+  ruling1Button.addEventListener("click", function(){
     if(ruling1 === true) {
       console.log("ruling mode1 ended...");
       ruling1 = false;
@@ -453,7 +451,7 @@ function initDrawApp(globals) {
   });
 
   //rulingツール2ボタンが押された時の処理
-  document.getElementById("ruling2-button").addEventListener("click", function(){
+  ruling2Button.addEventListener("click", function(){
     if(ruling2 === true) {
       console.log("ruling mode2 ended...");
       ruling2 = false;
@@ -474,7 +472,7 @@ function initDrawApp(globals) {
   });
 
   //grid linesボタンが押された時の処理
-  document.getElementById("grid-button").addEventListener("click", function() {
+  gridButton.addEventListener("click", function() {
     if(gridTool.flag === true) {
       console.log("grid line mode ended...");
       gridTool.flag = false;
@@ -491,6 +489,28 @@ function initDrawApp(globals) {
       ruling1Button.style.backgroundColor = buttonColor;
       ruling2 = false;
       ruling2Button.style.backgroundColor = buttonColor;
+    }
+  });
+
+  gridMode.addEventListener("click", function() {
+    if (gridMode.mode == 0) {
+      gridMode.innerText = "Grid Mode 2";
+      gridMode.mode++;
+    } else if (gridMode.mode == 1) {
+      gridMode.innerText = "Grid Mode 3";
+      gridMode.mode++;
+    } else if (gridMode.mode == 2) {
+      gridMode.innerText = "Grid Mode 4";
+      gridMode.mode++;
+    } else if (gridMode.mode == 3) {
+      gridMode.innerText = "Grid Mode 5";
+      gridMode.mode++;
+    } else if (gridMode.mode == 4) {
+      gridMode.innerText = "Grid Mode 6";
+      gridMode.mode++;
+    } else if (gridMode.mode == 5) {
+      gridMode.innerText = "Grid Mode 1";
+      gridMode.mode = 0;
     }
   });
 
@@ -568,7 +588,10 @@ function initDrawApp(globals) {
     ru2array = new Array();
     dragList = new Array();
     outputList = new Array();
-    gridTool = new Object();
+    optimizedRuling = new Array();
+    gridTool.flag = false;
+    gridTool.points = new Array();
+
     canvasReload();
     drawCanvas();
   });
