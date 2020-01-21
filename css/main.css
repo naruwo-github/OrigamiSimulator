@@ -123,6 +123,7 @@ p{
     width: 170px;
     height: 50px;
     left: 10px;
+    font-family: 'Century Gothic';
 
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -140,6 +141,7 @@ p{
     position: fixed;
     width: 80px;
     height: 50px;
+    font-family: 'Century Gothic';
     
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -155,7 +157,8 @@ p{
 
 .drawAppButtons3{
     position: fixed;
-    width: 80px;
+    width: 50px;
+    font-family: 'Century Gothic';
 
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -163,7 +166,7 @@ p{
     background-color: rgb(150, 150, 150);
 }
 .drawAppButtons3:hover{
-    width: 86px;
+    width: 56px;
     background-color: rgb(255, 170, 120);
 }
 
@@ -172,6 +175,7 @@ p{
     width: 50px;
     height: 50px;
     left: 10px;
+    font-family: 'Century Gothic';
 
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
