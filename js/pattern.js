@@ -540,6 +540,7 @@ function initPattern(globals){
                 var line = document.createElementNS(ns, 'line');
                 const element = gridList[i];
                 //line.setAttribute('stroke', "#ff00ff");
+                //格子ツールの色を指定
                 line.setAttribute('stroke', "#ffff00");
                 line.setAttribute('opacity', "1");
                 line.setAttribute('x1', element[0][0]);
