@@ -509,6 +509,15 @@ function initDrawApp(globals) {
       gridMode.innerText = "Grid Mode 6";
       gridMode.mode++;
     } else if (gridMode.mode == 5) {
+      gridMode.innerText = "Grid Mode 7";
+      gridMode.mode++;
+    } else if (gridMode.mode == 6) {
+      gridMode.innerText = "Grid Mode 8";
+      gridMode.mode++;
+    } else if (gridMode.mode == 7) {
+      gridMode.innerText = "Grid Mode 9";
+      gridMode.mode++;
+    } else if (gridMode.mode == 8) {
       gridMode.innerText = "Grid Mode 1";
       gridMode.mode = 0;
     }
