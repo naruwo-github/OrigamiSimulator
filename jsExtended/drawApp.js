@@ -540,7 +540,10 @@ function initDrawApp(globals) {
     }
     //修正した展開図をシミュレータへ投げる
     globals.importer.simulateAgain(globals.svgFile,outputList,gridLineList);
-    globals.simulationRunning = true; 
+    globals.simulationRunning = true;
+    setTimeout(function() {
+      globals.simulationRunning = false;
+    }, 1000*20);
 
     //Simulate Modeへ遷移する
     globals.navMode = "simulation";
