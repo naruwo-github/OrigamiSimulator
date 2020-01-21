@@ -512,6 +512,8 @@ function initDrawApp(globals) {
       gridMode.innerText = "Grid Mode 1";
       gridMode.mode = 0;
     }
+    canvasReload();
+    drawCanvas();
   });
 
   //svg出力ボタンが押された時の処理

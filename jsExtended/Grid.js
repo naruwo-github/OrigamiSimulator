@@ -28,8 +28,8 @@ function initGrids(globals) {
                 //正方グリッド
                 for (let i = 1; i < lines; i++) {
                     //縦方向
-                    var start = [vectorP0.x+vectorP0P1.x*i, vectorP0.y+vectorP0P1.y*i];
-                    var end = [vectorP2.x+vectorP2P3.x*(lines-i), vectorP2.y+vectorP2P3.y*(lines-i)];
+                    let start = [vectorP0.x+vectorP0P1.x*i, vectorP0.y+vectorP0P1.y*i];
+                    let end = [vectorP2.x+vectorP2P3.x*(lines-i), vectorP2.y+vectorP2P3.y*(lines-i)];
                     globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
                     list.push([[start[0], start[1]], [end[0], end[1]], color]);
 
@@ -43,8 +43,8 @@ function initGrids(globals) {
                 //直線×斜め１
                 for (let i = 1; i < lines; i++) {
                     //横方向
-                    start = [vectorP1.x+vectorP1P2.x*i, vectorP1.y+vectorP1P2.y*i];
-                    end = [vectorP3.x+vectorP3P0.x*(lines-i), vectorP3.y+vectorP3P0.y*(lines-i)];
+                    let start = [vectorP1.x+vectorP1P2.x*i, vectorP1.y+vectorP1P2.y*i];
+                    let end = [vectorP3.x+vectorP3P0.x*(lines-i), vectorP3.y+vectorP3P0.y*(lines-i)];
                     globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
                     list.push([[start[0], start[1]], [end[0], end[1]], color]);
                 }
@@ -52,13 +52,23 @@ function initGrids(globals) {
                 globals.drawapp.drawLine(ctx, color, 2, vectorP1.x, vectorP1.y, vectorP3.x, vectorP3.y);
                 list.push([[vectorP1.x, vectorP1.y], [vectorP3.x, vectorP3.y], color]);
                 //斜線
+                for (let i = 0; i < lines; i++) {
+                    let start = [vectorP0.x+vectorP0P1.x*i, vectorP0.y+vectorP0P1.y*i];
+                    let end = [vectorP3.x+vectorP3P0.x*(lines-i), vectorP3.y+vectorP3P0.y*(lines-i)];
+                    globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
+                    list.push([[start[0], start[1]], [end[0], end[1]], color]);
 
+                    start = [vectorP1.x+vectorP1P2.x*i, vectorP1.y+vectorP1P2.y*i];
+                    end = [vectorP2.x+vectorP2P3.x*(lines-i), vectorP2.y+vectorP2P3.y*(lines-i)];
+                    globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
+                    list.push([[start[0], start[1]], [end[0], end[1]], color]);
+                }
             } else if (mode == 2) {
                 //直線×斜め２
                 for (let i = 1; i < lines; i++) {
                     //横方向
-                    start = [vectorP1.x+vectorP1P2.x*i, vectorP1.y+vectorP1P2.y*i];
-                    end = [vectorP3.x+vectorP3P0.x*(lines-i), vectorP3.y+vectorP3P0.y*(lines-i)];
+                    let start = [vectorP1.x+vectorP1P2.x*i, vectorP1.y+vectorP1P2.y*i];
+                    let end = [vectorP3.x+vectorP3P0.x*(lines-i), vectorP3.y+vectorP3P0.y*(lines-i)];
                     globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
                     list.push([[start[0], start[1]], [end[0], end[1]], color]);
                 }
@@ -66,12 +76,23 @@ function initGrids(globals) {
                 globals.drawapp.drawLine(ctx, color, 2, vectorP0.x, vectorP0.y, vectorP2.x, vectorP2.y);
                 list.push([[vectorP0.x, vectorP0.y], [vectorP2.x, vectorP2.y], color]);
                 //斜線
+                for (let i = 0; i < lines; i++) {
+                    let start = [vectorP0.x+vectorP0P1.x*(lines-i), vectorP0.y+vectorP0P1.y*(lines-i)];
+                    let end = [vectorP1.x+vectorP1P2.x*i, vectorP1.y+vectorP1P2.y*i];
+                    globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
+                    list.push([[start[0], start[1]], [end[0], end[1]], color]);
+
+                    start = [vectorP3.x+vectorP3P0.x*(lines-i), vectorP3.y+vectorP3P0.y*(lines-i)];
+                    end = [vectorP2.x+vectorP2P3.x*i, vectorP2.y+vectorP2P3.y*i];
+                    globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
+                    list.push([[start[0], start[1]], [end[0], end[1]], color]);
+                }
             } else if (mode == 3) {
                 //斜め１×直線
                 for (let i = 1; i < lines; i++) {
                     //縦方向
-                    var start = [vectorP0.x+vectorP0P1.x*i, vectorP0.y+vectorP0P1.y*i];
-                    var end = [vectorP2.x+vectorP2P3.x*(lines-i), vectorP2.y+vectorP2P3.y*(lines-i)];
+                    let start = [vectorP0.x+vectorP0P1.x*i, vectorP0.y+vectorP0P1.y*i];
+                    let end = [vectorP2.x+vectorP2P3.x*(lines-i), vectorP2.y+vectorP2P3.y*(lines-i)];
                     globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
                     list.push([[start[0], start[1]], [end[0], end[1]], color]);
 
@@ -85,8 +106,8 @@ function initGrids(globals) {
                 //斜め２×直線
                 for (let i = 1; i < lines; i++) {
                     //縦方向
-                    var start = [vectorP0.x+vectorP0P1.x*i, vectorP0.y+vectorP0P1.y*i];
-                    var end = [vectorP2.x+vectorP2P3.x*(lines-i), vectorP2.y+vectorP2P3.y*(lines-i)];
+                    let start = [vectorP0.x+vectorP0P1.x*i, vectorP0.y+vectorP0P1.y*i];
+                    let end = [vectorP2.x+vectorP2P3.x*(lines-i), vectorP2.y+vectorP2P3.y*(lines-i)];
                     globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
                     list.push([[start[0], start[1]], [end[0], end[1]], color]);
 
