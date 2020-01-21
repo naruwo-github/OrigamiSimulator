@@ -4,7 +4,7 @@
 
 function initGrids(globals) {
     //格子を描画する
-    function drawGrid(gridnumber, list, ctx, color, array) {
+    function drawGrid(mode, gridnumber, list, ctx, color, array) {
         const lines = gridnumber;
         for (let index = 0; index < array.length; index+=4) {
             const element0 = array[index];
@@ -24,16 +24,31 @@ function initGrids(globals) {
             vectorP2P3.divideScalar(lines);
             vectorP3P0.divideScalar(lines);
 
-            for (let index = 1; index < lines; index++) {
-                var start = [vectorP0.x+vectorP0P1.x*index, vectorP0.y+vectorP0P1.y*index];
-                var end = [vectorP2.x+vectorP2P3.x*(lines-index), vectorP2.y+vectorP2P3.y*(lines-index)];
-                globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
-                list.push([[start[0], start[1]], [end[0], end[1]], color]);
+            if (mode == 0) {
+                //正方グリッド
+                for (let index = 1; index < lines; index++) {
+                    //縦方向
+                    var start = [vectorP0.x+vectorP0P1.x*index, vectorP0.y+vectorP0P1.y*index];
+                    var end = [vectorP2.x+vectorP2P3.x*(lines-index), vectorP2.y+vectorP2P3.y*(lines-index)];
+                    globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
+                    list.push([[start[0], start[1]], [end[0], end[1]], color]);
 
-                start = [vectorP1.x+vectorP1P2.x*index, vectorP1.y+vectorP1P2.y*index];
-                end = [vectorP3.x+vectorP3P0.x*(lines-index), vectorP3.y+vectorP3P0.y*(lines-index)];
-                globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
-                list.push([[start[0], start[1]], [end[0], end[1]], color]);
+                    //横方向
+                    start = [vectorP1.x+vectorP1P2.x*index, vectorP1.y+vectorP1P2.y*index];
+                    end = [vectorP3.x+vectorP3P0.x*(lines-index), vectorP3.y+vectorP3P0.y*(lines-index)];
+                    globals.drawapp.drawLine(ctx, color, 2, start[0], start[1], end[0], end[1]);
+                    list.push([[start[0], start[1]], [end[0], end[1]], color]);
+                }
+            } else if (mode == 1) {
+                //直線×斜め１
+            } else if (mode == 2) {
+                //直線×斜め２
+            } else if (mode == 3) {
+                //斜め１×直線
+            } else if (mode == 4) {
+                //斜め２×直線
+            } else if (mode == 5) {
+                //斜め１×斜め２
             }
         }
     }

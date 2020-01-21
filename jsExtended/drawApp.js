@@ -214,7 +214,7 @@ function initDrawApp(globals) {
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
       if(gridTool.points.length%4 == 0) {
-        globals.grids.drawGrid(gridnumber, gridLineList, context, lineColors[3], gridTool.points);
+        globals.grids.drawGrid(gridMode.mode, gridnumber, gridLineList, context, lineColors[3], gridTool.points);
       }
     }
   }
