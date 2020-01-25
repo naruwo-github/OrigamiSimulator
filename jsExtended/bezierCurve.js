@@ -51,11 +51,9 @@ function initBezierCurve(globals){
             var postDist = preDist + dist(preCo2[0],preCo2[1],co2[0],co2[1]);
             if(Math.abs(distBetweenCP - postDist) < Math.abs(distBetweenCP - preDist)){
                 index1 = i;
-                console.log(index1);
             }
             if(Math.abs(distBetweenCP * 2.0 - postDist) < Math.abs(distBetweenCP * 2.0 - preDist)){
                 index2 = i;
-                console.log(index2);
             }
             preDist = postDist;
         }
@@ -96,23 +94,18 @@ function initBezierCurve(globals){
             var postDist = preDist + dist(preCo2[0],preCo2[1],co2[0],co2[1]);
             if(Math.abs(distBetweenCP - postDist) < Math.abs(distBetweenCP - preDist)){
                 index1 = i;
-                console.log(index1);
             }
             if(Math.abs(distBetweenCP * 2.0 - postDist) < Math.abs(distBetweenCP * 2.0 - preDist)){
                 index2 = i;
-                console.log(index2);
             }
             if(Math.abs(distBetweenCP * 3.0 - postDist) < Math.abs(distBetweenCP * 3.0 - preDist)){
                 index3 = i;
-                console.log(index3);
             }
             if(Math.abs(distBetweenCP * 4.0 - postDist) < Math.abs(distBetweenCP * 4.0 - preDist)){
                 index4 = i;
-                console.log(index4);
             }
             if(Math.abs(distBetweenCP * 5.0 - postDist) < Math.abs(distBetweenCP * 5.0 - preDist)){
                 index5 = i;
-                console.log(index5);
             }
             preDist = postDist;
         }
@@ -173,6 +166,7 @@ function initBezierCurve(globals){
     //座標列(info.x1,info.y1)または(info.x2,info.y2)の中から
     //(ex,ey)から最短の座標(nx,ny)を返すメソッド
     function returnNearCoordinates(info,ex,ey){
+        console.log("これは↓、展開図情報に含まれる頂点の集合を表す配列");
         console.log(info);
         var nx,ny;
         var distance = 10000;

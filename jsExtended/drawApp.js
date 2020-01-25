@@ -49,7 +49,7 @@ function initDrawApp(globals) {
   gridTool.flag = false;
   gridTool.points = new Array();
   var gridButton = document.getElementById("grid-button");
-  //gridLineList = ([[x0,y0],[x1,y1],color,,,[[xn-1,yn-1],[xn,yn],color])
+  //中身はこんな感じ↓ gridLineList = ([[x0,y0],[x1,y1],color,,,[[xn-1,yn-1],[xn,yn],color])
   var gridLineList = new Array();
   var gridnumber = 10;
   var gridNum = document.getElementById("grid-num");
@@ -75,7 +75,8 @@ function initDrawApp(globals) {
   //===================================
 
 
-  var readerFile = new FileReader(); //svgのdlに使う
+  var readerFile = new FileReader(); //svg(分割線が追加されてないやつ)のdlに使う
+  var outputSVG = new FileReader();
 
   //順に山、分割線(Ruling)、谷、分割線(ただの線)、切り取り線
   const lineColors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", "rgb(0, 0, 255)", 
@@ -313,7 +314,6 @@ function initDrawApp(globals) {
       /*if(cpMove == true){
         //これはベジェ
         beziList.splice(movedIndex,1,[e.offsetX,e.offsetY]);
-        //console.log(beziList.length);
         canvasReload();
         drawCanvas();
       }else */if(cpMove2 == true) {
@@ -540,7 +540,10 @@ function initDrawApp(globals) {
     }
     //修正した展開図をシミュレータへ投げる
     globals.importer.simulateAgain(globals.svgFile,outputList,gridLineList);
-    globals.simulationRunning = true; 
+    globals.simulationRunning = true;
+    setTimeout(function() {
+      globals.simulationRunning = false;
+    }, 1000*20);
 
     //Simulate Modeへ遷移する
     globals.navMode = "simulation";
@@ -585,7 +588,9 @@ function initDrawApp(globals) {
   //現在読み込んであるsvgをダウンロードする
   document.getElementById("dl-svg").addEventListener("click", function(){
     //ダウンロード、シンプルな
-    downloadFile('sampleDL.svg',readerFile.result);
+    downloadFile('fileNotFix.svg', readerFile.result);
+    makeExtendedSVGFile(fileReader, globals.svgInformation, outputList, optimizedRuling);
+    downloadFile('fileFixed.svg', outputSVG.result);
   });
 
   //clear all button
@@ -682,6 +687,22 @@ function initDrawApp(globals) {
       const end = trianglatedInformation[index+1];
       drawLine(ctx,"rgb(255, 255, 0)",2,start[0],start[1],end[0],end[1]);
     }
+  }
+
+  //修正した展開図の情報をsvgファイルに変換する処理
+  function makeExtendedSVGFile(fileReader, original, output, anotherOutput) {
+    //出力svgファイルの宣言
+    let text = `<?xml version="1.0"?>
+    <svg xmlns="http://www.w3.org/2000/svg">
+    `;
+
+    //ここから展開図情報を挿入していく
+    //輪郭(黒)、山折り(赤)、谷折り(青)、分割線(黄色)、切り取り線(緑)、何もしない線(マゼンタ)に分けてからそれぞれまとめて追加する
+
+    text += `
+    </svg>`;
+
+    fileReader.readAsText(text);
   }
 
   //ruling描画メソッドないで用いる2点を結んで直線を描画するメソッド

@@ -183,7 +183,6 @@ function initRulings(globals) {
       }
 
       if(ru2array.length > 2){
-        console.log()
         //点Pi、Pi+1、Pi+2について
         //直線Pi+1(Pi + Pi+2)/2 を描画する
         for(var i = 0; i < ru2array.length - 2; i++){
