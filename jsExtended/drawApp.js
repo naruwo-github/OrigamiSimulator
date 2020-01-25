@@ -49,7 +49,7 @@ function initDrawApp(globals) {
   gridTool.flag = false;
   gridTool.points = new Array();
   var gridButton = document.getElementById("grid-button");
-  //gridLineList = ([[x0,y0],[x1,y1],color,,,[[xn-1,yn-1],[xn,yn],color])
+  //中身はこんな感じ↓ gridLineList = ([[x0,y0],[x1,y1],color,,,[[xn-1,yn-1],[xn,yn],color])
   var gridLineList = new Array();
   var gridnumber = 10;
   var gridNum = document.getElementById("grid-num");
@@ -75,7 +75,7 @@ function initDrawApp(globals) {
   //===================================
 
 
-  var readerFile = new FileReader(); //svgのdlに使う
+  var readerFile = new FileReader(); //svg(分割線が追加されてないやつ)のdlに使う
 
   //順に山、分割線(Ruling)、谷、分割線(ただの線)、切り取り線
   const lineColors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", "rgb(0, 0, 255)", 
@@ -313,7 +313,6 @@ function initDrawApp(globals) {
       /*if(cpMove == true){
         //これはベジェ
         beziList.splice(movedIndex,1,[e.offsetX,e.offsetY]);
-        //console.log(beziList.length);
         canvasReload();
         drawCanvas();
       }else */if(cpMove2 == true) {

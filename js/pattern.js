@@ -353,7 +353,7 @@ function initPattern(globals){
             var img = new Image();
             img.src = url;
             globals.svgimg = img;
-            console.log(url);
+            console.log("svg's URL: " + url);
             //↓初期化しておく
             globals.svgInformation.stroke = new Array();
             globals.svgInformation.opacity = new Array();
@@ -641,10 +641,6 @@ function initPattern(globals){
                 line.setAttribute('y2', vertex[2]);
                 line.setAttribute('stroke-width', strokeWidth);
                 svg.appendChild(line);
-
-
-                //デバッグ用
-                //console.log(line);
             }
             //----------------------------------------------------------
             //ここはただ、svgViewer表示にしか関係ない
@@ -1290,7 +1286,6 @@ function initPattern(globals){
                         assignments.push("F");
 
                         //取得
-                        //console.log([tri[0], tri[1]]);
                         globals.autoTriangulatedInfo.push([tri[0], tri[1]]);
                     } else if (k==1){
                         faceEdges.push(edges.length);
@@ -1299,7 +1294,6 @@ function initPattern(globals){
                         assignments.push("F");
 
                         //取得
-                        //console.log([tri[2], tri[1]]);
                         globals.autoTriangulatedInfo.push([tri[2], tri[1]]);
                     } else if (k==2){
                         faceEdges.push(edges.length);
@@ -1308,7 +1302,6 @@ function initPattern(globals){
                         assignments.push("F");
 
                         //取得
-                        //console.log([tri[2], tri[0]]);
                         globals.autoTriangulatedInfo.push([tri[2], tri[0]]);
                     }
                 }
@@ -1318,10 +1311,7 @@ function initPattern(globals){
         }
         fold.faces_vertices = triangulatedFaces;
 
-        //
-        //
-        //console.log(fold);
-        //ここでautoTriInfoを加工しよう
+        //globals.autoTriangulatedInfoへ三角形分割の結果を格納
         var returnInfo = [];
         for (let index = 0; index < globals.autoTriangulatedInfo.length; index++) {
             const element = globals.autoTriangulatedInfo[index];
@@ -1332,9 +1322,6 @@ function initPattern(globals){
             returnInfo.push(fold.vertices_coords[end]);
         }
         globals.autoTriangulatedInfo = returnInfo;
-        //
-        //
-        //
 
         return fold;
     }
