@@ -587,17 +587,12 @@ function initDrawApp(globals) {
 
   //現在読み込んであるsvgをダウンロードする
   document.getElementById("dl-svg").addEventListener("click", function(){
-    console.log(readerFile.result);
     //downloadFile('fileNotFix.svg', readerFile.result);
 
     //修正後のやつ
     makeExtendedSVGFile(outputSVG, globals.svgInformation, outputList, optimizedRuling);
-    //downloadFile('fileFixed.svg', outputSVG.result);
-    /*
-    setTimeout(function() {
-      downloadFile('developmentView.svg', outputSVG.result);
-    }, 1000*3);
-    */
+    //downloadFile('developmentView.svg', outputSVG.result);
+    downloadFile('developmentView.svg', outputSVG.text);
   });
 
   //clear all button
@@ -699,9 +694,8 @@ function initDrawApp(globals) {
   //修正した展開図の情報をsvgファイルに変換する処理
   function makeExtendedSVGFile(fileReader, original, output, anotherOutput) {
     //出力svgファイルの宣言
-    let text = `<?xml version="1.0" encoding="utf-8?>
-    <svg xmlns="http://www.w3.org/2000/svg"
-    x="0px" y="0px" width="1000px" height="800px" viewBox="0 0 1000.0 800.0">
+    let text = `<?xml version="1.0" encoding="utf-8"?>
+    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1000px" height="800px" viewBox="0 0 1000.0 800.0">
     <title>outputSVG</title>
     `;
 
@@ -756,7 +750,7 @@ function initDrawApp(globals) {
     //黒
     text += `
     <g>
-      <polygon fill="none" stroke="#000" stroke-miterlimit="10" points="
+    <polygon fill="none" stroke="#000" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < black.length; i++) {
       text += `${black[i][2]} ${black[i][4]} ${black[i][3]} ${black[i][5]} `;
@@ -767,7 +761,7 @@ function initDrawApp(globals) {
     //赤
     text += `
     <g>
-      <polygon fill="none" stroke="#f00" stroke-miterlimit="10" points="
+    <polygon fill="none" stroke="#f00" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < red.length; i++) {
       text += `${red[i][2]} ${red[i][4]} ${red[i][3]} ${red[i][5]} `;
@@ -778,7 +772,7 @@ function initDrawApp(globals) {
     //青
     text += `
     <g>
-      <polygon fill="none" stroke="#00f" stroke-miterlimit="10" points="
+    <polygon fill="none" stroke="#00f" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < blue.length; i++) {
       text += `${blue[i][2]} ${blue[i][4]} ${blue[i][3]} ${blue[i][5]} `;
@@ -789,7 +783,7 @@ function initDrawApp(globals) {
     //黄色
     text += `
     <g>
-      <polygon fill="none" stroke="#ff0" stroke-miterlimit="10" points="
+    <polygon fill="none" stroke="#ff0" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < yellow.length; i++) {
       text += `${yellow[i][2]} ${yellow[i][4]} ${yellow[i][3]} ${yellow[i][5]} `;
@@ -800,7 +794,7 @@ function initDrawApp(globals) {
     //緑
     text += `
     <g>
-      <polygon fill="none" stroke="#0f0" stroke-miterlimit="10" points="
+    <polygon fill="none" stroke="#0f0" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < green.length; i++) {
       text += `${green[i][2]} ${green[i][4]} ${green[i][3]} ${green[i][5]} `;
@@ -811,7 +805,7 @@ function initDrawApp(globals) {
     //マゼンタ
     text += `
     <g>
-      <polygon fill="none" stroke="#f0f" stroke-miterlimit="10" points="
+    <polygon fill="none" stroke="#f0f" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < magenta.length; i++) {
       text += `${magenta[i][2]} ${magenta[i][4]} ${magenta[i][3]} ${magenta[i][5]} `;
@@ -823,8 +817,8 @@ function initDrawApp(globals) {
     </svg>`;
 
     //console.log(text);
-    fileReader.result = text;
-    console.log(fileReader.result);
+    //fileReader.result = text;
+    fileReader.text = text;
   }
 
   //ruling描画メソッドないで用いる2点を結んで直線を描画するメソッド
