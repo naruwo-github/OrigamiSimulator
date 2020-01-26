@@ -590,7 +590,7 @@ function initDrawApp(globals) {
     //downloadFile('fileNotFix.svg', readerFile.result);
 
     //修正後のやつ
-    makeExtendedSVGFile(outputSVG, globals.svgInformation, outputList, optimizedRuling);
+    makeExtendedSVGFile(outputSVG, globals.svgInformation, outputList, optimizedRuling, gridLineList);
     //downloadFile('developmentView.svg', outputSVG.result);
     downloadFile('developmentView.svg', outputSVG.text);
   });
@@ -692,7 +692,7 @@ function initDrawApp(globals) {
   }
 
   //修正した展開図の情報をsvgファイルに変換する処理
-  function makeExtendedSVGFile(fileReader, original, output, anotherOutput) {
+  function makeExtendedSVGFile(fileReader, original, output, optimized, gridline) {
     //出力svgファイルの宣言
     let text = `<?xml version="1.0" encoding="utf-8"?>
     <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1000px" height="800px" viewBox="0 0 1000.0 800.0">
@@ -748,19 +748,57 @@ function initDrawApp(globals) {
 
     //格納作業
     //黒
-    text += `<g>`;
-    for (let i = 0; i < black.length; i++) {
-      text += `<line fill="none" stroke="#000" stroke-miterlimit="10" x1="${black[i][3]}" y1="${black[i][5]}" x2="${black[i][4]}" y2="${black[i][6]}"/>`;
+    if (black.length > 0) {
+      text += `<g>`;
+      for (let i = 0; i < black.length; i++) {
+        text += `<line fill="none" stroke="#000" stroke-miterlimit="10" x1="${black[i][3]}" y1="${black[i][5]}" x2="${black[i][4]}" y2="${black[i][6]}"/>`;
+      }
+      text += `</g>`;
     }
-    text += `</g>`;
-
     //赤
-    text += `<g>`;
-    for (let i = 0; i < red.length; i++) {
-      text += `<line fill="none" stroke="#f00" stroke-miterlimit="10" x1="${red[i][3]}" y1="${red[i][5]}" x2="${red[i][4]}" y2="${red[i][6]}"/>`;
+    if (red.length > 0) {
+      text += `<g>`;
+      for (let i = 0; i < red.length; i++) {
+        text += `<line fill="none" stroke="#f00" stroke-miterlimit="10" x1="${red[i][3]}" y1="${red[i][5]}" x2="${red[i][4]}" y2="${red[i][6]}"/>`;
+      }
+      text += `</g>`;
     }
-    text += `</g>`;
+    //青
+    if (blue.length > 0) {
+      text += `<g>`;
+      for (let i = 0; i < blue.length; i++) {
+        text += `<line fill="none" stroke="#00f" stroke-miterlimit="10" x1="${blue[i][3]}" y1="${blue[i][5]}" x2="${blue[i][4]}" y2="${blue[i][6]}"/>`;
+      }
+      text += `</g>`;
+    }
+    //黄
+    if (yellow.length > 0) {
+      text += `<g>`;
+      for (let i = 0; i < yellow.length; i++) {
+        text += `<line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${yellow[i][3]}" y1="${yellow[i][5]}" x2="${yellow[i][4]}" y2="${yellow[i][6]}"/>`;
+      }
+      text += `</g>`;
+    }
+    //緑
+    if (green.length > 0) {
+      text += `<g>`;
+      for (let i = 0; i < green.length; i++) {
+        text += `<line fill="none" stroke="#0f0" stroke-miterlimit="10" x1="${green[i][3]}" y1="${green[i][5]}" x2="${green[i][4]}" y2="${green[i][6]}"/>`;
+      }
+      text += `</g>`;
+    }
+    //マゼンタ
+    if (magenta.length > 0) {
+      text += `<g>`;
+      for (let i = 0; i < magenta.length; i++) {
+        text += `<line fill="none" stroke="#f0f" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+      }
+      text += `</g>`;
+    }
 
+    text += `</svg>`;
+    fileReader.text = text;
+    
     /*
     //黒
     text += `
@@ -772,7 +810,6 @@ function initDrawApp(globals) {
     }
     text += `"/>
     </g>`;
-
     //赤
     text += `
     <g>
@@ -783,7 +820,6 @@ function initDrawApp(globals) {
     }
     text += `"/>
     </g>`;
-
     //青
     text += `
     <g>
@@ -794,8 +830,7 @@ function initDrawApp(globals) {
     }
     text += `"/>
     </g>`;
-
-    //黄色
+    //黄
     text += `
     <g>
     <polyline fill="none" stroke="#ff0" stroke-miterlimit="10" points="
@@ -805,7 +840,6 @@ function initDrawApp(globals) {
     }
     text += `"/>
     </g>`;
-
     //緑
     text += `
     <g>
@@ -816,7 +850,6 @@ function initDrawApp(globals) {
     }
     text += `"/>
     </g>`;
-
     //マゼンタ
     text += `
     <g>
@@ -827,13 +860,9 @@ function initDrawApp(globals) {
     }
     text += `"/>
     </g>`;
-
     text += `
     </svg>`;
     */
-
-   text += `</svg>`;
-    fileReader.text = text;
   }
 
   //ruling描画メソッドないで用いる2点を結んで直線を描画するメソッド
