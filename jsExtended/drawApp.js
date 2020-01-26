@@ -634,7 +634,7 @@ function initDrawApp(globals) {
   function drawDevelopment(info,ctx) {
     for(var i = 0; i < info.stroke.length; i++) {
       //drawLine(ctx,info.stroke[i],info.stroke_width[i],info.x1,info.y1,info.x2,info.y2);
-      drawLine(ctx,"rgb("+String(hex2rgb(info.stroke[i]))+")",Number(info.stroke_width[i]),parseInt(info.x1[i]),parseInt(info.y1[i]),parseInt(info.x2[i]),parseInt(info.y2[i]));
+      drawLine(ctx,"rgb("+String(hex2rgb(info.stroke[i]))+")", Number(info.stroke_width[i]), parseInt(info.x1[i]), parseInt(info.y1[i]), parseInt(info.x2[i]), parseInt(info.y2[i]));
       //点
       //ctx.fillStyle = "rgb(50, 200, 255)";
       ctx.fillStyle = "rgb(134, 74, 43)";
@@ -708,13 +708,13 @@ function initDrawApp(globals) {
     let green = new Array();
     let magenta = new Array();
 
-    let opacity = original["opacity"];
-    let stroke = original["stroke"];
-    let stroke_width = original["stroke_width"];
-    let x1 = original["x1"];
-    let x2 = original["x2"];
-    let y1 = original["y1"];
-    let y2 = original["y2"];
+    let opacity = original.opacity;
+    let stroke = original.stroke;
+    let stroke_width = original.stroke_width;
+    let x1 = original.x1;
+    let x2 = original.x2;
+    let y1 = original.y1;
+    let y2 = original.y2;
 
     //振り分け
     for (let i = 0; i < stroke.length; i++) {
@@ -748,12 +748,27 @@ function initDrawApp(globals) {
 
     //格納作業
     //黒
+    text += `<g>`;
+    for (let i = 0; i < black.length; i++) {
+      text += `<line fill="none" stroke="#000" stroke-miterlimit="10" x1="${black[i][3]}" y1="${black[i][5]}" x2="${black[i][4]}" y2="${black[i][6]}"/>`;
+    }
+    text += `</g>`;
+
+    //赤
+    text += `<g>`;
+    for (let i = 0; i < red.length; i++) {
+      text += `<line fill="none" stroke="#f00" stroke-miterlimit="10" x1="${red[i][3]}" y1="${red[i][5]}" x2="${red[i][4]}" y2="${red[i][6]}"/>`;
+    }
+    text += `</g>`;
+
+    /*
+    //黒
     text += `
     <g>
     <polyline fill="none" stroke="#000" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < black.length; i++) {
-      text += `${black[i][2]} ${black[i][3]} ${black[i][3]} ${black[i][5]} `;
+      text += `${black[i][3]} ${black[i][5]} ${black[i][4]} ${black[i][6]} `;
     }
     text += `"/>
     </g>`;
@@ -764,7 +779,7 @@ function initDrawApp(globals) {
     <polyline fill="none" stroke="#f00" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < red.length; i++) {
-      text += `${red[i][2]} ${red[i][4]} ${red[i][3]} ${red[i][5]} `;
+      text += `${red[i][3]} ${red[i][5]} ${red[i][4]} ${red[i][6]} `;
     }
     text += `"/>
     </g>`;
@@ -775,7 +790,7 @@ function initDrawApp(globals) {
     <polyline fill="none" stroke="#00f" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < blue.length; i++) {
-      text += `${blue[i][2]} ${blue[i][4]} ${blue[i][3]} ${blue[i][5]} `;
+      text += `${blue[i][3]} ${blue[i][5]} ${blue[i][4]} ${blue[i][6]} `;
     }
     text += `"/>
     </g>`;
@@ -786,7 +801,7 @@ function initDrawApp(globals) {
     <polyline fill="none" stroke="#ff0" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < yellow.length; i++) {
-      text += `${yellow[i][2]} ${yellow[i][4]} ${yellow[i][3]} ${yellow[i][5]} `;
+      text += `${yellow[i][3]} ${yellow[i][5]} ${yellow[i][4]} ${yellow[i][6]} `;
     }
     text += `"/>
     </g>`;
@@ -797,7 +812,7 @@ function initDrawApp(globals) {
     <polyline fill="none" stroke="#0f0" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < green.length; i++) {
-      text += `${green[i][2]} ${green[i][4]} ${green[i][3]} ${green[i][5]} `;
+      text += `${green[i][3]} ${green[i][5]} ${green[i][4]} ${green[i][6]} `;
     }
     text += `"/>
     </g>`;
@@ -808,16 +823,16 @@ function initDrawApp(globals) {
     <polyline fill="none" stroke="#f0f" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < magenta.length; i++) {
-      text += `${magenta[i][2]} ${magenta[i][4]} ${magenta[i][3]} ${magenta[i][5]} `;
+      text += `${magenta[i][3]} ${magenta[i][5]} ${magenta[i][4]} ${magenta[i][6]} `;
     }
     text += `"/>
     </g>`;
 
     text += `
     </svg>`;
+    */
 
-    //console.log(text);
-    //fileReader.result = text;
+   text += `</svg>`;
     fileReader.text = text;
   }
 
