@@ -750,10 +750,10 @@ function initDrawApp(globals) {
     //黒
     text += `
     <g>
-    <polygon fill="none" stroke="#000" stroke-miterlimit="10" points="
+    <polyline fill="none" stroke="#000" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < black.length; i++) {
-      text += `${black[i][2]} ${black[i][4]} ${black[i][3]} ${black[i][5]} `;
+      text += `${black[i][2]} ${black[i][3]} ${black[i][3]} ${black[i][5]} `;
     }
     text += `"/>
     </g>`;
@@ -761,7 +761,7 @@ function initDrawApp(globals) {
     //赤
     text += `
     <g>
-    <polygon fill="none" stroke="#f00" stroke-miterlimit="10" points="
+    <polyline fill="none" stroke="#f00" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < red.length; i++) {
       text += `${red[i][2]} ${red[i][4]} ${red[i][3]} ${red[i][5]} `;
@@ -772,7 +772,7 @@ function initDrawApp(globals) {
     //青
     text += `
     <g>
-    <polygon fill="none" stroke="#00f" stroke-miterlimit="10" points="
+    <polyline fill="none" stroke="#00f" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < blue.length; i++) {
       text += `${blue[i][2]} ${blue[i][4]} ${blue[i][3]} ${blue[i][5]} `;
@@ -783,7 +783,7 @@ function initDrawApp(globals) {
     //黄色
     text += `
     <g>
-    <polygon fill="none" stroke="#ff0" stroke-miterlimit="10" points="
+    <polyline fill="none" stroke="#ff0" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < yellow.length; i++) {
       text += `${yellow[i][2]} ${yellow[i][4]} ${yellow[i][3]} ${yellow[i][5]} `;
@@ -794,7 +794,7 @@ function initDrawApp(globals) {
     //緑
     text += `
     <g>
-    <polygon fill="none" stroke="#0f0" stroke-miterlimit="10" points="
+    <polyline fill="none" stroke="#0f0" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < green.length; i++) {
       text += `${green[i][2]} ${green[i][4]} ${green[i][3]} ${green[i][5]} `;
@@ -805,7 +805,7 @@ function initDrawApp(globals) {
     //マゼンタ
     text += `
     <g>
-    <polygon fill="none" stroke="#f0f" stroke-miterlimit="10" points="
+    <polyline fill="none" stroke="#f0f" stroke-miterlimit="10" points="
     `;
     for (let i = 0; i < magenta.length; i++) {
       text += `${magenta[i][2]} ${magenta[i][4]} ${magenta[i][3]} ${magenta[i][5]} `;
