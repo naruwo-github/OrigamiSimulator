@@ -37,6 +37,9 @@ function initDynamicSolver(globals){
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
+    //
+    let avgOriginalPosition;
+
     function syncNodesAndEdges(){
         nodes = globals.model.getNodes();
         edges = globals.model.getEdges();
@@ -49,6 +52,8 @@ function initDynamicSolver(globals){
         initTypedArrays();
         initTexturesAndPrograms(globals.gpuMath);
         setSolveParams();
+
+        avgOriginalPosition = getAvgOriginalPosition();
     }
 
     var programsInited = false;//flag for initial setup
@@ -109,6 +114,8 @@ function initDynamicSolver(globals){
         //     globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
         //     globals.shouldZeroDynamicVelocity = false;
         // }
+
+        //ジオメトリのセンタリンぐ
         if (globals.shouldCenterGeo){
             var avgPosition = getAvgPosition();
             globals.gpuMath.setProgram("centerTexture");
@@ -119,6 +126,18 @@ function initDynamicSolver(globals){
             globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
             globals.gpuMath.step("zeroTexture", [], "u_velocity");
             globals.shouldCenterGeo = false;
+        } else {
+            if (isErrorPosition()) {
+                var avgPosition = getAvgPosition();
+                globals.gpuMath.setProgram("centerTexture");
+                globals.gpuMath.setUniformForProgram("centerTexture",   "u_center", [avgPosition.x, avgPosition.y, avgPosition.z],    "3f");
+                globals.gpuMath.step("centerTexture", ["u_lastPosition"],   "u_position");
+                if (globals.integrationType == "verlet") globals.gpuMath.step   ("copyTexture", ["u_position"], "u_lastLastPosition");
+                globals.gpuMath.swapTextures("u_position", "u_lastPosition");
+                globals.gpuMath.step("zeroTexture", [], "u_lastVelocity");
+                globals.gpuMath.step("zeroTexture", [], "u_velocity");
+            }
+            updateLastPosition();
         }
 
         if (_numSteps === undefined) _numSteps = globals.numSteps;
@@ -183,6 +202,35 @@ function initDynamicSolver(globals){
         var avgPosition = new THREE.Vector3(xavg, yavg, zavg);
         avgPosition.multiplyScalar(3/positions.length);
         return avgPosition;
+    }
+
+    function getAvgOriginalPosition(){
+        let orgxavg = 0, orgyavg = 0, orgzavg = 0;
+        for (let i = 0; i < nodes.length; i++) {
+            orgxavg += originalPosition[4*i];
+            orgyavg += originalPosition[4*i+1];
+            orgzavg += originalPosition[4*i+2];
+        }
+        let avgOriginalPosition = new THREE.Vector3(orgxavg, orgyavg, orgzavg);
+        avgOriginalPosition.multiplyScalar(1/nodes.length);
+        return avgOriginalPosition;
+    }
+
+    function isErrorPosition() {
+        let xavg = 0, yavg = 0, zavg = 0;
+        for (let i = 0; i < nodes.length; i++) {
+            let position = nodes[i].getPosition();
+            xavg += position.x;
+            yavg += position.y;
+            zavg += position.z;
+        }
+        let avgPosition = new THREE.Vector3(xavg, yavg, zavg);
+        avgPosition.multiplyScalar(1/nodes.length);
+        if (avgPosition.sub(avgOriginalPosition).lengthSq() > 0.01) {
+            console.log("fixed");
+            return true;
+        }
+        return false;
     }
 
     function render(){
