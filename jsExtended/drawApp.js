@@ -741,10 +741,29 @@ function initDrawApp(globals) {
     }
 
     //outputとoptimizedruling使うところ
-    //
-    //
-    //
-    //
+    //現在はどちらも黄色なのか？
+    if (output.length > 0) {
+      for (let i = 0; i < output.length-1; i+=2) {
+        let start = output[i];
+        let end = output[i+1];
+        yellow.push([1, "#ff0", stroke_width[0], start[0], end[0], start[1], end[1]]);
+      }
+    }
+
+    if (optimized.length > 0) {
+      for (let i = 0; i < optimized.length-1; i+=2) {
+        let start = optimized[i];
+        let end = optimized[i+1];
+        yellow.push([1, "#ff0", stroke_width[0], start[0], end[0], start[1], end[1]]);
+      }
+    }
+
+    if (gridline.length > 0) {
+      for (let i = 0; i < gridline.length; i++) {
+        let tmp = gridline[i];
+        magenta.push([1, "#f0f", stroke_width[0], tmp[0][0], tmp[1][0], tmp[0][1], tmp[1][1]]);
+      }
+    }
 
     //格納作業
     //黒
@@ -798,7 +817,7 @@ function initDrawApp(globals) {
 
     text += `</svg>`;
     fileReader.text = text;
-    
+
     /*
     //黒
     text += `
