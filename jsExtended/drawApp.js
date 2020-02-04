@@ -93,6 +93,17 @@ function initDrawApp(globals) {
   var downButton = document.getElementById("down-num");
   downButton.innerHTML = "▼";
 
+  //テストボタン
+  var testButton = document.getElementById("test-button");
+  var testCount = parseInt(testButton.innerText);
+  testButton.addEventListener("click", function() {
+    testCount+=1;
+    console.log("testCount = " + testCount);
+    testButton.innerText = String(testCount);
+    canvasReload();
+    drawCanvas();
+  });
+
   //出力のリスト
   var outputList = new Array();
   //最適化されたrulingを保存するリスト
@@ -215,7 +226,8 @@ function initDrawApp(globals) {
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
       if(gridTool.points.length%4 == 0) {
-        globals.grids.drawGrid(gridMode.mode, gridnumber, gridLineList, context, lineColors[3], gridTool.points);
+        //globals.grids.drawGrid(gridMode.mode, gridnumber, gridLineList, context, lineColors[3], gridTool.points);
+        globals.grids.drawGridWithAngle(gridMode.mode, gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount);
       }
     }
   }
