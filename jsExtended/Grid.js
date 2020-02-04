@@ -275,6 +275,63 @@ function initGrids(globals) {
         rotationalMovement(ctx, list, array, 0);
     }
 
+    //角度を持った格子を描画する関数
+    function drawGridWithAngle(gridMode, gridnumber, outputList, ctx, lineColor, outlinePoints) {
+        const lines = gridnumber;
+        var grids = new Array();
+        for (let i = 0; i < outlinePoints.length; i+=4) {
+            //輪郭を構成する頂点群(4つと決め打ち)
+            const element0 = outlinePoints[0];
+            const element1 = outlinePoints[1];
+            const element2 = outlinePoints[2];
+            const element3 = outlinePoints[3];
+            const vectorP0 = new THREE.Vector2(element0[0], element0[1]);
+            const vectorP1 = new THREE.Vector2(element1[0], element1[1]);
+            const vectorP2 = new THREE.Vector2(element2[0], element2[1]);
+            const vectorP3 = new THREE.Vector2(element3[0], element3[1]);
+            const vectorP0P1 = new THREE.Vector2(vectorP1.x-vectorP0.x, vectorP1.y-vectorP0.y);
+            const vectorP1P2 = new THREE.Vector2(vectorP2.x-vectorP1.x, vectorP2.y-vectorP1.y);
+            const vectorP2P3 = new THREE.Vector2(vectorP3.x-vectorP2.x, vectorP3.y-vectorP2.y);
+            const vectorP3P0 = new THREE.Vector2(vectorP0.x-vectorP3.x, vectorP0.y-vectorP3.y);
+            vectorP0P1.divideScalar(lines);
+            vectorP1P2.divideScalar(lines);
+            vectorP2P3.divideScalar(lines);
+            vectorP3P0.divideScalar(lines);
+            //格子角度調整用に拡大した輪郭の頂点ベクトル
+            const vectorP0Dash = new THREE.Vector2(2 * vectorP0.x - vectorP1.x, 2 * vectorP0.y - vectorP3.y);
+            const vectorP1Dash = new THREE.Vector2(2 * vectorP1.x - vectorP0.x, 2 * vectorP1.y - vectorP2.y);
+            const vectorP2Dash = new THREE.Vector2(2 * vectorP2.x - vectorP3.x, 2 * vectorP2.y - vectorP1.y);
+            const vectorP3Dash = new THREE.Vector2(2 * vectorP3.x - vectorP2.x, 2 * vectorP3.y - vectorP0.y);
+            /*
+            const vectorP0P1Dash = new THREE.Vector2(vectorP1Dash.x - vectorP0Dash.x, vectorP1Dash.y - vectorP0Dash.y);
+            const vectorP1P2Dash = new THREE.Vector2(vectorP2Dash.x - vectorP1Dash.x, vectorP2Dash.y - vectorP1Dash.y);
+            const vectorP2P3Dash = new THREE.Vector2(vectorP3Dash.x - vectorP2Dash.x, vectorP3Dash.y - vectorP2Dash.y);
+            const vectorP3P0Dash = new THREE.Vector2(vectorP0Dash.x - vectorP3Dash.x, vectorP0Dash.y - vectorP3Dash.y);
+            */
+           //線は縦横それぞれ 格子数×3+1本 描画する
+           for (let i = 0; i < lines * 3 + 1; i++) {
+               //gridsのなかに[[x0, y0], [x1, y1], color]の形式で格納
+               //上から下の線
+               grids.push([[vectorP0Dash.x + vectorP0P1.x * i, vectorP0Dash.y + vectorP0P1.y * i], 
+                [vectorP3Dash.x - vectorP2P3.x * i, vectorP3Dash.y - vectorP2P3.y * i], lineColor]);
+               //左から右の線
+               grids.push([[vectorP0Dash.x - vectorP3P0.x * i, vectorP0Dash.y - vectorP3P0.y * i], 
+                [vectorP1Dash.x + vectorP1P2.x * i, vectorP1Dash.y + vectorP1P2.y * i], lineColor]);
+           }
+           //grids内にある線を用いて交差判定
+           //
+           //
+           /*
+           //試し書きするか
+           for (let i = 0; i < grids.length; i++) {
+               globals.drawapp.drawLine(ctx, lineColor, 3, grids[i][0][0], grids[i][0][1], grids[i][1][0], grids[i][1][1]);
+           }
+           */
+        }
+    }
+
+    //listに格納されている直線群のそれぞれに対し、
+    //outlineを中心としてangleだけ回転させたものをlist内に返し描画する
     function rotationalMovement(ctx, list, outline, angle) {
         let center = [0, 0];
         for (let i = 0; i < outline.length; i++) {
@@ -299,6 +356,7 @@ function initGrids(globals) {
 
     return {
         drawGrid: drawGrid,
+        drawGridWithAngle: drawGridWithAngle,
         rotationalMovement: rotationalMovement,
         coordinateTransformation: coordinateTransformation,
     }
