@@ -302,12 +302,10 @@ function initGrids(globals) {
             const vectorP1Dash = new THREE.Vector2(2 * vectorP1.x - vectorP0.x, 2 * vectorP1.y - vectorP2.y);
             const vectorP2Dash = new THREE.Vector2(2 * vectorP2.x - vectorP3.x, 2 * vectorP2.y - vectorP1.y);
             const vectorP3Dash = new THREE.Vector2(2 * vectorP3.x - vectorP2.x, 2 * vectorP3.y - vectorP0.y);
-            /*
-            const vectorP0P1Dash = new THREE.Vector2(vectorP1Dash.x - vectorP0Dash.x, vectorP1Dash.y - vectorP0Dash.y);
-            const vectorP1P2Dash = new THREE.Vector2(vectorP2Dash.x - vectorP1Dash.x, vectorP2Dash.y - vectorP1Dash.y);
-            const vectorP2P3Dash = new THREE.Vector2(vectorP3Dash.x - vectorP2Dash.x, vectorP3Dash.y - vectorP2Dash.y);
-            const vectorP3P0Dash = new THREE.Vector2(vectorP0Dash.x - vectorP3Dash.x, vectorP0Dash.y - vectorP3Dash.y);
-            */
+            // const vectorP0P1Dash = new THREE.Vector2(vectorP1Dash.x - vectorP0Dash.x, vectorP1Dash.y - vectorP0Dash.y);
+            // const vectorP1P2Dash = new THREE.Vector2(vectorP2Dash.x - vectorP1Dash.x, vectorP2Dash.y - vectorP1Dash.y);
+            // const vectorP2P3Dash = new THREE.Vector2(vectorP3Dash.x - vectorP2Dash.x, vectorP3Dash.y - vectorP2Dash.y);
+            // const vectorP3P0Dash = new THREE.Vector2(vectorP0Dash.x - vectorP3Dash.x, vectorP0Dash.y - vectorP3Dash.y);
            //線は縦横それぞれ 格子数×3+1本 描画する
            for (let i = 0; i < lines * 3 + 1; i++) {
                //gridsのなかに[[x0, y0], [x1, y1], color]の形式で格納
