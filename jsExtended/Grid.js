@@ -276,7 +276,7 @@ function initGrids(globals) {
     }
 
     //角度を持った格子を描画する関数
-    function drawGridWithAngle(gridMode, gridnumber, outputList, ctx, lineColor, outlinePoints) {
+    function drawGridWithAngle(gridMode, gridnumber, outputList, ctx, lineColor, outlinePoints, angle) {
         const lines = gridnumber;
         var grids = new Array();
         for (let i = 0; i < outlinePoints.length; i+=4) {
@@ -316,15 +316,14 @@ function initGrids(globals) {
                grids.push([[vectorP0Dash.x - vectorP3P0.x * i, vectorP0Dash.y - vectorP3P0.y * i], 
                 [vectorP1Dash.x + vectorP1P2.x * i, vectorP1Dash.y + vectorP1P2.y * i], lineColor]);
            }
-           //grids内にある線を用いて交差判定
-           //
-           //
-           /*
-           //試し書きするか
+           //grids内の座標をangleだけ回転移動
+           console.log("(drawGridWithAngle)angle = " + angle);
+           rotationalMovement(ctx, grids, outlinePoints, angle);
+           //試し描き
            for (let i = 0; i < grids.length; i++) {
                globals.drawapp.drawLine(ctx, lineColor, 3, grids[i][0][0], grids[i][0][1], grids[i][1][0], grids[i][1][1]);
            }
-           */
+           //grids内にある線を用いて交差判定
         }
     }
 
@@ -338,6 +337,7 @@ function initGrids(globals) {
         }
         center[0] /= outline.length;
         center[1] /= outline.length;
+        ctx.fillRect(center[0]-5, center[1]-5, 11, 11);
         for (let i = 0; i < list.length; i++) {
             list[i][0] = coordinateTransformation(list[i][0][0], list[i][0][1], center[0], center[1], angle);
             list[i][1] = coordinateTransformation(list[i][1][0], list[i][1][1], center[0], center[1], angle);
@@ -349,7 +349,8 @@ function initGrids(globals) {
     function coordinateTransformation(x, y, ox, oy, angle) {
         x -= ox;
         y -= oy;
-        return [x * Math.cos(angle) - y * Math.sin(angle) + ox, x * Math.sin(angle) + y * Math.cos(angle) + oy];
+        return [x * Math.cos(angle / 180 * Math.PI) - y * Math.sin(angle / 180 * Math.PI) + ox, 
+            x * Math.sin(angle / 180 * Math.PI) + y * Math.cos(angle / 180 * Math.PI) + oy];
     }
 
     return {
