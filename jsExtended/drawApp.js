@@ -104,7 +104,7 @@ function initDrawApp(globals) {
     drawCanvas();
   });
 
-  //出力のリスト
+  //出力のリスト(構造は[[x0, y0],...,[xn, yn]])
   var outputList = new Array();
   //最適化されたrulingを保存するリスト
   var optimizedRuling = new Array();
