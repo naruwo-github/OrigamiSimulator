@@ -328,17 +328,20 @@ function initGrids(globals) {
                let tmp = grids[i];
                let start = tmp[0];
                let end = tmp[1];
-               var vectorStart = new Vector2(start[0], start[1]);
-               var vectorEnd = new Vector2(end[0], end[1]);
-               var vectorStartToEnd = new Vector2(vectorEnd.x - vectorStart.x, vectorEnd.y - vectorStart.y);
+               var vectorStart = new THREE.Vector2(start[0], start[1]);
+               var vectorEnd = new THREE.Vector2(end[0], end[1]);
+               var vectorStartToEnd = new THREE.Vector2(vectorEnd.x - vectorStart.x, vectorEnd.y - vectorStart.y);
                vectorStartToEnd.normalize();
 
                var j = 0;
                var handleGrids = new Array();
                var vectorStartTmp = vectorStart;
-               while (vectorStartTmp.distance(vectorEnd) < 10) {
+               while (vectorStartTmp.distanceTo(vectorEnd) > 10) {
                    vectorStartTmp.x += vectorStartToEnd.x * j;
                    vectorStartTmp.y += vectorStartToEnd.y * j;
+                   //デバッグコード
+                   ctx.fillStyle = "rgb(0, 255, 0)";
+                   ctx.fillRect(vectorStartTmp.x-1, vectorStartTmp.y-1, 3, 3);
                    //輪郭との交差判定を行う(現段階では輪郭線は4本と上で固定されている？)
                    //一方向から交差判定し続けると、上の点が複数回検出されてしまう、、それを弾く処理が必要になる
                    //検出したら、「その点を更新した点」から始める
@@ -366,9 +369,15 @@ function initGrids(globals) {
                             vectorStartTmp.x, vectorStartTmp.y, element0[0], element0[1]));
                         vectorStart = vectorStartTmp;
                    }
-                   j += 10;
+                   j += 5;
                }
                //handlegridsのサイズが2だったら交差した2点を検出できているのでこれを格子の線とする
+               if (handleGrids.length == 2) {
+                   //outputlistに格納&描画
+                   outputList.push(handleGrids[0]);
+                   outputList.push(handleGrids[1]);
+                   globals.drawapp.drawLine(ctx, lineColor, 0.5, handleGrids[0][0], handleGrids[0][1], handleGrids[1][0], handleGrids[1][1]);
+               }
            }
         }
     }
@@ -387,7 +396,7 @@ function initGrids(globals) {
         for (let i = 0; i < list.length; i++) {
             list[i][0] = coordinateTransformation(list[i][0][0], list[i][0][1], center[0], center[1], angle);
             list[i][1] = coordinateTransformation(list[i][1][0], list[i][1][1], center[0], center[1], angle);
-            globals.drawapp.drawLine(ctx, list[i][2], 2, list[i][0][0], list[i][0][1], list[i][1][0], list[i][1][1]);
+            //globals.drawapp.drawLine(ctx, list[i][2], 2, list[i][0][0], list[i][0][1], list[i][1][0], list[i][1][1]);
         }
     }
 
