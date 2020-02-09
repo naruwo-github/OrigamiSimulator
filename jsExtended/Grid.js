@@ -262,10 +262,6 @@ function initGrids(globals) {
             const vectorP1Dash = new THREE.Vector2(2 * vectorP1.x - vectorP0.x, 2 * vectorP1.y - vectorP2.y);
             const vectorP2Dash = new THREE.Vector2(2 * vectorP2.x - vectorP3.x, 2 * vectorP2.y - vectorP1.y);
             const vectorP3Dash = new THREE.Vector2(2 * vectorP3.x - vectorP2.x, 2 * vectorP3.y - vectorP0.y);
-            // const vectorP0P1Dash = new THREE.Vector2(vectorP1Dash.x - vectorP0Dash.x, vectorP1Dash.y - vectorP0Dash.y);
-            // const vectorP1P2Dash = new THREE.Vector2(vectorP2Dash.x - vectorP1Dash.x, vectorP2Dash.y - vectorP1Dash.y);
-            // const vectorP2P3Dash = new THREE.Vector2(vectorP3Dash.x - vectorP2Dash.x, vectorP3Dash.y - vectorP2Dash.y);
-            // const vectorP3P0Dash = new THREE.Vector2(vectorP0Dash.x - vectorP3Dash.x, vectorP0Dash.y - vectorP3Dash.y);
            //線は縦横それぞれ 格子数×3+1本 描画する
            for (let i = 0; i < lines * 3 + 1; i++) {
                //gridsのなかに[[x0, y0], [x1, y1], color]の形式で格納
@@ -276,95 +272,52 @@ function initGrids(globals) {
                grids.push([[vectorP0Dash.x - vectorP3P0.x * i, vectorP0Dash.y - vectorP3P0.y * i], 
                 [vectorP1Dash.x + vectorP1P2.x * i, vectorP1Dash.y + vectorP1P2.y * i], lineColor]);
            }
+
            //grids内の座標をangleだけ回転移動
            rotationalMovement(ctx, grids, outlinePoints, angle);
-           console.log("grids num = " + grids.length);
+
+           var handleGrids = new Array();
            //grids内にある線を用いて交差判定
            for (let i = 0; i < grids.length; i++) {
+               handleGrids = new Array();
                //弾く格子ライン
                if (i !== 2 * gridnumber && i !== 2 * gridnumber + 1 && i !== 4 * gridnumber && i !== 4 * gridnumber +1 || angle%90 !== 0) {
                     let tmp = grids[i];
                     let start = tmp[0];
                     let end = tmp[1];
-                    var vectorStart = new THREE.Vector2(start[0], start[1]);
-                    var vectorEnd = new THREE.Vector2(end[0], end[1]);
-                    var vectorStartToEnd = new THREE.Vector2(vectorEnd.x - vectorStart.x, vectorEnd.y - vectorStart.y);
-                    vectorStartToEnd.normalize();
 
-                    var handleGrids = new Array();
-                    var vectorStartTmp = vectorStart;
-                    while (vectorStartTmp.distanceTo(vectorEnd) > 10) {
-                        vectorStartTmp.x += vectorStartToEnd.x;
-                        vectorStartTmp.y += vectorStartToEnd.y;
+                    //デバッグ用(交差判定する前のやつら)
+                    outputList.push([[start[0], start[1]], [end[0], end[1]], lineColor]);
+                    globals.drawapp.drawLine(ctx, lineColor, 1, start[0], start[1], end[0], end[1]);
 
-                        //デバッグ用に線を引こうかな
-                        ctx.fillStyle = "rgb(0, 255, 100)";
-                        ctx.fillRect(vectorStartTmp.x-2, vectorStartTmp.y-2, 5, 5);
-
-                        /*
-                        //輪郭との交差判定を行う(現段階では輪郭線は4本と上で固定されている？)
-                        //一方向から交差判定し続けると、上の点が複数回検出されてしまう、、それを弾く処理が必要になる
-                        //検出したら、「その点を更新した点」から始める
-                        if (handleGrids.length === 0) {
-                            console.log("Into First Loop...");
-                                if (globals.beziercurve.judgeIntersect2(vectorStart.x, vectorStart.y, vectorStartTmp.x, vectorStartTmp.y, 
-                                    element0[0], element0[1], element1[0], element1[1])) {
-                                        handleGrids.push(globals.beziercurve.getIntersectPoint(vectorStart.x, vectorStart.y, element0[0], element0[1], 
-                                            vectorStartTmp.x, vectorStartTmp.y, element1[0], element1[1]));
-                                }
-                                if (globals.beziercurve.judgeIntersect2(vectorStart.x, vectorStart.y, vectorStartTmp.x, vectorStartTmp.y, 
-                                    element1[0], element1[1], element2[0], element2[1])) {
-                                        handleGrids.push(globals.beziercurve.getIntersectPoint(vectorStart.x, vectorStart.y, element1[0], element1[1], 
-                                            vectorStartTmp.x, vectorStartTmp.y, element2[0], element2[1]));
-                                }
-                                if (globals.beziercurve.judgeIntersect2(vectorStart.x, vectorStart.y, vectorStartTmp.x, vectorStartTmp.y, 
-                                    element2[0], element2[1], element3[0], element3[1])) {
-                                        handleGrids.push(globals.beziercurve.getIntersectPoint(vectorStart.x, vectorStart.y, element2[0], element2[1], 
-                                            vectorStartTmp.x, vectorStartTmp.y, element3[0], element3[1]));
-                                }
-                                if (globals.beziercurve.judgeIntersect2(vectorStart.x, vectorStart.y, vectorStartTmp.x, vectorStartTmp.y, 
-                                    element3[0], element3[1], element0[0], element0[1])) {
-                                        handleGrids.push(globals.beziercurve.getIntersectPoint(vectorStart.x, vectorStart.y, element3[0], element3[1], 
-                                            vectorStartTmp.x, vectorStartTmp.y, element0[0], element0[1]));
-                                }
-                                console.log("gridsSize: " + grids.length);
-                            } else if (handleGrids.length === 1) {
-                                console.log("Into Second Loop...");
-                                //vectorStartTmpとvectorEndで交差判定
-                                if (globals.beziercurve.judgeIntersect2(vectorStartTmp.x, vectorStartTmp.y, vectorEnd.x, vectorEnd.y, 
-                                    element0[0], element0[1], element1[0], element1[1])) {
-                                        handleGrids.push(globals.beziercurve.getIntersectPoint(vectorStartTmp.x, vectorStartTmp.y, element0[0], element0[1], 
-                                            vectorEnd.x, vectorEnd.y, element1[0], element1[1]));
-                                }
-                                if (globals.beziercurve.judgeIntersect2(vectorStartTmp.x, vectorStartTmp.y, vectorEnd.x, vectorEnd.y, 
-                                    element1[0], element1[1], element2[0], element2[1])) {
-                                        handleGrids.push(globals.beziercurve.getIntersectPoint(vectorStartTmp.x, vectorStartTmp.y, element1[0], element1[1], 
-                                            vectorEnd.x, vectorEnd.y, element2[0], element2[1]));
-                                }
-                                if (globals.beziercurve.judgeIntersect2(vectorStartTmp.x, vectorStartTmp.y, vectorEnd.x, vectorEnd.y, 
-                                    element2[0], element2[1], element3[0], element3[1])) {
-                                        handleGrids.push(globals.beziercurve.getIntersectPoint(vectorStartTmp.x, vectorStartTmp.y, element2[0], element2[1], 
-                                            vectorEnd.x, vectorEnd.y, element3[0], element3[1]));
-                                }
-                                if (globals.beziercurve.judgeIntersect2(vectorStartTmp.x, vectorStartTmp.y, vectorEnd.x, vectorEnd.y, 
-                                    element3[0], element3[1], element0[0], element0[1])) {
-                                        handleGrids.push(globals.beziercurve.getIntersectPoint(vectorStartTmp.x, vectorStartTmp.y, element3[0], element3[1], 
-                                            vectorEnd.x, vectorEnd.y, element0[0], element0[1]));
-                                }
-                                //loopを終了させるように
-                                vectorStartTmp = vectorEnd;
-                                break;
-                            }
-                            */
+                    if (globals.beziercurve.judgeIntersect2(start[0], start[1], end[0], end[1], element0[0], element0[1], element1[0], element1[1])) {
+                        //let intersectPoint = globals.beziercurve.getIntersectPoint(start[0], start[1], element0[0], element0[1], end[0], end[0], element1[0], element1[1]);
+                        //ctx.fillRect(intersectPoint[0]-1, intersectPoint[1]-1, 3, 3);
+                        handleGrids.push(globals.beziercurve.getIntersectPoint(start[0], start[1], element0[0], element0[1], end[0], end[0], element1[0], element1[1]));
                     }
-                    //handlegridsのサイズが2だったら交差した2点を検出できているのでこれを格子の線とする
-                    if (handleGrids.length == 2) {
-                        //outputlistに格納&描画
-                        console.log("determine!!!");
-                        outputList.push([handleGrids[0], handleGrids[1], lineColor]);
-                        globals.drawapp.drawLine(ctx, lineColor, 0.5, handleGrids[0][0], handleGrids[0][1], handleGrids[1][0], handleGrids[1][1]);
+                    if (globals.beziercurve.judgeIntersect2(start[0], start[1], end[0], end[1], element1[0], element1[1], element2[0], element2[1])) {
+                        //let intersectPoint = globals.beziercurve.getIntersectPoint(start[0], start[1], element1[0], element1[1], end[0], end[0], element2[0], element2[1]);
+                        //ctx.fillRect(intersectPoint[0]-1, intersectPoint[1]-1, 3, 3);
+                        handleGrids.push(globals.beziercurve.getIntersectPoint(start[0], start[1], element1[0], element1[1], end[0], end[0], element2[0], element2[1]));
+                    }
+                    if (globals.beziercurve.judgeIntersect2(start[0], start[1], end[0], end[1], element2[0], element2[1], element3[0], element3[1])) {
+                        //let intersectPoint = globals.beziercurve.getIntersectPoint(start[0], start[1], element2[0], element2[1], end[0], end[0], element3[0], element3[1]);
+                        //ctx.fillRect(intersectPoint[0]-1, intersectPoint[1]-1, 3, 3);
+                        handleGrids.push(globals.beziercurve.getIntersectPoint(start[0], start[1], element2[0], element2[1], end[0], end[0], element3[0], element3[1]));
+                    }
+                    if (globals.beziercurve.judgeIntersect2(start[0], start[1], end[0], end[1], element3[0], element3[1], element0[0], element0[1])) {
+                        //let intersectPoint = globals.beziercurve.getIntersectPoint(start[0], start[1], element3[0], element3[1], end[0], end[0], element0[0], element0[1]);
+                        //ctx.fillRect(intersectPoint[0]-1, intersectPoint[1]-1, 3, 3);
+                        handleGrids.push(globals.beziercurve.getIntersectPoint(start[0], start[1], element3[0], element3[1], end[0], end[0], element0[0], element0[1]));
                     }
                 }
+
+                //handlegridsのサイズが2だったら交差した2点を検出できているのでこれを格子の線とする
+                if (handleGrids.length === 2) {
+                    outputList.push([handleGrids[0], handleGrids[1], lineColor]);
+                    globals.drawapp.drawLine(ctx, lineColor, 0.5, handleGrids[0][0], handleGrids[0][1], handleGrids[1][0], handleGrids[1][1]);
+                }
+
            }
         }
     }
