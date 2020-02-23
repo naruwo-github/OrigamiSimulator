@@ -343,10 +343,23 @@ function initGrids(globals) {
             x * Math.sin(angle / 180 * Math.PI) + y * Math.cos(angle / 180 * Math.PI) + oy];
     }
 
+    //四分木の構造体
+    class q_tree {
+        constructor(selfIndex, parentIndex, next, prev, coordinates) {
+            this.selfIndex = selfIndex;
+            this.parentIndex = parentIndex;
+            this.next = next;
+            this.prev = prev;
+            this.coordinates = coordinates;
+            this.center = [(coordinates[0] + coordinates[2] + coordinates[4] + coordinates[6]) / 4, (coordinates[1] + coordinates[3] + coordinates[5] + coordinates[7]) / 4];
+        }
+    }
+
     return {
         drawGrid: drawGrid,
         drawGridWithAngle: drawGridWithAngle,
         rotationalMovement: rotationalMovement,
         coordinateTransformation: coordinateTransformation,
+        q_tree: q_tree,
     }
 }
