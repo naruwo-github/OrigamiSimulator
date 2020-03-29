@@ -490,15 +490,23 @@ function initGrids(globals) {
         ctx.fillRect(center[0]-0.5, center[1]-0.5, 2, 2);
 
         if (tree.selfIndex !== 0) {
-            //輪郭描画
-            globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x0, y0, x1, y1);
-            globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x1, y1, x2, y2);
-            globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x2, y2, x3, y3);
-            globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x3, y3, x0, y0);
-            gridLineList.push([[x0, y0], [x1, y1], lineColor]);
-            gridLineList.push([[x1, y1], [x2, y2], lineColor]);
-            gridLineList.push([[x2, y2], [x3, y3], lineColor]);
-            gridLineList.push([[x3, y3], [x0, y0], lineColor]);
+            if (tree.selfIndex%4 === 1) {
+                //child0の場合
+                globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x0, y0, x1, y1);
+                gridLineList.push([[x0, y0], [x1, y1], lineColor]);
+            } else if (tree.selfIndex%4 === 2) {
+                //chld1の場合
+                globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x3, y3, x0, y0);
+                gridLineList.push([[x3, y3], [x0, y0], lineColor]);
+            } else if (tree.selfIndex%4 === 3) {
+                //child2の場合
+                globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x1, y1, x2, y2);
+                gridLineList.push([[x1, y1], [x2, y2], lineColor]);
+            } else if (tree.selfIndex%4 === 0) {
+                //child3の場合
+                globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x2, y2, x3, y3);
+                gridLineList.push([[x2, y2], [x3, y3], lineColor]);
+            }
         }
 
         drawQTree(tree.child0, ctx, gridLineList, lineColor);
