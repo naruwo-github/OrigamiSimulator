@@ -369,16 +369,13 @@ function initGrids(globals) {
         let y3 = points[3][1];
         source.structure = new q_tree(0, NaN, [x0, y0, x1, y1, x2, y2, x3, y3]);
 
-        if (points.length > 4) {
+        if (points.length >= 4) {
             for (let i = 4; i < points.length; i++) {
                 //ここに再起で四分木を構築するようにしたい
                 if (i === 4) {
                     let parent = source.structure;
                     //x: 0 2 4 6
                     //y: 1 3 5 7
-
-                    //初めての分割
-                    
                     /*
                     //子1
                     source.structure.child0 = new q_tree(1, parent.selfIndex, [parent.coordinates[0], parent.coordinates[1], 
@@ -402,6 +399,7 @@ function initGrids(globals) {
                         (parent.coordinates[0]+parent.coordinates[6])/2, (parent.coordinates[1]+parent.coordinates[7])/2]);
                         */
                     
+                    //初めての分割
                     //子1
                     source.structure.child0 = new q_tree(1, parent.selfIndex, [x0, (y0+y3)/2, (x0+x1)/2, (y0+y3)/2, (x3+x2)/2, y3, x3, y3]);
                     //子2
@@ -411,11 +409,18 @@ function initGrids(globals) {
                     //子4
                     source.structure.child3 = new q_tree(4, parent.selfIndex, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
 
+                    tmpTree = source.structure;
                 } else {
-                    //初期分割以降のやつ、、、うまく再起を使いたいなあ、、、
+                    //初期分割以降
+                    //クリックした点の位置を取得
+                    let point = points[i];
                 }
             }
         }
+    }
+
+    function explorNextTree(tree, point) {
+        return;
     }
 
     function devideQTree(tree) {
@@ -441,7 +446,7 @@ function initGrids(globals) {
     }
 
     function drawQTree(tree, ctx) {
-        if (tree === NaN) {
+        if (tree === undefined) {
             return;
         }
 
@@ -453,29 +458,31 @@ function initGrids(globals) {
         let y2 = tree.coordinates[5];
         let x3 = tree.coordinates[6];
         let y3 = tree.coordinates[7];
+        let center = tree.center;
 
         //出力の確認？
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 2, x0, y0, x1, y1);
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 2, x1, y1, x2, y2);
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 2, x2, y2, x3, y3);
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 2, x3, y3, x0, y0);
+        console.log("drawing outline");
+        ctx.fillRect(center[0]-2, center[1]-2, 5, 5);
+        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x0, y0, x1, y1);
+        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x1, y1, x2, y2);
+        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x2, y2, x3, y3);
+        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x3, y3, x0, y0);
 
-        if (tree.child0 !== NaN) {
-            //子1
-            drawQTree(tree.child0, ctx);
-        }
-        if (tree.child1 !== NaN) {
-            //子2
-            drawQTree(tree.child1, ctx);
-        }
-        if (tree.child2 !== NaN) {
-            //子3
-            drawQTree(tree.child2, ctx);
-        }
-        if (tree.child3 !== NaN) {
-            //子4
-            drawQTree(tree.child3, ctx);
-        }
+        console.log("child0");
+        drawQTree(tree.child0, ctx);
+        console.log("child1");
+        drawQTree(tree.child1, ctx);
+        console.log("child2");
+        drawQTree(tree.child2, ctx);
+        console.log("child3");
+        drawQTree(tree.child3, ctx);
+        
+        return;
+    }
+
+    //2点間の距離を求める
+    function dist(x1,y1,x2,y2) {
+        return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
     }
 
     return {

@@ -245,13 +245,15 @@ function initDrawApp(globals) {
 
     //四分木の方のgrid!
     for (let i = 0; i < q_tree.points.length; i++) {
-      const point = q_tree.points[i];
-      context.fillStyle = lineColors[0];
-      context.fillRect(point[0]-4, point[1]-4, 9, 9);
+      if (i < 4) {
+        const point = q_tree.points[i];
+        context.fillStyle = lineColors[0];
+        context.fillRect(point[0]-4, point[1]-4, 9, 9);
+      }
     }
     if (q_tree.points.length >= 4) {
       globals.grids.makeQTree(q_tree);
-      console.log(q_tree);
+      console.log(q_tree.structure);
       globals.grids.drawQTree(q_tree.structure, context);
     }
 
