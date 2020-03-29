@@ -409,21 +409,45 @@ function initGrids(globals) {
                     //子4
                     source.structure.child3 = new q_tree(4, parent.selfIndex, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
 
-                    tmpTree = source.structure;
                 } else {
                     //初期分割以降
                     //クリックした点の位置を取得
                     let point = points[i];
+                    divideAimTree(source.structure, point);
+                    //divideQTree(endQTree);
                 }
             }
         }
     }
 
-    function explorNextTree(tree, point) {
-        return;
+    function divideAimTree(tree, point) {
+        if (tree.child0 === undefined) {
+            divideQTree(tree);
+            return;
+        }
+        //4つのcenterで一番近いところにすすむ
+        let center0 = tree.child0.center;
+        let center1 = tree.child1.center;
+        let center2 = tree.child2.center;
+        let center3 = tree.child3.center;
+        //pointとcenterX間の距離
+        let dist0 = dist(point[0], point[1], center0[0], center0[1]);
+        let dist1 = dist(point[0], point[1], center1[0], center1[1]);
+        let dist2 = dist(point[0], point[1], center2[0], center2[1]);
+        let dist3 = dist(point[0], point[1], center3[0], center3[1]);
+
+        if (Math.min(dist0, dist1, dist2, dist3) === dist0) {
+            divideAimTree(tree.child0, point);
+        } else if (Math.min(dist0, dist1, dist2, dist3) === dist1) {
+            divideAimTree(tree.child1, point);
+        } else if (Math.min(dist0, dist1, dist2, dist3) === dist2) {
+            divideAimTree(tree.child2, point);
+        } else if (Math.min(dist0, dist1, dist2, dist3) === dist3) {
+            divideAimTree(tree.child3, point);
+        }
     }
 
-    function devideQTree(tree) {
+    function divideQTree(tree) {
         //四分木を分割(子1~4をappendする)
         let parentId = tree.selfIndex;
         let x0 = tree.coordinates[0];
@@ -476,7 +500,7 @@ function initGrids(globals) {
         drawQTree(tree.child2, ctx);
         console.log("child3");
         drawQTree(tree.child3, ctx);
-        
+
         return;
     }
 
@@ -492,7 +516,7 @@ function initGrids(globals) {
         coordinateTransformation: coordinateTransformation,
         q_tree: q_tree,
         makeQTree: makeQTree,
-        devideQTree: devideQTree,
+        divideQTree: divideQTree,
         drawQTree: drawQTree,
     }
 }
