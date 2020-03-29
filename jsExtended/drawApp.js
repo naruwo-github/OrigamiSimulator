@@ -48,6 +48,16 @@ function initDrawApp(globals) {
   var gridTool = new Object();
   gridTool.flag = false;
   gridTool.points = new Array();
+
+
+  //===暫定的に用いるやつ===
+  //q_tree.pointsが輪郭の点、q_tree.structureが四分木そのものを表す
+  var q_tree = new Object();
+  q_tree.points = new Array();
+  q_tree.structure = new Object();
+  //=====================
+
+
   var gridButton = document.getElementById("grid-button");
   //中身はこんな感じ↓ gridLineList = ([[x0,y0],[x1,y1],color,,,[[xn-1,yn-1],[xn,yn],color])
   var gridLineList = new Array();
@@ -218,6 +228,8 @@ function initDrawApp(globals) {
     context.strokeStyle = "rgb(50, 200, 255)";
     globals.ruling.drawRulingVertexUse(ru2array,context,outputList);
 
+    /*
+    //Gridツール
     //格子を描画する(デフォルトはマゼンタ？)
     if (gridTool.points.length > 0) {
       context.fillStyle = lineColors[0];
@@ -226,10 +238,25 @@ function initDrawApp(globals) {
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
       if(gridTool.points.length%4 == 0) {
-        //globals.grids.drawGrid(gridMode.mode, gridnumber, gridLineList, context, lineColors[3], gridTool.points);
         globals.grids.drawGridWithAngle(gridMode.mode, gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount);
       }
     }
+    */
+
+    //四分木の方のgrid!
+    for (let i = 0; i < q_tree.points.length; i++) {
+      if (i < 4) {
+        const point = q_tree.points[i];
+        context.fillStyle = lineColors[0];
+        context.fillRect(point[0]-4, point[1]-4, 9, 9);
+      }
+    }
+    if (q_tree.points.length >= 4) {
+      globals.grids.makeQTree(q_tree);
+      console.log(q_tree.structure);
+      globals.grids.drawQTree(q_tree.structure, context);
+    }
+
   }
   //=====================================================
 
@@ -247,27 +274,26 @@ function initDrawApp(globals) {
         straightLineList.push([e.offsetX, e.offsetY]);
       }
     } else if(ruling1 === true) { //ベジェ曲線ツールがON!!
-      //
     } else if(ruling2 === true) {
       var closest = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
       ru2array.push(closest);
-    } else if(gridTool.flag === true) {
+    } else if(gridTool.flag === true) { //GridTool!!
       //クリックした点が展開図情報内の点のいずれかに近い場合、
       //重ねて配置したいと判定する
       var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
       var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1])
       if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
         gridTool.points.push([ret[0], ret[1]]);
+
+        q_tree.points.push([ret[0], ret[1]]);
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         gridTool.points.push([e.offsetX, e.offsetY]);
+
+        q_tree.points.push([e.offsetX, e.offsetY]);
       }
     } else {
      canvasReload(); //canvasのリロード
-
      readerFile.readAsText(globals.svgFile); //svgファイルをテキストで取得
-     //readerFile.onload = function(ev){
-     //}
-
     }
     drawCanvas();
 
@@ -591,6 +617,7 @@ function initDrawApp(globals) {
       ru2array.pop();
     } else if(gridTool.flag === true) {
       gridTool.points.pop();
+      q_tree.points.pop();
     } else {
     }
     canvasReload();

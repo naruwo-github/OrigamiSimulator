@@ -166,8 +166,8 @@ function initBezierCurve(globals){
     //座標列(info.x1,info.y1)または(info.x2,info.y2)の中から
     //(ex,ey)から最短の座標(nx,ny)を返すメソッド
     function returnNearCoordinates(info,ex,ey){
-        console.log("これは↓、展開図情報に含まれる頂点の集合を表す配列");
-        console.log(info);
+        //console.log("これは↓、展開図情報に含まれる頂点の集合を表す配列");
+        //console.log(info);
         var nx,ny;
         var distance = 10000;
         var tmp = 10000;

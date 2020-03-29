@@ -234,7 +234,7 @@ function initGrids(globals) {
     }
 
     //角度を持った格子を描画する関数
-    function drawGridWithAngle(gridMode, gridnumber, outputList, ctx, lineColor, outlinePoints, angle) {
+    function drawGridWithAngle(gridnumber, outputList, ctx, lineColor, outlinePoints, angle) {
         //格子数がgridnumber
         //格子数Nに対し、N+1、2N+1、4N+2、5N+2を弾く
         const lines = gridnumber;
@@ -260,7 +260,6 @@ function initGrids(globals) {
             //格子角度調整用に拡大した輪郭の頂点ベクトル
             const vectorP0Dash = new THREE.Vector2(2 * vectorP0.x - vectorP1.x, 2 * vectorP0.y - vectorP3.y);
             const vectorP1Dash = new THREE.Vector2(2 * vectorP1.x - vectorP0.x, 2 * vectorP1.y - vectorP2.y);
-            const vectorP2Dash = new THREE.Vector2(2 * vectorP2.x - vectorP3.x, 2 * vectorP2.y - vectorP1.y);
             const vectorP3Dash = new THREE.Vector2(2 * vectorP3.x - vectorP2.x, 2 * vectorP3.y - vectorP0.y);
             //線は縦横それぞれ 格子数×3+1本 描画する
             for (let i = 0; i < lines * 3 + 1; i++) {
@@ -343,10 +342,157 @@ function initGrids(globals) {
             x * Math.sin(angle / 180 * Math.PI) + y * Math.cos(angle / 180 * Math.PI) + oy];
     }
 
+    //四分木の構造体
+    class q_tree {
+        constructor(selfIndex, parentIndex, coordinates) {
+            this.selfIndex = selfIndex;
+            this.parentIndex = parentIndex;
+            this.coordinates = coordinates;
+            this.center = [(coordinates[0] + coordinates[2] + coordinates[4] + coordinates[6]) / 4, (coordinates[1] + coordinates[3] + coordinates[5] + coordinates[7]) / 4];
+            //parentとchild0~3を持たせる
+            this.child0;
+            this.child1;
+            this.child2;
+            this.child3;
+        }
+    }
+
+    function makeQTree(source) {
+        let points = source.points;
+        let x0 = points[0][0];
+        let y0 = points[0][1];
+        let x1 = points[1][0];
+        let y1 = points[1][1];
+        let x2 = points[2][0];
+        let y2 = points[2][1];
+        let x3 = points[3][0];
+        let y3 = points[3][1];
+        source.structure = new q_tree(0, NaN, [x0, y0, x1, y1, x2, y2, x3, y3]);
+
+        if (points.length >= 4) {
+            for (let i = 4; i < points.length; i++) {
+                //ここに再起で四分木を構築するようにしたい
+                if (i === 4) {
+                    let parent = source.structure;
+                    //x: 0 2 4 6
+                    //y: 1 3 5 7
+                    /*
+                    //子1
+                    source.structure.child0 = new q_tree(1, parent.selfIndex, [parent.coordinates[0], parent.coordinates[1], 
+                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[1]+parent.coordinates[3])/2, 
+                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[3]+parent.coordinates[5])/2, 
+                        (parent.coordinates[0]+parent.coordinates[6])/2, (parent.coordinates[1]+parent.coordinates[7])/2]);
+                    //子2
+                    source.structure.child1 = new q_tree(2, parent.selfIndex, [(parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[1]+parent.coordinates[3])/2, 
+                        parent.coordinates[2], parent.coordinates[3], 
+                        (parent.coordinates[2]+parent.coordinates[4])/2, (parent.coordinates[3]+parent.coordinates[5])/2, 
+                        (parent.coordinates[4]+parent.coordinates[6])/2, (parent.coordinates[5]+parent.coordinates[7])/2]);
+                    //子3
+                    source.structure.child2 = new q_tree(3, parent.selfIndex, [parent.coordinates[0], parent.coordinates[1], 
+                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[1]+parent.coordinates[3])/2, 
+                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[3]+parent.coordinates[5])/2, 
+                        (parent.coordinates[0]+parent.coordinates[6])/2, (parent.coordinates[1]+parent.coordinates[7])/2]);
+                    //子4
+                    source.structure.child3 = new q_tree(4, parent.selfIndex, [parent.coordinates[0], parent.coordinates[1], 
+                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[1]+parent.coordinates[3])/2, 
+                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[3]+parent.coordinates[5])/2, 
+                        (parent.coordinates[0]+parent.coordinates[6])/2, (parent.coordinates[1]+parent.coordinates[7])/2]);
+                        */
+                    
+                    //初めての分割
+                    //子1
+                    source.structure.child0 = new q_tree(1, parent.selfIndex, [x0, (y0+y3)/2, (x0+x1)/2, (y0+y3)/2, (x3+x2)/2, y3, x3, y3]);
+                    //子2
+                    source.structure.child1 = new q_tree(2, parent.selfIndex, [(x0+x1)/2, (y0+y3)/2, x1, (y1+y2)/2, x2, y2, (x3+x2)/2, y3]);
+                    //子3
+                    source.structure.child2 = new q_tree(3, parent.selfIndex, [x0, y0, (x0+x1)/2, y0, (x0+x1)/2, (y0+y3)/2, x0, (y0+y3)/2]);
+                    //子4
+                    source.structure.child3 = new q_tree(4, parent.selfIndex, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
+
+                    tmpTree = source.structure;
+                } else {
+                    //初期分割以降
+                    //クリックした点の位置を取得
+                    let point = points[i];
+                }
+            }
+        }
+    }
+
+    function explorNextTree(tree, point) {
+        return;
+    }
+
+    function devideQTree(tree) {
+        //四分木を分割(子1~4をappendする)
+        let parentId = tree.selfIndex;
+        let x0 = tree.coordinates[0];
+        let y0 = tree.coordinates[1];
+        let x1 = tree.coordinates[2];
+        let y1 = tree.coordinates[3];
+        let x2 = tree.coordinates[4];
+        let y2 = tree.coordinates[5];
+        let x3 = tree.coordinates[6];
+        let y3 = tree.coordinates[7];
+
+        //子1(左上)の追加
+        tree.child0 = new q_tree(parentId*4+1, parentId, [x0, (y0+y3)/2, (x0+x1)/2, (y0+y3)/2, (x3+x2)/2, y3, x3, y3]);
+        //子2(右上)の追加
+        tree.child1 = new q_tree(parentId*4+2, parentId, [(x0+x1)/2, (y0+y3)/2, x1, (y1+y2)/2, x2, y2, (x3+x2)/2, y3]);
+        //子3(左下)の追加
+        tree.child2 = new q_tree(parentId*4+3, parentId, [x0, y0, (x0+x1)/2, y0, (x0+x1)/2, (y0+y3)/2, x0, (y0+y3)/2]);
+        //子4(右下)の追加
+        tree.child3 = new q_tree(parentId*4+4, parentId, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
+    }
+
+    function drawQTree(tree, ctx) {
+        if (tree === undefined) {
+            return;
+        }
+
+        let x0 = tree.coordinates[0];
+        let y0 = tree.coordinates[1];
+        let x1 = tree.coordinates[2];
+        let y1 = tree.coordinates[3];
+        let x2 = tree.coordinates[4];
+        let y2 = tree.coordinates[5];
+        let x3 = tree.coordinates[6];
+        let y3 = tree.coordinates[7];
+        let center = tree.center;
+
+        //出力の確認？
+        console.log("drawing outline");
+        ctx.fillRect(center[0]-2, center[1]-2, 5, 5);
+        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x0, y0, x1, y1);
+        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x1, y1, x2, y2);
+        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x2, y2, x3, y3);
+        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x3, y3, x0, y0);
+
+        console.log("child0");
+        drawQTree(tree.child0, ctx);
+        console.log("child1");
+        drawQTree(tree.child1, ctx);
+        console.log("child2");
+        drawQTree(tree.child2, ctx);
+        console.log("child3");
+        drawQTree(tree.child3, ctx);
+        
+        return;
+    }
+
+    //2点間の距離を求める
+    function dist(x1,y1,x2,y2) {
+        return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
+    }
+
     return {
         drawGrid: drawGrid,
         drawGridWithAngle: drawGridWithAngle,
         rotationalMovement: rotationalMovement,
         coordinateTransformation: coordinateTransformation,
+        q_tree: q_tree,
+        makeQTree: makeQTree,
+        devideQTree: devideQTree,
+        drawQTree: drawQTree,
     }
 }
