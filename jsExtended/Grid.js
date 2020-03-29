@@ -469,10 +469,12 @@ function initGrids(globals) {
         tree.child3 = new q_tree(parentId*4+4, parentId, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
     }
 
-    function drawQTree(tree, ctx) {
+    function drawQTree(tree, ctx, gridLineList, lineColor) {
         if (tree === undefined) {
             return;
         }
+        console.log("drawQTree内のtree描画");
+        console.log(tree);
 
         let x0 = tree.coordinates[0];
         let y0 = tree.coordinates[1];
@@ -484,23 +486,25 @@ function initGrids(globals) {
         let y3 = tree.coordinates[7];
         let center = tree.center;
 
-        //出力の確認？
-        console.log("drawing outline");
-        ctx.fillRect(center[0]-2, center[1]-2, 5, 5);
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x0, y0, x1, y1);
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x1, y1, x2, y2);
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x2, y2, x3, y3);
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x3, y3, x0, y0);
+        //centerの座標を描画
+        ctx.fillRect(center[0]-0.5, center[1]-0.5, 2, 2);
 
-        console.log("child0");
-        drawQTree(tree.child0, ctx);
-        console.log("child1");
-        drawQTree(tree.child1, ctx);
-        console.log("child2");
-        drawQTree(tree.child2, ctx);
-        console.log("child3");
-        drawQTree(tree.child3, ctx);
+        if (tree.selfIndex !== 0) {
+            //輪郭描画
+            globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x0, y0, x1, y1);
+            globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x1, y1, x2, y2);
+            globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x2, y2, x3, y3);
+            globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x3, y3, x0, y0);
+            gridLineList.push([[x0, y0], [x1, y1], lineColor]);
+            gridLineList.push([[x1, y1], [x2, y2], lineColor]);
+            gridLineList.push([[x2, y2], [x3, y3], lineColor]);
+            gridLineList.push([[x3, y3], [x0, y0], lineColor]);
+        }
 
+        drawQTree(tree.child0, ctx, gridLineList, lineColor);
+        drawQTree(tree.child1, ctx, gridLineList, lineColor);
+        drawQTree(tree.child2, ctx, gridLineList, lineColor);
+        drawQTree(tree.child3, ctx, gridLineList, lineColor);
         return;
     }
 
