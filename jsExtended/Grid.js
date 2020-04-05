@@ -473,8 +473,6 @@ function initGrids(globals) {
         if (tree === undefined) {
             return;
         }
-        console.log("drawQTree内のtree描画");
-        console.log(tree);
 
         let x0 = tree.coordinates[0];
         let y0 = tree.coordinates[1];
@@ -486,7 +484,6 @@ function initGrids(globals) {
         let y3 = tree.coordinates[7];
         let center = tree.center;
 
-        //centerの座標を描画
         ctx.fillRect(center[0]-0.5, center[1]-0.5, 2, 2);
 
         if (tree.selfIndex !== 0) {
