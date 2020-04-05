@@ -59,7 +59,7 @@ function initDrawApp(globals) {
 
 
   var gridButton = document.getElementById("grid-button");
-  //中身はこんな感じ↓ gridLineList = ([[x0,y0],[x1,y1],color,,,[[xn-1,yn-1],[xn,yn],color])
+  //中身はこんな感じ↓ gridLineList = ([[x0,y0],[x1,y1],color],,,[[xn-1,yn-1],[xn,yn],color])
   var gridLineList = new Array();
   var gridnumber = 10;
   var gridNum = document.getElementById("grid-num");
@@ -248,13 +248,14 @@ function initDrawApp(globals) {
       if (i < 4) {
         const point = q_tree.points[i];
         context.fillStyle = lineColors[0];
-        context.fillRect(point[0]-4, point[1]-4, 9, 9);
+        context.fillRect(point[0]-3, point[1]-3, 7, 7);
       }
     }
     if (q_tree.points.length >= 4) {
       globals.grids.makeQTree(q_tree);
       console.log(q_tree.structure);
-      globals.grids.drawQTree(q_tree.structure, context);
+      //globals.grids.drawQTree(q_tree.structure, context);
+      globals.grids.drawQTree(q_tree.structure, context, gridLineList, lineColors[3]);
     }
 
   }
@@ -726,7 +727,7 @@ function initDrawApp(globals) {
     for (let index = 0; index < trianglatedInformation.length; index+=2) {
       const start = trianglatedInformation[index];
       const end = trianglatedInformation[index+1];
-      drawLine(ctx,"rgb(255, 255, 0)",2,start[0],start[1],end[0],end[1]);
+      drawLine(ctx, "rgb(255, 255, 0)", 0.5, start[0], start[1], end[0], end[1]);
     }
   }
 

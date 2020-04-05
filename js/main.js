@@ -69,5 +69,6 @@ $(function() {
     globals.grids = initGrids(globals);
     //
 
+    //globals.pattern.loadSVG("assets/Tessellations/huffmanWaterbomb.svg");
     $(".demo[data-url='Tessellations/huffmanWaterbomb.svg']").click();//load demo model
 });

@@ -27,14 +27,10 @@ function initImporter(globals){
         if (files.length < 1) {
             return;
         }
-
         var file = files[0];
 
         //files[0]をグローバル化
-        console.log("Getting a file!");
         globals.svgFile = files[0];
-        //console.log(globals.svgFile);
-        //
 
         var extension = file.name.split(".");
         var name = extension[0];

@@ -409,21 +409,45 @@ function initGrids(globals) {
                     //子4
                     source.structure.child3 = new q_tree(4, parent.selfIndex, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
 
-                    tmpTree = source.structure;
                 } else {
                     //初期分割以降
                     //クリックした点の位置を取得
                     let point = points[i];
+                    divideAimTree(source.structure, point);
+                    //divideQTree(endQTree);
                 }
             }
         }
     }
 
-    function explorNextTree(tree, point) {
-        return;
+    function divideAimTree(tree, point) {
+        if (tree.child0 === undefined) {
+            divideQTree(tree);
+            return;
+        }
+        //4つのcenterで一番近いところにすすむ
+        let center0 = tree.child0.center;
+        let center1 = tree.child1.center;
+        let center2 = tree.child2.center;
+        let center3 = tree.child3.center;
+        //pointとcenterX間の距離
+        let dist0 = dist(point[0], point[1], center0[0], center0[1]);
+        let dist1 = dist(point[0], point[1], center1[0], center1[1]);
+        let dist2 = dist(point[0], point[1], center2[0], center2[1]);
+        let dist3 = dist(point[0], point[1], center3[0], center3[1]);
+
+        if (Math.min(dist0, dist1, dist2, dist3) === dist0) {
+            divideAimTree(tree.child0, point);
+        } else if (Math.min(dist0, dist1, dist2, dist3) === dist1) {
+            divideAimTree(tree.child1, point);
+        } else if (Math.min(dist0, dist1, dist2, dist3) === dist2) {
+            divideAimTree(tree.child2, point);
+        } else if (Math.min(dist0, dist1, dist2, dist3) === dist3) {
+            divideAimTree(tree.child3, point);
+        }
     }
 
-    function devideQTree(tree) {
+    function divideQTree(tree) {
         //四分木を分割(子1~4をappendする)
         let parentId = tree.selfIndex;
         let x0 = tree.coordinates[0];
@@ -445,10 +469,12 @@ function initGrids(globals) {
         tree.child3 = new q_tree(parentId*4+4, parentId, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
     }
 
-    function drawQTree(tree, ctx) {
+    function drawQTree(tree, ctx, gridLineList, lineColor) {
         if (tree === undefined) {
             return;
         }
+        console.log("drawQTree内のtree描画");
+        console.log(tree);
 
         let x0 = tree.coordinates[0];
         let y0 = tree.coordinates[1];
@@ -460,23 +486,33 @@ function initGrids(globals) {
         let y3 = tree.coordinates[7];
         let center = tree.center;
 
-        //出力の確認？
-        console.log("drawing outline");
-        ctx.fillRect(center[0]-2, center[1]-2, 5, 5);
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x0, y0, x1, y1);
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x1, y1, x2, y2);
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x2, y2, x3, y3);
-        globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 1, x3, y3, x0, y0);
+        //centerの座標を描画
+        ctx.fillRect(center[0]-0.5, center[1]-0.5, 2, 2);
 
-        console.log("child0");
-        drawQTree(tree.child0, ctx);
-        console.log("child1");
-        drawQTree(tree.child1, ctx);
-        console.log("child2");
-        drawQTree(tree.child2, ctx);
-        console.log("child3");
-        drawQTree(tree.child3, ctx);
-        
+        if (tree.selfIndex !== 0) {
+            if (tree.selfIndex%4 === 1) {
+                //child0の場合
+                globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x0, y0, x1, y1);
+                gridLineList.push([[x0, y0], [x1, y1], lineColor]);
+            } else if (tree.selfIndex%4 === 2) {
+                //chld1の場合
+                globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x3, y3, x0, y0);
+                gridLineList.push([[x3, y3], [x0, y0], lineColor]);
+            } else if (tree.selfIndex%4 === 3) {
+                //child2の場合
+                globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x1, y1, x2, y2);
+                gridLineList.push([[x1, y1], [x2, y2], lineColor]);
+            } else if (tree.selfIndex%4 === 0) {
+                //child3の場合
+                globals.drawapp.drawLine(ctx, "rgb(255, 0, 0)", 0.8, x2, y2, x3, y3);
+                gridLineList.push([[x2, y2], [x3, y3], lineColor]);
+            }
+        }
+
+        drawQTree(tree.child0, ctx, gridLineList, lineColor);
+        drawQTree(tree.child1, ctx, gridLineList, lineColor);
+        drawQTree(tree.child2, ctx, gridLineList, lineColor);
+        drawQTree(tree.child3, ctx, gridLineList, lineColor);
         return;
     }
 
@@ -492,7 +528,7 @@ function initGrids(globals) {
         coordinateTransformation: coordinateTransformation,
         q_tree: q_tree,
         makeQTree: makeQTree,
-        devideQTree: devideQTree,
+        divideQTree: divideQTree,
         drawQTree: drawQTree,
     }
 }
