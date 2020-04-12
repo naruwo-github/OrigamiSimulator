@@ -353,7 +353,7 @@ function initPattern(globals){
             var img = new Image();
             img.src = url;
             globals.svgimg = img;
-            console.log("svg's URL: " + url);
+            //console.log("svg's URL: " + url);
             //↓初期化しておく
             globals.svgInformation.stroke = new Array();
             globals.svgInformation.opacity = new Array();
@@ -474,8 +474,9 @@ function initPattern(globals){
                 //-----------------------------------------------
             }
             //---------------------------------------------------
-            console.log("svg information");
-            console.log(globals.svgInformation);
+            //svgファイルの中身
+            //console.log("svg information");
+            //console.log(globals.svgInformation);
             //---------------------------------------------------
 
             $("#svgViewer").html(svg);
@@ -1214,7 +1215,7 @@ function initPattern(globals){
                     triangulatedFaces.push([face[1], face[2], face[3]]);
 
                     //これが分割するために追加した直線?
-                    console.log([face[1], face[3]]);
+                    //console.log([face[1], face[3]]);
                 } else {
                     edges.push([face[0], face[2]]);
                     foldAngles.push(0);
@@ -1223,7 +1224,7 @@ function initPattern(globals){
                     triangulatedFaces.push([face[0], face[2], face[3]]);
 
                     //これが分割するために追加した直線?
-                    console.log([face[0], face[2]]);
+                    //console.log([face[0], face[2]]);
                 }
                 continue;
             }

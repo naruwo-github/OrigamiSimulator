@@ -579,9 +579,10 @@ function initDrawApp(globals) {
     }
     //修正した展開図をシミュレータへ投げる
     globals.importer.simulateAgain(globals.svgFile,outputList,gridLineList);
-    globals.simulationRunning = true;
+    globals.threeView.startSimulation();
+    //20描画にシミュレーションを停止する処理
     setTimeout(function() {
-      globals.simulationRunning = false;
+      globals.threeView.pauseSimulation();
     }, 1000*20);
 
     //Simulate Modeへ遷移する
@@ -735,7 +736,7 @@ function initDrawApp(globals) {
   function makeExtendedSVGFile(fileReader, original, output, optimized, gridline) {
     //出力svgファイルの宣言
     let text = `<?xml version="1.0" encoding="utf-8"?>
-    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1000px" height="800px" viewBox="0 0 1000.0 800.0">
+    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1000px" height="1000px" viewBox="0 0 1000.0 1000.0">
     <title>outputSVG</title>
     `;
 
