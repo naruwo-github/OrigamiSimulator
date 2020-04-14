@@ -561,8 +561,8 @@ function initDynamicSolver(globals){
             //ここで座標の更新を行っている
             //ここでシミュレーションを継続するかどうかを制御するか
         }
-        //console.log("totalMovedPosition = " + totalMovedPosition);
-        if(totalMovedPosition <= 0.005 && totalMovedPosition !== 0.0) globals.threeView.pauseSimulation();
+        console.log("Avg(totalMovedPosition) = " + totalMovedPosition/nodes.length);
+        if(totalMovedPosition/nodes.length <= 0.00001 && totalMovedPosition > 0.0) globals.threeView.pauseSimulation();
 
         globals.gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
         globals.gpuMath.initFrameBufferForTexture("u_lastPosition", true);
