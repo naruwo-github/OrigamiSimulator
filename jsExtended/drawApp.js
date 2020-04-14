@@ -51,6 +51,8 @@ function initDrawApp(globals) {
 
 
   //===暫定的に用いるやつ===
+  var qtreeButton = document.getElementById("qtree-mode");
+  var qtreeFlag = false;
   //q_tree.pointsが輪郭の点、q_tree.structureが四分木そのものを表す
   var q_tree = new Object();
   q_tree.points = new Array();
@@ -228,7 +230,6 @@ function initDrawApp(globals) {
     context.strokeStyle = "rgb(50, 200, 255)";
     globals.ruling.drawRulingVertexUse(ru2array,context,outputList);
 
-    /*
     //Gridツール
     //格子を描画する(デフォルトはマゼンタ？)
     if (gridTool.points.length > 0) {
@@ -238,10 +239,9 @@ function initDrawApp(globals) {
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
       if(gridTool.points.length%4 == 0) {
-        globals.grids.drawGridWithAngle(gridMode.mode, gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount);
+        globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount);
       }
     }
-    */
 
     //四分木の方のgrid!
     for (let i = 0; i < q_tree.points.length; i++) {
@@ -285,20 +285,24 @@ function initDrawApp(globals) {
       var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1])
       if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
         gridTool.points.push([ret[0], ret[1]]);
-
-        q_tree.points.push([ret[0], ret[1]]);
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         gridTool.points.push([e.offsetX, e.offsetY]);
-
+      }
+    } else if(qtreeFlag === true) {
+      var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
+      var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1])
+      if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
+        q_tree.points.push([ret[0], ret[1]]);
+      }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         q_tree.points.push([e.offsetX, e.offsetY]);
       }
     } else {
      canvasReload(); //canvasのリロード
      readerFile.readAsText(globals.svgFile); //svgファイルをテキストで取得
     }
+    canvasReload(); //canvasのリロード
     drawCanvas();
-
-    globals.simulationRunning = true; //シミュレーションをON
+    globals.threeView.startSimulation(); //シミュレーションをON
   })
 
   canvas.addEventListener("mousedown", e => {
@@ -415,6 +419,8 @@ function initDrawApp(globals) {
       ruling2Button.style.backgroundColor = buttonColor;
       gridTool.flag = false;
       gridButton.style.backgroundColor = buttonColor;
+      qtreeFlag = false;
+      qtreeButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -436,6 +442,8 @@ function initDrawApp(globals) {
       ruling2Button.style.backgroundColor = buttonColor;
       gridTool.flag = false;
       gridButton.style.backgroundColor = buttonColor;
+      qtreeFlag = false;
+      qtreeButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -507,6 +515,8 @@ function initDrawApp(globals) {
       ruling1Button.style.backgroundColor = buttonColor;
       gridTool.flag = false;
       gridButton.style.backgroundColor = buttonColor;
+      qtreeFlag = false;
+      qtreeButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -528,8 +538,33 @@ function initDrawApp(globals) {
       ruling1Button.style.backgroundColor = buttonColor;
       ruling2 = false;
       ruling2Button.style.backgroundColor = buttonColor;
+      qtreeFlag = false;
+      qtreeButton.style.backgroundColor = buttonColor;
     }
   });
+
+  //qtreeButtonが押されたときの処理
+  qtreeButton.addEventListener("click", function() {
+    if(qtreeFlag === true) {
+      console.log("qtree mode ended...");
+      qtreeFlag = false;
+      qtreeButton.style.backgroundColor = buttonColor;
+    } else {
+      console.log("qtree mode started...");
+      qtreeFlag= true;
+      qtreeButton.style.backgroundColor = '#aaaaaa';
+
+      //ほかのボタン
+      straight = false;
+      slineButton.style.backgroundColor = buttonColor;
+      ruling1 = false;
+      ruling1Button.style.backgroundColor = buttonColor;
+      ruling2 = false;
+      ruling2Button.style.backgroundColor = buttonColor;
+      gridTool.flag = false;
+      gridButton.style.backgroundColor = buttonColor;
+    }
+  })
 
   gridMode.addEventListener("click", function() {
     if (gridMode.mode == 0) {
@@ -580,10 +615,11 @@ function initDrawApp(globals) {
     //修正した展開図をシミュレータへ投げる
     globals.importer.simulateAgain(globals.svgFile,outputList,gridLineList);
     globals.threeView.startSimulation();
+
     //20描画にシミュレーションを停止する処理
-    setTimeout(function() {
-      globals.threeView.pauseSimulation();
-    }, 1000*20);
+    // setTimeout(function() {
+    //   globals.threeView.pauseSimulation();
+    // }, 1000*20);
 
     //Simulate Modeへ遷移する
     globals.navMode = "simulation";
@@ -619,6 +655,7 @@ function initDrawApp(globals) {
       ru2array.pop();
     } else if(gridTool.flag === true) {
       gridTool.points.pop();
+    } else if(qtreeFlag === true){
       q_tree.points.pop();
     } else {
     }
@@ -650,6 +687,8 @@ function initDrawApp(globals) {
     optimizedRuling = new Array();
     gridTool.flag = false;
     gridTool.points = new Array();
+    qtreeFlag = false;
+    q_tree.points = new Array();
 
     canvasReload();
     drawCanvas();
@@ -938,5 +977,6 @@ function initDrawApp(globals) {
 
   return {
     drawLine: drawLine,
+    dist: dist,
   }
 }
