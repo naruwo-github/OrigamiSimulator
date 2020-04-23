@@ -376,29 +376,7 @@ function initGrids(globals) {
                     let parent = source.structure;
                     //x: 0 2 4 6
                     //y: 1 3 5 7
-                    /*
-                    //子1
-                    source.structure.child0 = new q_tree(1, parent.selfIndex, [parent.coordinates[0], parent.coordinates[1], 
-                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[1]+parent.coordinates[3])/2, 
-                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[3]+parent.coordinates[5])/2, 
-                        (parent.coordinates[0]+parent.coordinates[6])/2, (parent.coordinates[1]+parent.coordinates[7])/2]);
-                    //子2
-                    source.structure.child1 = new q_tree(2, parent.selfIndex, [(parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[1]+parent.coordinates[3])/2, 
-                        parent.coordinates[2], parent.coordinates[3], 
-                        (parent.coordinates[2]+parent.coordinates[4])/2, (parent.coordinates[3]+parent.coordinates[5])/2, 
-                        (parent.coordinates[4]+parent.coordinates[6])/2, (parent.coordinates[5]+parent.coordinates[7])/2]);
-                    //子3
-                    source.structure.child2 = new q_tree(3, parent.selfIndex, [parent.coordinates[0], parent.coordinates[1], 
-                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[1]+parent.coordinates[3])/2, 
-                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[3]+parent.coordinates[5])/2, 
-                        (parent.coordinates[0]+parent.coordinates[6])/2, (parent.coordinates[1]+parent.coordinates[7])/2]);
-                    //子4
-                    source.structure.child3 = new q_tree(4, parent.selfIndex, [parent.coordinates[0], parent.coordinates[1], 
-                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[1]+parent.coordinates[3])/2, 
-                        (parent.coordinates[0]+parent.coordinates[2])/2, (parent.coordinates[3]+parent.coordinates[5])/2, 
-                        (parent.coordinates[0]+parent.coordinates[6])/2, (parent.coordinates[1]+parent.coordinates[7])/2]);
-                        */
-                    
+
                     //初めての分割
                     //子1
                     source.structure.child0 = new q_tree(1, parent.selfIndex, [x0, (y0+y3)/2, (x0+x1)/2, (y0+y3)/2, (x3+x2)/2, y3, x3, y3]);
@@ -513,6 +491,33 @@ function initGrids(globals) {
         return;
     }
 
+    function autoMesh(tree, hmin, hmax, svgInfo) {
+        if (hmin > hmax) {
+            console.log("HminとHmaxの値が不適切です。")
+            return;
+        }
+        
+        if (tree === undefined) { return; }
+
+        //ここで木の高さ判定を行う
+        // let id = tree.selfIndex;
+        // let H = id / 4;
+        // id%4 > 0 ? H++: H=H;
+        // if (H >= hmax) { return; }
+
+        if (tree.child0 === undefined) {
+            //子がいない場合に分割の処理を行う
+            //木の領域□の中に、折り線(赤や青の線)が含まれていれば分割
+            //
+        } else {
+            //子がいる場合
+            autoMesh(tree.child0, hmin, hmax, svgInfo);
+            autoMesh(tree.child1, hmin, hmax, svgInfo);
+            autoMesh(tree.child2, hmin, hmax, svgInfo);
+            autoMesh(tree.child3, hmin, hmax, svgInfo);
+        }
+    }
+
     //2点間の距離を求める
     function dist(x1,y1,x2,y2) {
         return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
@@ -527,5 +532,6 @@ function initGrids(globals) {
         makeQTree: makeQTree,
         divideQTree: divideQTree,
         drawQTree: drawQTree,
+        autoMesh: autoMesh,
     }
 }
