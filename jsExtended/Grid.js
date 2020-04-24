@@ -505,8 +505,40 @@ function initGrids(globals) {
 
         if (tree.child0 === undefined) {
             //子がいない場合に分割の処理を行う
+            let x0 = tree.coordinates[0];
+            let y0 = tree.coordinates[1];
+            let x1 = tree.coordinates[2];
+            let y1 = tree.coordinates[3];
+            let x2 = tree.coordinates[4];
+            let y2 = tree.coordinates[5];
+            let x3 = tree.coordinates[6];
+            let y3 = tree.coordinates[7];
+            let flag = false;
             //木の領域□の中に、折り線(赤や青の線)が含まれていれば分割
             //線分の交差判定を用いるが、端点は含まない方を扱う
+            for (let i = 0; i < svgInfo.stroke.length; i++) {
+                if(globals.beziercurve.judgeIntersect2(x0, y0, x1, y1, svgInfo.x1[i], svgInfo.y1[i], svgInfo.x2[i], svgInfo.y2[i])){
+                    flag = true;
+                    break;
+                }
+                if(globals.beziercurve.judgeIntersect2(x1, y1, x2, y2, svgInfo.x1[i], svgInfo.y1[i], svgInfo.x2[i], svgInfo.y2[i])){
+                    flag = true;
+                    break;
+                }
+                if(globals.beziercurve.judgeIntersect2(x2, y2, x3, y3, svgInfo.x1[i], svgInfo.y1[i], svgInfo.x2[i], svgInfo.y2[i])){
+                    flag = true;
+                    break;
+                }
+                if(globals.beziercurve.judgeIntersect2(x3, y3, x0, y0, svgInfo.x1[i], svgInfo.y1[i], svgInfo.x2[i], svgInfo.y2[i])){
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag) {
+                //分割する！
+                divideQTree(tree);
+                flag = false;
+            }
         } else {
             //子がいる場合
             autoMesh(tree.child0, hmin, hmax, svgInfo);
