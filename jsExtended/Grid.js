@@ -344,9 +344,10 @@ function initGrids(globals) {
 
     //四分木の構造体
     class q_tree {
-        constructor(selfIndex, parentIndex, coordinates) {
+        constructor(selfIndex, parentIndex, height, coordinates) {
             this.selfIndex = selfIndex;
             this.parentIndex = parentIndex;
+            this.height = height;
             this.coordinates = coordinates;
             this.center = [(coordinates[0] + coordinates[2] + coordinates[4] + coordinates[6]) / 4, (coordinates[1] + coordinates[3] + coordinates[5] + coordinates[7]) / 4];
             //parentとchild0~3を持たせる
@@ -367,7 +368,7 @@ function initGrids(globals) {
         let y2 = points[2][1];
         let x3 = points[3][0];
         let y3 = points[3][1];
-        source.structure = new q_tree(0, NaN, [x0, y0, x1, y1, x2, y2, x3, y3]);
+        source.structure = new q_tree(0, NaN, 0, [x0, y0, x1, y1, x2, y2, x3, y3]);
 
         if (points.length >= 4) {
             for (let i = 4; i < points.length; i++) {
@@ -379,13 +380,13 @@ function initGrids(globals) {
 
                     //初めての分割
                     //子1
-                    source.structure.child0 = new q_tree(1, parent.selfIndex, [x0, (y0+y3)/2, (x0+x1)/2, (y0+y3)/2, (x3+x2)/2, y3, x3, y3]);
+                    source.structure.child0 = new q_tree(1, parent.selfIndex, source.structure.height + 1, [x0, (y0+y3)/2, (x0+x1)/2, (y0+y3)/2, (x3+x2)/2, y3, x3, y3]);
                     //子2
-                    source.structure.child1 = new q_tree(2, parent.selfIndex, [(x0+x1)/2, (y0+y3)/2, x1, (y1+y2)/2, x2, y2, (x3+x2)/2, y3]);
+                    source.structure.child1 = new q_tree(2, parent.selfIndex, source.structure.height + 1, [(x0+x1)/2, (y0+y3)/2, x1, (y1+y2)/2, x2, y2, (x3+x2)/2, y3]);
                     //子3
-                    source.structure.child2 = new q_tree(3, parent.selfIndex, [x0, y0, (x0+x1)/2, y0, (x0+x1)/2, (y0+y3)/2, x0, (y0+y3)/2]);
+                    source.structure.child2 = new q_tree(3, parent.selfIndex, source.structure.height + 1, [x0, y0, (x0+x1)/2, y0, (x0+x1)/2, (y0+y3)/2, x0, (y0+y3)/2]);
                     //子4
-                    source.structure.child3 = new q_tree(4, parent.selfIndex, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
+                    source.structure.child3 = new q_tree(4, parent.selfIndex, source.structure.height + 1, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
 
                 } else {
                     //初期分割以降
@@ -438,13 +439,13 @@ function initGrids(globals) {
         let y3 = tree.coordinates[7];
 
         //子1(左上)の追加
-        tree.child0 = new q_tree(parentId*4+1, parentId, [x0, (y0+y3)/2, (x0+x1)/2, (y0+y3)/2, (x3+x2)/2, y3, x3, y3]);
+        tree.child0 = new q_tree(parentId*4+1, parentId, tree.height + 1, [x0, (y0+y3)/2, (x0+x1)/2, (y0+y3)/2, (x3+x2)/2, y3, x3, y3]);
         //子2(右上)の追加
-        tree.child1 = new q_tree(parentId*4+2, parentId, [(x0+x1)/2, (y0+y3)/2, x1, (y1+y2)/2, x2, y2, (x3+x2)/2, y3]);
+        tree.child1 = new q_tree(parentId*4+2, parentId, tree.height + 1, [(x0+x1)/2, (y0+y3)/2, x1, (y1+y2)/2, x2, y2, (x3+x2)/2, y3]);
         //子3(左下)の追加
-        tree.child2 = new q_tree(parentId*4+3, parentId, [x0, y0, (x0+x1)/2, y0, (x0+x1)/2, (y0+y3)/2, x0, (y0+y3)/2]);
+        tree.child2 = new q_tree(parentId*4+3, parentId, tree.height + 1, [x0, y0, (x0+x1)/2, y0, (x0+x1)/2, (y0+y3)/2, x0, (y0+y3)/2]);
         //子4(右下)の追加
-        tree.child3 = new q_tree(parentId*4+4, parentId, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
+        tree.child3 = new q_tree(parentId*4+4, parentId, tree.height + 1, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
     }
 
     function drawQTree(tree, ctx, gridLineList, lineColor) {
@@ -500,15 +501,12 @@ function initGrids(globals) {
         if (tree === undefined) { return; }
 
         //ここで木の高さ判定を行う
-        // let id = tree.selfIndex;
-        // let H = id / 4;
-        // id%4 > 0 ? H++: H=H;
-        // if (H >= hmax) { return; }
+        if (tree.height >= hmax) { return; }
 
         if (tree.child0 === undefined) {
             //子がいない場合に分割の処理を行う
             //木の領域□の中に、折り線(赤や青の線)が含まれていれば分割
-            //
+            //線分の交差判定を用いるが、端点は含まない方を扱う
         } else {
             //子がいる場合
             autoMesh(tree.child0, hmin, hmax, svgInfo);
