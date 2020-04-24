@@ -110,7 +110,7 @@ function initDrawApp(globals) {
   var testCount = parseInt(testButton.innerText);
   testButton.addEventListener("click", function() {
     testCount+=1;
-    console.log("testCount = " + testCount);
+    //console.log("testCount = " + testCount);
     testButton.innerText = String(testCount);
     canvasReload();
     drawCanvas();
@@ -122,6 +122,48 @@ function initDrawApp(globals) {
   var optimizedRuling = new Array();
   //----------------------------------------------------------------------
 
+
+  //自動メッシュの設定あれこれ
+  let Hmin = 3;
+  let Hmax = 5;
+  var autoMeshButton = document.getElementById("auto-mesh");
+  var autoMeshFlag = false;
+  autoMeshButton.addEventListener("click", function() {
+    autoMeshFlag = !autoMeshFlag;
+    autoMeshButton.innerText = String(autoMeshFlag);
+  });
+  var HminNumButton = document.getElementById("hmin-num");
+  HminNumButton.innerText = String(Hmin);
+  var HminUp = document.getElementById("hmin-up");
+  var HminDown = document.getElementById("hmin-down");
+  var HmaxNumButton = document.getElementById("hmax-num");
+  HmaxNumButton.innerText = String(Hmax);
+  var HmaxUp = document.getElementById("hmax-up");
+  var HmaxDown = document.getElementById("hmax-down");
+  HminUp.addEventListener("click", function() {
+    Hmin++;
+    HminNumButton.innerText = String(Hmin);
+    if (Hmin > Hmax) {
+      Hmax++;
+      HmaxNumButton.innerText = String(Hmax);
+    }
+  });
+  HminDown.addEventListener("click", function() {
+    Hmin--;
+    HminNumButton.innerText = String(Hmin);
+  });
+  HmaxUp.addEventListener("click", function() {
+    Hmax++;
+    HmaxNumButton.innerText = String(Hmax);
+  });
+  HmaxDown.addEventListener("click", function() {
+    Hmax--;
+    HmaxNumButton.innerText = String(Hmax);
+    if (Hmin > Hmax) {
+      Hmin--;
+      HminNumButton.innerText = String(Hmin);
+    }
+  })
 
   //================= キャンバスの描画関数 ==================
   function drawCanvas() {
@@ -238,9 +280,7 @@ function initDrawApp(globals) {
         const stl1 = gridTool.points[i];
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
-      if(gridTool.points.length%4 == 0) {
-        globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount);
-      }
+      if(gridTool.points.length%4 == 0) { globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount); }
     }
 
     //四分木の方のgrid!
@@ -253,8 +293,7 @@ function initDrawApp(globals) {
     }
     if (q_tree.points.length >= 4) {
       globals.grids.makeQTree(q_tree);
-      console.log(q_tree.structure);
-      //globals.grids.drawQTree(q_tree.structure, context);
+      if (autoMeshFlag) { globals.grids.autoMesh(q_tree.structure, Hmin, Hmax, globals.svgInformation); }
       globals.grids.drawQTree(q_tree.structure, context, gridLineList, lineColors[3]);
     }
 
@@ -404,11 +443,11 @@ function initDrawApp(globals) {
   //直線ボタンが押された時の処理
   slineButton.addEventListener("click", function(){
     if(straight === true) {
-      console.log("straight line mode ended...");
+      //console.log("straight line mode ended...");
       straight = false;
       slineButton.style.backgroundColor = buttonColor;
     } else {
-      console.log("straight line mode started...");
+      //console.log("straight line mode started...");
       straight = true;
       slineButton.style.backgroundColor = '#aaaaaa';
 
@@ -427,11 +466,11 @@ function initDrawApp(globals) {
   //rulingツール1ボタンが押された時の処理
   ruling1Button.addEventListener("click", function(){
     if(ruling1 === true) {
-      console.log("ruling mode1 ended...");
+      //console.log("ruling mode1 ended...");
       ruling1 = false;
       ruling1Button.style.backgroundColor = buttonColor;
     } else {
-      console.log("ruling mode1 started...");
+      //console.log("ruling mode1 started...");
       ruling1 = true;
       ruling1Button.style.backgroundColor = '#aaaaaa';
 
@@ -488,23 +527,23 @@ function initDrawApp(globals) {
   //optimize button
   document.getElementById("optimize-button").addEventListener("click", function(){
     //rulingの最適化動作を行う
-    console.log("ruling optimizing...");
+    //console.log("ruling optimizing...");
     optimizedRuling = new Array();
     canvasReload();
     drawCanvas();
 
     globals.ruling.extendRulings(optimizedRuling,context,startEndInformation);
-    console.log("ruling optimizing ended.");
+    //console.log("ruling optimizing ended.");
   });
 
   //rulingツール2ボタンが押された時の処理
   ruling2Button.addEventListener("click", function(){
     if(ruling2 === true) {
-      console.log("ruling mode2 ended...");
+      //console.log("ruling mode2 ended...");
       ruling2 = false;
       ruling2Button.style.backgroundColor = buttonColor;
     } else {
-      console.log("ruling mode2 started...");
+      //console.log("ruling mode2 started...");
       ruling2 = true;
       ruling2Button.style.backgroundColor = '#aaaaaa';
 
@@ -523,11 +562,11 @@ function initDrawApp(globals) {
   //grid linesボタンが押された時の処理
   gridButton.addEventListener("click", function() {
     if(gridTool.flag === true) {
-      console.log("grid line mode ended...");
+      //console.log("grid line mode ended...");
       gridTool.flag = false;
       gridButton.style.backgroundColor = buttonColor;
     } else {
-      console.log("grid line mode started...");
+      //console.log("grid line mode started...");
       gridTool.flag = true;
       gridButton.style.backgroundColor = '#aaaaaa';
 
@@ -546,11 +585,11 @@ function initDrawApp(globals) {
   //qtreeButtonが押されたときの処理
   qtreeButton.addEventListener("click", function() {
     if(qtreeFlag === true) {
-      console.log("qtree mode ended...");
+      //console.log("qtree mode ended...");
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
     } else {
-      console.log("qtree mode started...");
+      //console.log("qtree mode started...");
       qtreeFlag= true;
       qtreeButton.style.backgroundColor = '#aaaaaa';
 
@@ -617,9 +656,9 @@ function initDrawApp(globals) {
     globals.threeView.startSimulation();
 
     //20描画にシミュレーションを停止する処理
-    // setTimeout(function() {
-    //   globals.threeView.pauseSimulation();
-    // }, 1000*20);
+    setTimeout(function() {
+      globals.threeView.pauseSimulation();
+    }, 1000*30);
 
     //Simulate Modeへ遷移する
     globals.navMode = "simulation";
