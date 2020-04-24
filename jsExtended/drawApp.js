@@ -123,6 +123,7 @@ function initDrawApp(globals) {
   //----------------------------------------------------------------------
 
 
+  //自動メッシュの設定あれこれ
   let Hmin = 3;
   let Hmax = 5;
   var autoMeshButton = document.getElementById("auto-mesh");
@@ -131,6 +132,39 @@ function initDrawApp(globals) {
     autoMeshFlag = !autoMeshFlag;
     autoMeshButton.innerText = String(autoMeshFlag);
   });
+  var HminNumButton = document.getElementById("hmin-num");
+  HminNumButton.innerText = String(Hmin);
+  var HminUp = document.getElementById("hmin-up");
+  var HminDown = document.getElementById("hmin-down");
+  var HmaxNumButton = document.getElementById("hmax-num");
+  HmaxNumButton.innerText = String(Hmax);
+  var HmaxUp = document.getElementById("hmax-up");
+  var HmaxDown = document.getElementById("hmax-down");
+  HminUp.addEventListener("click", function() {
+    Hmin++;
+    HminNumButton.innerText = String(Hmin);
+    if (Hmin > Hmax) {
+      Hmax++;
+      HmaxNumButton.innerText = String(Hmax);
+    }
+  });
+  HminDown.addEventListener("click", function() {
+    Hmin--;
+    HminNumButton.innerText = String(Hmin);
+  });
+  HmaxUp.addEventListener("click", function() {
+    Hmax++;
+    HmaxNumButton.innerText = String(Hmax);
+  });
+  HmaxDown.addEventListener("click", function() {
+    Hmax--;
+    HmaxNumButton.innerText = String(Hmax);
+    if (Hmin > Hmax) {
+      Hmin--;
+      HminNumButton.innerText = String(Hmin);
+    }
+  })
+
   //================= キャンバスの描画関数 ==================
   function drawCanvas() {
 
@@ -246,9 +280,7 @@ function initDrawApp(globals) {
         const stl1 = gridTool.points[i];
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
-      if(gridTool.points.length%4 == 0) {
-        globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount);
-      }
+      if(gridTool.points.length%4 == 0) { globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount); }
     }
 
     //四分木の方のgrid!
@@ -261,14 +293,7 @@ function initDrawApp(globals) {
     }
     if (q_tree.points.length >= 4) {
       globals.grids.makeQTree(q_tree);
-      if (autoMeshFlag) {
-        globals.grids.autoMesh(q_tree.structure, Hmin, Hmax, globals.svgInformation);
-        // let i = 0;
-        // while (i < Hmax) {
-        //   globals.grids.autoMesh(q_tree.structure, Hmin, Hmax, globals.svgInformation);
-        //   i++;
-        // }
-      }
+      if (autoMeshFlag) { globals.grids.autoMesh(q_tree.structure, Hmin, Hmax, globals.svgInformation); }
       globals.grids.drawQTree(q_tree.structure, context, gridLineList, lineColors[3]);
     }
 

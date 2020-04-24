@@ -1279,11 +1279,19 @@
             <button class="drawAppButtons1" id="test-button" style="left: 10px; top: 555px;">0</button>
         </div>
         <div>
-            <button class="drawAppButtons3" id="auto-mesh" style="top: 70px; right: 10px;">Mesh Generate</button>
-            <button class="drawAppButtons3" id="h-min" style="top:130px; right: 10px; height: 50px;">Hmin</button>
-            <button class="drawAppButtons3" id="hmin-num" style="top: 130px; right: 70px; height: 50px;">Num</button>
-            <button class="drawAppButtons3" id="hmin-up" style="top: 130px; right: 130px; height: 22px;">Up</button>
-            <button class="drawAppButtons3" id="hmin-down" style="top: 155px; right: 130px; height: 22px;">Down</button>
+            <!-- 自動分割のフラグ -->
+            <button class="drawAppButtons6" id="auto-mesh" style="top: 70px; right: 100px;">false</button>
+            <button class="drawAppButtons5" id="auto-mesh-flag" style="top: 70px; right: 10px;">←Auto Meshing</button>
+            <!-- Hminの値を指定するところ -->
+            <button class="drawAppButtons5" id="h-min" style="top:130px; right: 130px; width: 50px;">Hmin</button>
+            <button class="drawAppButtons5" id="hmin-num" style="top: 130px; right: 70px; width: 50px;">3</button>
+            <button class="drawAppButtons3" id="hmin-up" style="top: 130px; right: 10px; height: 22px;">▲</button>
+            <button class="drawAppButtons3" id="hmin-down" style="top: 155px; right: 10px; height: 22px;">▼</button>
+            <!-- Hmaxの値を指定するところ -->
+            <button class="drawAppButtons5" id="h-max" style="top:190px; right: 130px; width: 50px;">Hmax</button>
+            <button class="drawAppButtons5" id="hmax-num" style="top: 190px; right: 70px; width: 50px;">3</button>
+            <button class="drawAppButtons3" id="hmax-up" style="top: 190px; right: 10px; height: 22px;">▲</button>
+            <button class="drawAppButtons3" id="hmax-down" style="top: 215px; right: 10px; height: 22px;">▼</button>
         </div>
 </div>
 
