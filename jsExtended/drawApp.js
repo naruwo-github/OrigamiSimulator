@@ -262,11 +262,12 @@ function initDrawApp(globals) {
     if (q_tree.points.length >= 4) {
       globals.grids.makeQTree(q_tree);
       if (autoMeshFlag) {
-        let i = 0;
-        while (i < Hmax) {
-          globals.grids.autoMesh(q_tree.structure, Hmin, Hmax, globals.svgInformation);
-          i++;
-        }
+        globals.grids.autoMesh(q_tree.structure, Hmin, Hmax, globals.svgInformation);
+        // let i = 0;
+        // while (i < Hmax) {
+        //   globals.grids.autoMesh(q_tree.structure, Hmin, Hmax, globals.svgInformation);
+        //   i++;
+        // }
       }
       globals.grids.drawQTree(q_tree.structure, context, gridLineList, lineColors[3]);
     }

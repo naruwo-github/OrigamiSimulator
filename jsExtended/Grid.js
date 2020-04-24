@@ -493,12 +493,12 @@ function initGrids(globals) {
     }
 
     function autoMesh(tree, hmin, hmax, svgInfo) {
+        if (tree === undefined) { return; }
+
         if (hmin > hmax) {
             console.log("HminとHmaxの値が不適切です。")
             return;
         }
-        
-        if (tree === undefined) { return; }
 
         //ここで木の高さ判定を行う
         if (tree.height >= hmax) { return; }
@@ -541,11 +541,15 @@ function initGrids(globals) {
             }
         } else {
             //子がいる場合
-            autoMesh(tree.child0, hmin, hmax, svgInfo);
-            autoMesh(tree.child1, hmin, hmax, svgInfo);
-            autoMesh(tree.child2, hmin, hmax, svgInfo);
-            autoMesh(tree.child3, hmin, hmax, svgInfo);
+            // autoMesh(tree.child0, hmin, hmax, svgInfo);
+            // autoMesh(tree.child1, hmin, hmax, svgInfo);
+            // autoMesh(tree.child2, hmin, hmax, svgInfo);
+            // autoMesh(tree.child3, hmin, hmax, svgInfo);
         }
+        autoMesh(tree.child0, hmin, hmax, svgInfo);
+        autoMesh(tree.child1, hmin, hmax, svgInfo);
+        autoMesh(tree.child2, hmin, hmax, svgInfo);
+        autoMesh(tree.child3, hmin, hmax, svgInfo);
     }
 
     //2点間の距離を求める
