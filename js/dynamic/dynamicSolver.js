@@ -250,15 +250,15 @@ function initDynamicSolver(globals){
             var parsedPixels = new Float32Array(pixels.buffer);
             var globalError = 0;
             var globalError2 = 0;
-            var globalError3 = 0;
+            var globalError3 = 100;
             var shouldUpdateColors = globals.colorMode == "axialStrain";
             for (var i = 0; i < nodes.length; i++) {
                 var rgbaIndex = i * vectorLength;
                 var nodeError = parsedPixels[rgbaIndex+3]*100;
                 globalError += nodeError;
-                if(globalError2 < nodeError){
+                if (globalError2 < nodeError) {
                     globalError2 = nodeError;
-                }else{
+                }else if (globalError3 > nodeError) {
                     globalError3 = nodeError;
                 }
                 var nodePosition = new THREE.Vector3(parsedPixels[rgbaIndex], parsedPixels[rgbaIndex + 1], parsedPixels[rgbaIndex + 2]);
