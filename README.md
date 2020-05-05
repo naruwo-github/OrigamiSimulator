@@ -1,44 +1,38 @@
-# Origami Simulator[Ghassaei et. al 2017]を研究のため使用してます。
+#### 研究のソースコードを管理するリポジトリ
+
+## 曲線折り紙の折り動作シミュレーション
+（Origami Simulator[Ghassaei et. al 2017]を使用）
 
 　近年注目を集めつつある曲線折り紙(折り線に曲線を含む)は、既存のシミュレータでは上手くシミュレートすることができません。曲線折りに対応したシミュレータが今の所存在しないからです。既存のシミュレータにて、曲線折り紙の折りの動作シミュレーション行う場合、入力となる展開図に分割線情報をあらかじめ与える必要があります。そうすることで、曲面を分割線をヒンジとした平面の集合として表現することができるからです。一般的な方法では、既存のドローイングソフトウェア(Illustratorなど)で一本ずつ手作業で描画することが挙げられますが、、、このような操作を施してからシミュレータに入力する操作は冗長であると考えます。
 
 
 　そこで私は、折りのシミュレーションを行いながら展開図に分割線情報を追加、削除する機能をOrigami Simulatorに追加することで、曲線折り紙の折り動作のシミュレーションの効率化を図ります。具体的には、Illustratorなどで行なっていた線分を配置するなどの操作を、Origami Simulatorないで行えるようにします。これにより、展開図を入力する過程、また展開図を修正した後の再入力の際の時間的コストを大幅に削減できると考えます。
 
+### 曲線折り紙の展開図例
 
-<img src="assets/Readmeに新たに載せるやつ/シミュレータ拡張１.png" />
-曲線折り紙の展開図例
-<br/>
+<img src="assets/Readmeに新たに載せるやつ/シミュレータ拡張１.png" width="600" />
+
 展開図の入力後、DrawAppタブのアプリケーション画面に表示します。水色の点は入力された展開図情報ないの頂点群を表しています。
-<br/>
 
-<img src="assets/Readmeに新たに載せるやつ/シミュレータ拡張２.png" />
-シミュレート結果
-<br/>
+<img src="assets/Readmeに新たに載せるやつ/シミュレータ拡張２.png" width="600" />
+
 Origami Simulatorのデフォルト設定で、多角形パネルが存在する場合は内部で三角形分割されるため、可展面の自然な形状(滑らかな曲面)が表現できない場合が多いです。
-<br/>
 
-<img src="assets/Readmeに新たに載せるやつ/シミュレータ拡張３.png" />
+<img src="assets/Readmeに新たに載せるやつ/シミュレータ拡張３.png" width="600" />
 シミュレータ内で分割線情報を入力可能に
-<br/>
+
 追加したドローツールを用いて、可展面内に分割線となる線群を追加します。
-<br/>
 
-<img src="assets/Readmeに新たに載せるやつ/シミュレータ拡張４.png" />
-再シミュレート結果
-<br/>
+<img src="assets/Readmeに新たに載せるやつ/シミュレータ拡張４.png" width="600" />
+
+### 再シミュレート結果
+
 ユーザの意図を反映する立体形状を表現できる様になります。
-<br/>
 
 
 
-<br/>
-以下、Amandaさんのreadmeです。
 
-<br/>
-<br/>
-<br/>
-# OrigamiSimulator
+# OrigamiSimulator (Quoted by Ghassaei's readme.md)
 
 Live demo at <a href="http://apps.amandaghassaei.com/OrigamiSimulator">apps.amandaghassaei.com/OrigamiSimulator</a><br/>
 
