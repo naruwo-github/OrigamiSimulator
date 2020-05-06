@@ -177,6 +177,8 @@ function initDrawApp(globals) {
     
     //三角形分割の結果の描画
     drawTrianglationResult(context, globals.autoTriangulatedInfo);
+    //展開図情報の出力
+    //console.log(globals.svgInformation);
 
     //直線ツールの点
     context.fillStyle = lineColors[0];
@@ -656,9 +658,9 @@ function initDrawApp(globals) {
     globals.threeView.startSimulation();
 
     //20描画にシミュレーションを停止する処理
-    setTimeout(function() {
-      globals.threeView.pauseSimulation();
-    }, 1000*30);
+    // setTimeout(function() {
+    //   globals.threeView.pauseSimulation();
+    // }, 1000*30);
 
     //Simulate Modeへ遷移する
     globals.navMode = "simulation";
