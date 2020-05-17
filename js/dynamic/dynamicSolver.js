@@ -552,17 +552,18 @@ function initDynamicSolver(globals){
         var totalMovedPosition = 0.0;
         for (var i=0;i<nodes.length;i++){
             var _position = nodes[i].getRelativePosition();
-            //
+            
             totalMovedPosition += Math.sqrt(Math.pow((lastPosition[4*i]-_position.x),2)+Math.pow(lastPosition[4*i+1]-_position.y,2)+Math.pow(lastPosition[4*i+2]-_position.z,2));
-            //
+            
             lastPosition[4*i] = _position.x;
             lastPosition[4*i+1] = _position.y;
             lastPosition[4*i+2] = _position.z;
-            //ここで座標の更新を行っている
-            //ここでシミュレーションを継続するかどうかを制御するか
         }
-        //console.log("Avg(totalMovedPosition) = " + totalMovedPosition/nodes.length);
-        //if(totalMovedPosition/nodes.length <= 0.00001 && totalMovedPosition > 0.0) globals.threeView.pauseSimulation();
+        //globals.model.positionArray.push(totalMovedPosition/nodes.length);
+        if(totalMovedPosition/nodes.length <= 0.00001 && totalMovedPosition > 0.0) {
+            console.log(totalMovedPosition/nodes.length);
+            globals.threeView.pauseSimulation();
+        }
 
         globals.gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
         globals.gpuMath.initFrameBufferForTexture("u_lastPosition", true);
