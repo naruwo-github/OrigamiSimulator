@@ -276,13 +276,24 @@ function initDrawApp(globals) {
 
     //Gridツール
     //格子を描画する(デフォルトはマゼンタ？)
+    //正方格子
+    // if (gridTool.points.length > 0) {
+    //   context.fillStyle = lineColors[0];
+    //   for (let i = 0; i < gridTool.points.length; i++) {
+    //     const stl1 = gridTool.points[i];
+    //     context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
+    //   }
+    //   if(gridTool.points.length%4 == 0) { globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount); }
+    // }
+
+    //正三角形
     if (gridTool.points.length > 0) {
       context.fillStyle = lineColors[0];
       for (let i = 0; i < gridTool.points.length; i++) {
         const stl1 = gridTool.points[i];
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
-      if(gridTool.points.length%4 == 0) { globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount); }
+      if(gridTool.points.length%4 == 0) { globals.grids.regularTrianglation(gridTool.points, 50, context, context, gridLineList, lineColors[3]); }
     }
 
     //四分木の方のgrid!

@@ -233,6 +233,8 @@ function initGrids(globals) {
         rotationalMovement(ctx, list, array, 0);
     }
 
+
+
     //角度を持った格子を描画する関数
     function drawGridWithAngle(gridnumber, outputList, ctx, lineColor, outlinePoints, angle) {
         //格子数がgridnumber
@@ -317,6 +319,8 @@ function initGrids(globals) {
         }
     }
 
+
+
     //listに格納されている直線群のそれぞれに対し、
     //outlineを中心としてangleだけ回転させたものをlist内に返し描画する
     function rotationalMovement(ctx, list, outline, angle) {
@@ -334,6 +338,8 @@ function initGrids(globals) {
         }
     }
 
+
+
     //(x, y)を(ox, oy)を中心としてangleだけ回転移動した座標を返す関数
     function coordinateTransformation(x, y, ox, oy, angle) {
         x -= ox;
@@ -341,6 +347,12 @@ function initGrids(globals) {
         return [x * Math.cos(angle / 180 * Math.PI) - y * Math.sin(angle / 180 * Math.PI) + ox, 
             x * Math.sin(angle / 180 * Math.PI) + y * Math.cos(angle / 180 * Math.PI) + oy];
     }
+
+
+
+
+
+
 
     //四分木の構造体
     class q_tree {
@@ -358,6 +370,8 @@ function initGrids(globals) {
         }
     }
 
+
+    //四分木構造を構築するメソッド
     function makeQTree(source) {
         let points = source.points;
         let x0 = points[0][0];
@@ -399,6 +413,8 @@ function initGrids(globals) {
         }
     }
 
+
+    //分割する木を探索し、分割するメソッド
     function divideAimTree(tree, point) {
         if (tree.child0 === undefined) {
             divideQTree(tree);
@@ -426,6 +442,8 @@ function initGrids(globals) {
         }
     }
 
+
+    //木を分割するメソッド
     function divideQTree(tree) {
         //四分木を分割(子1~4をappendする)
         let parentId = tree.selfIndex;
@@ -448,6 +466,8 @@ function initGrids(globals) {
         tree.child3 = new q_tree(parentId*4+4, parentId, tree.height + 1, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
     }
 
+
+    //木をCanvasに描画するメソッド
     function drawQTree(tree, ctx, gridLineList, lineColor) {
         if (tree === undefined) {
             return;
@@ -492,6 +512,8 @@ function initGrids(globals) {
         return;
     }
 
+
+    //木の自動分割
     function autoMesh(tree, hmin, hmax, svgInfo) {
         if (tree === undefined) { return; }
 
@@ -566,6 +588,58 @@ function initGrids(globals) {
         return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
     }
 
+
+
+
+    //正三角形の格子を描画するメソッド
+    function regularTrianglation(outlinePoints, triangleEdgeLength, ctx, gridLineList, lineColor) {
+        if (outlinePoints.length < 4) {
+            return;
+        }
+        let op = outlinePoints;
+        let len = triangleEdgeLength;
+        let center = [
+            (op[0][0]+op[1][0]+op[2][0]+op[3][0])/4,
+            (op[0][1]+op[1][1]+op[2][1]+op[3][1])/4
+        ];
+
+        let vecLeftTop = new THREE.Vector2(-1, Math.sqrt(3));
+        let vecRightTop = new THREE.Vector2(1, Math.sqrt(3));
+        vecLeftTop.normalize();
+        vecRightTop.normalize();
+        
+        let startRight = [center[0] + triangleEdgeLength/2, center[1]];
+        let startLeft = [center[0] - triangleEdgeLength/2, center[1]];
+
+        //右側の点
+        while (startRight[0] < op[1][0] && startLeft[0] > op[0][0]) {
+            //描画処理
+            ctx.fillStyle = lineColor;
+            ctx.fillRect(startRight[0]-2, startRight[1]-2, 5, 5);
+            ctx.fillRect(startLeft[0]-2, startLeft[1]-2, 5, 5);
+
+            //更新処理
+            startRight[0] += triangleEdgeLength;
+            startLeft[0] -= triangleEdgeLength;
+        }
+        //上下の点
+        startRight[1] += triangleEdgeLength;
+        startLeft[1] -= triangleEdgeLength;
+        while (startRight[1] < op[2][1] && startLeft[1] > op[0][1]) {
+            //描画処理
+            ctx.fillStyle = lineColor;
+            ctx.fillRect(center[0]-2, startRight[1]-2, 5, 5);
+            ctx.fillRect(center[0]-2, startLeft[1]-2, 5, 5);
+
+            //更新処理
+            startRight[1] += triangleEdgeLength;
+            startLeft[1] -= triangleEdgeLength;
+        }
+    }
+
+
+
+
     return {
         drawGrid: drawGrid,
         drawGridWithAngle: drawGridWithAngle,
@@ -576,5 +650,6 @@ function initGrids(globals) {
         divideQTree: divideQTree,
         drawQTree: drawQTree,
         autoMesh: autoMesh,
+        regularTrianglation: regularTrianglation,
     }
 }
