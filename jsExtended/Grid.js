@@ -233,6 +233,8 @@ function initGrids(globals) {
         rotationalMovement(ctx, list, array, 0);
     }
 
+
+
     //角度を持った格子を描画する関数
     function drawGridWithAngle(gridnumber, outputList, ctx, lineColor, outlinePoints, angle) {
         //格子数がgridnumber
@@ -317,6 +319,8 @@ function initGrids(globals) {
         }
     }
 
+
+
     //listに格納されている直線群のそれぞれに対し、
     //outlineを中心としてangleだけ回転させたものをlist内に返し描画する
     function rotationalMovement(ctx, list, outline, angle) {
@@ -334,6 +338,8 @@ function initGrids(globals) {
         }
     }
 
+
+
     //(x, y)を(ox, oy)を中心としてangleだけ回転移動した座標を返す関数
     function coordinateTransformation(x, y, ox, oy, angle) {
         x -= ox;
@@ -341,6 +347,12 @@ function initGrids(globals) {
         return [x * Math.cos(angle / 180 * Math.PI) - y * Math.sin(angle / 180 * Math.PI) + ox, 
             x * Math.sin(angle / 180 * Math.PI) + y * Math.cos(angle / 180 * Math.PI) + oy];
     }
+
+
+
+
+
+
 
     //四分木の構造体
     class q_tree {
@@ -358,6 +370,8 @@ function initGrids(globals) {
         }
     }
 
+
+    //四分木構造を構築するメソッド
     function makeQTree(source) {
         let points = source.points;
         let x0 = points[0][0];
@@ -399,6 +413,8 @@ function initGrids(globals) {
         }
     }
 
+
+    //分割する木を探索し、分割するメソッド
     function divideAimTree(tree, point) {
         if (tree.child0 === undefined) {
             divideQTree(tree);
@@ -426,6 +442,8 @@ function initGrids(globals) {
         }
     }
 
+
+    //木を分割するメソッド
     function divideQTree(tree) {
         //四分木を分割(子1~4をappendする)
         let parentId = tree.selfIndex;
@@ -448,6 +466,8 @@ function initGrids(globals) {
         tree.child3 = new q_tree(parentId*4+4, parentId, tree.height + 1, [(x0+x1)/2, y0, x1, y1, x1, (y1+y2)/2, (x0+x1)/2, (y0+y3)/2]);
     }
 
+
+    //木をCanvasに描画するメソッド
     function drawQTree(tree, ctx, gridLineList, lineColor) {
         if (tree === undefined) {
             return;
@@ -492,6 +512,8 @@ function initGrids(globals) {
         return;
     }
 
+
+    //木の自動分割
     function autoMesh(tree, hmin, hmax, svgInfo) {
         if (tree === undefined) { return; }
 
@@ -566,6 +588,135 @@ function initGrids(globals) {
         return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
     }
 
+
+
+
+    //正三角形の格子を描画するメソッド
+    function regularTrianglation(outlinePoints, triangleEdgeLength, ctx, gridLineList, lineColor) {
+        if (outlinePoints.length < 4) {
+            return;
+        }
+        let op = outlinePoints;
+        let center = [
+            (op[0][0]+op[1][0]+op[2][0]+op[3][0])/4,
+            (op[0][1]+op[1][1]+op[2][1]+op[3][1])/4
+        ];
+
+        let vecLeftTop = new THREE.Vector2(-1, Math.sqrt(3));
+        let vecRightTop = new THREE.Vector2(1, Math.sqrt(3));
+        vecLeftTop.normalize();
+        vecRightTop.normalize();
+        
+        let startRight = [center[0] + triangleEdgeLength/2, center[1]];
+        let startLeft = [center[0] - triangleEdgeLength/2, center[1]];
+
+        //右側の点
+        while (startRight[0] < op[1][0]*10 && startLeft[0] > op[0][0]*(-10)) {
+            //描画処理
+            // ctx.fillStyle = lineColor;
+            // ctx.fillRect(startRight[0]-2, startRight[1]-2, 5, 5);
+            // ctx.fillRect(startLeft[0]-2, startLeft[1]-2, 5, 5);
+
+            //ベクトルを使って斜め線の集合を引いていく
+            //スタート地点(左左上、左右上、左左下、左右下、右左上、右右上、右左下、右右下)2点ずつ(始点と終点)書いていく
+            let leftUpperLeft = new THREE.Vector2(startLeft[0] + vecLeftTop.x*1000, startLeft[1] + vecLeftTop.y*1000);
+            let leftLowerRight = new THREE.Vector2(startLeft[0] + -vecLeftTop.x*1000, startLeft[1] + -vecLeftTop.y*1000);
+
+            let leftUpperRight = new THREE.Vector2(startLeft[0] + vecRightTop.x*1000, startLeft[1] + vecRightTop.y*1000);
+            let leftLowerLeft = new THREE.Vector2(startLeft[0] + -vecRightTop.x*1000, startLeft[1] + -vecRightTop.y*1000);
+
+            let rightUpperLeft = new THREE.Vector2(startRight[0] + vecLeftTop.x*1000, startRight[1] + vecLeftTop.y*1000);
+            let rightLowerRight = new THREE.Vector2(startRight[0] + -vecLeftTop.x*1000, startRight[1] + -vecLeftTop.y*1000);
+
+            let rightUpperRight = new THREE.Vector2(startRight[0] + vecRightTop.x*1000, startRight[1] + vecRightTop.y*1000);
+            let rightLowerLeft = new THREE.Vector2(startRight[0] + -vecRightTop.x*1000, startRight[1] + -vecRightTop.y*1000);
+
+            let intersectedPoints = [];
+            //(輪郭)との交差判定
+            judgeAndGetIntersection(op, leftUpperLeft.x, leftUpperLeft.y, leftLowerRight.x, leftLowerRight.y, intersectedPoints);
+            if (intersectedPoints.length === 2) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, intersectedPoints[0][0], intersectedPoints[0][1], intersectedPoints[1][0], intersectedPoints[1][1]);
+                gridLineList.push([[intersectedPoints[0][0], intersectedPoints[0][1]], [intersectedPoints[1][0], intersectedPoints[1][1]], lineColor]);
+            }
+            intersectedPoints = [];
+
+            judgeAndGetIntersection(op, leftUpperRight.x, leftUpperRight.y, leftLowerLeft.x, leftLowerLeft.y, intersectedPoints);
+            if (intersectedPoints.length === 2) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, intersectedPoints[0][0], intersectedPoints[0][1], intersectedPoints[1][0], intersectedPoints[1][1]);
+                gridLineList.push([[intersectedPoints[0][0], intersectedPoints[0][1]], [intersectedPoints[1][0], intersectedPoints[1][1]], lineColor]);
+            }
+            intersectedPoints = [];
+
+            judgeAndGetIntersection(op, rightUpperLeft.x, rightUpperLeft.y, rightLowerRight.x, rightLowerRight.y, intersectedPoints);
+            if (intersectedPoints.length === 2) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, intersectedPoints[0][0], intersectedPoints[0][1], intersectedPoints[1][0], intersectedPoints[1][1]);
+                gridLineList.push([[intersectedPoints[0][0], intersectedPoints[0][1]], [intersectedPoints[1][0], intersectedPoints[1][1]], lineColor]);
+            }
+            intersectedPoints = [];
+
+            judgeAndGetIntersection(op, rightUpperRight.x, rightUpperRight.y, rightLowerLeft.x, rightLowerLeft.y, intersectedPoints);
+            if (intersectedPoints.length === 2) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, intersectedPoints[0][0], intersectedPoints[0][1], intersectedPoints[1][0], intersectedPoints[1][1]);
+                gridLineList.push([[intersectedPoints[0][0], intersectedPoints[0][1]], [intersectedPoints[1][0], intersectedPoints[1][1]], lineColor]);
+            }
+            intersectedPoints = [];
+
+            //描画処理
+            // globals.drawapp.drawLine(ctx, lineColor, 1.0, leftUpperLeft.x, leftUpperLeft.y, leftLowerRight.x, leftLowerRight.y);
+            // gridLineList.push([[leftUpperLeft.x, leftUpperLeft.y], [leftLowerRight.x, leftLowerRight.y], lineColor]);
+            // globals.drawapp.drawLine(ctx, lineColor, 1.0, leftUpperRight.x, leftUpperRight.y, leftLowerLeft.x, leftLowerLeft.y);
+            // gridLineList.push([[leftUpperRight.x, leftUpperRight.y], [leftLowerLeft.x, leftLowerLeft.y], lineColor]);
+            // globals.drawapp.drawLine(ctx, lineColor, 1.0, rightUpperLeft.x, rightUpperLeft.y, rightLowerRight.x, rightLowerRight.y);
+            // gridLineList.push([[rightUpperLeft.x, rightUpperLeft.y], [rightLowerRight.x, rightLowerRight.y], lineColor]);
+            // globals.drawapp.drawLine(ctx, lineColor, 1.0, rightUpperRight.x, rightUpperRight.y, rightLowerLeft.x, rightLowerLeft.y);
+            // gridLineList.push([[rightUpperRight.x, rightUpperRight.y], [rightLowerLeft.x, rightLowerLeft.y], lineColor]);
+
+            //更新処理
+            startRight[0] += triangleEdgeLength;
+            startLeft[0] -= triangleEdgeLength;
+        }
+        //上下の点
+        //真ん中の横線引いちゃう
+        globals.drawapp.drawLine(ctx, lineColor, 1.0, op[0][0], startLeft[1], op[1][0], startLeft[1]);
+        gridLineList.push([[op[0][0], startRight[1]], [op[1][0], startRight[1]], lineColor]);
+        startRight[1] += triangleEdgeLength*Math.sqrt(3)/2;
+        startLeft[1] -= triangleEdgeLength*Math.sqrt(3)/2;
+        while (startRight[1] < op[2][1] && startLeft[1] > op[0][1]) {
+            //描画処理
+            globals.drawapp.drawLine(ctx, lineColor, 0.8, op[0][0], startRight[1], op[1][0], startRight[1]);
+            globals.drawapp.drawLine(ctx, lineColor, 0.8, op[0][0], startLeft[1], op[1][0], startLeft[1]);
+            gridLineList.push([[op[0][0], startRight[1]], [op[1][0], startRight[1]], lineColor]);
+            gridLineList.push([[op[0][0], startLeft[1]], [op[1][0], startLeft[1]], lineColor]);
+
+            //更新処理
+            startRight[1] += triangleEdgeLength*Math.sqrt(3)/2;
+            startLeft[1] -= triangleEdgeLength*Math.sqrt(3)/2;
+        }
+    }
+
+
+    //交差判定して交点とか求めるやーつ
+    function judgeAndGetIntersection(op, xs, ys, xe, ye, array) {
+        //op0op1との交点
+        if (globals.beziercurve.judgeIntersect2(xs, ys, xe, ye, op[0][0], op[0][1], op[1][0], op[1][1])) {
+            array.push(globals.beziercurve.getIntersectPoint(xs, ys, op[0][0], op[0][1], xe, ye, op[1][0], op[1][1]));
+        }
+        //op1op2との交点
+        if (globals.beziercurve.judgeIntersect2(xs, ys, xe, ye, op[1][0], op[1][1], op[2][0], op[2][1])) {
+            array.push(globals.beziercurve.getIntersectPoint(xs, ys, op[1][0], op[1][1], xe, ye, op[2][0], op[2][1]));
+        }
+        //op2op3との交点
+        if (globals.beziercurve.judgeIntersect2(xs, ys, xe, ye, op[2][0], op[2][1], op[3][0], op[3][1])) {
+            array.push(globals.beziercurve.getIntersectPoint(xs, ys, op[2][0], op[2][1], xe, ye, op[3][0], op[3][1]));
+        }
+        //op3op0との交点
+        if (globals.beziercurve.judgeIntersect2(xs, ys, xe, ye, op[3][0], op[3][1], op[0][0], op[0][1])) {
+            array.push(globals.beziercurve.getIntersectPoint(xs, ys, op[3][0], op[3][1], xe, ye, op[0][0], op[0][1]));
+        }
+    }
+
+
+
     return {
         drawGrid: drawGrid,
         drawGridWithAngle: drawGridWithAngle,
@@ -576,5 +727,6 @@ function initGrids(globals) {
         divideQTree: divideQTree,
         drawQTree: drawQTree,
         autoMesh: autoMesh,
+        regularTrianglation: regularTrianglation,
     }
 }
