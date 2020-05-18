@@ -597,7 +597,6 @@ function initGrids(globals) {
             return;
         }
         let op = outlinePoints;
-        let len = triangleEdgeLength;
         let center = [
             (op[0][0]+op[1][0]+op[2][0]+op[3][0])/4,
             (op[0][1]+op[1][1]+op[2][1]+op[3][1])/4
@@ -612,31 +611,109 @@ function initGrids(globals) {
         let startLeft = [center[0] - triangleEdgeLength/2, center[1]];
 
         //右側の点
-        while (startRight[0] < op[1][0] && startLeft[0] > op[0][0]) {
+        while (startRight[0] < op[1][0]*10 && startLeft[0] > op[0][0]*(-10)) {
             //描画処理
-            ctx.fillStyle = lineColor;
-            ctx.fillRect(startRight[0]-2, startRight[1]-2, 5, 5);
-            ctx.fillRect(startLeft[0]-2, startLeft[1]-2, 5, 5);
+            // ctx.fillStyle = lineColor;
+            // ctx.fillRect(startRight[0]-2, startRight[1]-2, 5, 5);
+            // ctx.fillRect(startLeft[0]-2, startLeft[1]-2, 5, 5);
+
+            //ベクトルを使って斜め線の集合を引いていく
+            //スタート地点(左左上、左右上、左左下、左右下、右左上、右右上、右左下、右右下)2点ずつ(始点と終点)書いていく
+            let leftUpperLeft = new THREE.Vector2(startLeft[0] + vecLeftTop.x*1000, startLeft[1] + vecLeftTop.y*1000);
+            let leftLowerRight = new THREE.Vector2(startLeft[0] + -vecLeftTop.x*1000, startLeft[1] + -vecLeftTop.y*1000);
+
+            let leftUpperRight = new THREE.Vector2(startLeft[0] + vecRightTop.x*1000, startLeft[1] + vecRightTop.y*1000);
+            let leftLowerLeft = new THREE.Vector2(startLeft[0] + -vecRightTop.x*1000, startLeft[1] + -vecRightTop.y*1000);
+
+            let rightUpperLeft = new THREE.Vector2(startRight[0] + vecLeftTop.x*1000, startRight[1] + vecLeftTop.y*1000);
+            let rightLowerRight = new THREE.Vector2(startRight[0] + -vecLeftTop.x*1000, startRight[1] + -vecLeftTop.y*1000);
+
+            let rightUpperRight = new THREE.Vector2(startRight[0] + vecRightTop.x*1000, startRight[1] + vecRightTop.y*1000);
+            let rightLowerLeft = new THREE.Vector2(startRight[0] + -vecRightTop.x*1000, startRight[1] + -vecRightTop.y*1000);
+
+            let intersectedPoints = [];
+            //(輪郭)との交差判定
+            judgeAndGetIntersection(op, leftUpperLeft.x, leftUpperLeft.y, leftLowerRight.x, leftLowerRight.y, intersectedPoints);
+            if (intersectedPoints.length === 2) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, intersectedPoints[0][0], intersectedPoints[0][1], intersectedPoints[1][0], intersectedPoints[1][1]);
+                gridLineList.push([[intersectedPoints[0][0], intersectedPoints[0][1]], [intersectedPoints[1][0], intersectedPoints[1][1]], lineColor]);
+            }
+            intersectedPoints = [];
+
+            judgeAndGetIntersection(op, leftUpperRight.x, leftUpperRight.y, leftLowerLeft.x, leftLowerLeft.y, intersectedPoints);
+            if (intersectedPoints.length === 2) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, intersectedPoints[0][0], intersectedPoints[0][1], intersectedPoints[1][0], intersectedPoints[1][1]);
+                gridLineList.push([[intersectedPoints[0][0], intersectedPoints[0][1]], [intersectedPoints[1][0], intersectedPoints[1][1]], lineColor]);
+            }
+            intersectedPoints = [];
+
+            judgeAndGetIntersection(op, rightUpperLeft.x, rightUpperLeft.y, rightLowerRight.x, rightLowerRight.y, intersectedPoints);
+            if (intersectedPoints.length === 2) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, intersectedPoints[0][0], intersectedPoints[0][1], intersectedPoints[1][0], intersectedPoints[1][1]);
+                gridLineList.push([[intersectedPoints[0][0], intersectedPoints[0][1]], [intersectedPoints[1][0], intersectedPoints[1][1]], lineColor]);
+            }
+            intersectedPoints = [];
+
+            judgeAndGetIntersection(op, rightUpperRight.x, rightUpperRight.y, rightLowerLeft.x, rightLowerLeft.y, intersectedPoints);
+            if (intersectedPoints.length === 2) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, intersectedPoints[0][0], intersectedPoints[0][1], intersectedPoints[1][0], intersectedPoints[1][1]);
+                gridLineList.push([[intersectedPoints[0][0], intersectedPoints[0][1]], [intersectedPoints[1][0], intersectedPoints[1][1]], lineColor]);
+            }
+            intersectedPoints = [];
+
+            //描画処理
+            // globals.drawapp.drawLine(ctx, lineColor, 1.0, leftUpperLeft.x, leftUpperLeft.y, leftLowerRight.x, leftLowerRight.y);
+            // gridLineList.push([[leftUpperLeft.x, leftUpperLeft.y], [leftLowerRight.x, leftLowerRight.y], lineColor]);
+            // globals.drawapp.drawLine(ctx, lineColor, 1.0, leftUpperRight.x, leftUpperRight.y, leftLowerLeft.x, leftLowerLeft.y);
+            // gridLineList.push([[leftUpperRight.x, leftUpperRight.y], [leftLowerLeft.x, leftLowerLeft.y], lineColor]);
+            // globals.drawapp.drawLine(ctx, lineColor, 1.0, rightUpperLeft.x, rightUpperLeft.y, rightLowerRight.x, rightLowerRight.y);
+            // gridLineList.push([[rightUpperLeft.x, rightUpperLeft.y], [rightLowerRight.x, rightLowerRight.y], lineColor]);
+            // globals.drawapp.drawLine(ctx, lineColor, 1.0, rightUpperRight.x, rightUpperRight.y, rightLowerLeft.x, rightLowerLeft.y);
+            // gridLineList.push([[rightUpperRight.x, rightUpperRight.y], [rightLowerLeft.x, rightLowerLeft.y], lineColor]);
 
             //更新処理
             startRight[0] += triangleEdgeLength;
             startLeft[0] -= triangleEdgeLength;
         }
         //上下の点
-        startRight[1] += triangleEdgeLength;
-        startLeft[1] -= triangleEdgeLength;
+        //真ん中の横線引いちゃう
+        globals.drawapp.drawLine(ctx, lineColor, 1.0, op[0][0], startLeft[1], op[1][0], startLeft[1]);
+        gridLineList.push([[op[0][0], startRight[1]], [op[1][0], startRight[1]], lineColor]);
+        startRight[1] += triangleEdgeLength*Math.sqrt(3)/2;
+        startLeft[1] -= triangleEdgeLength*Math.sqrt(3)/2;
         while (startRight[1] < op[2][1] && startLeft[1] > op[0][1]) {
             //描画処理
-            ctx.fillStyle = lineColor;
-            ctx.fillRect(center[0]-2, startRight[1]-2, 5, 5);
-            ctx.fillRect(center[0]-2, startLeft[1]-2, 5, 5);
+            globals.drawapp.drawLine(ctx, lineColor, 0.8, op[0][0], startRight[1], op[1][0], startRight[1]);
+            globals.drawapp.drawLine(ctx, lineColor, 0.8, op[0][0], startLeft[1], op[1][0], startLeft[1]);
+            gridLineList.push([[op[0][0], startRight[1]], [op[1][0], startRight[1]], lineColor]);
+            gridLineList.push([[op[0][0], startLeft[1]], [op[1][0], startLeft[1]], lineColor]);
 
             //更新処理
-            startRight[1] += triangleEdgeLength;
-            startLeft[1] -= triangleEdgeLength;
+            startRight[1] += triangleEdgeLength*Math.sqrt(3)/2;
+            startLeft[1] -= triangleEdgeLength*Math.sqrt(3)/2;
         }
     }
 
+
+    //交差判定して交点とか求めるやーつ
+    function judgeAndGetIntersection(op, xs, ys, xe, ye, array) {
+        //op0op1との交点
+        if (globals.beziercurve.judgeIntersect2(xs, ys, xe, ye, op[0][0], op[0][1], op[1][0], op[1][1])) {
+            array.push(globals.beziercurve.getIntersectPoint(xs, ys, op[0][0], op[0][1], xe, ye, op[1][0], op[1][1]));
+        }
+        //op1op2との交点
+        if (globals.beziercurve.judgeIntersect2(xs, ys, xe, ye, op[1][0], op[1][1], op[2][0], op[2][1])) {
+            array.push(globals.beziercurve.getIntersectPoint(xs, ys, op[1][0], op[1][1], xe, ye, op[2][0], op[2][1]));
+        }
+        //op2op3との交点
+        if (globals.beziercurve.judgeIntersect2(xs, ys, xe, ye, op[2][0], op[2][1], op[3][0], op[3][1])) {
+            array.push(globals.beziercurve.getIntersectPoint(xs, ys, op[2][0], op[2][1], xe, ye, op[3][0], op[3][1]));
+        }
+        //op3op0との交点
+        if (globals.beziercurve.judgeIntersect2(xs, ys, xe, ye, op[3][0], op[3][1], op[0][0], op[0][1])) {
+            array.push(globals.beziercurve.getIntersectPoint(xs, ys, op[3][0], op[3][1], xe, ye, op[0][0], op[0][1]));
+        }
+    }
 
 
 

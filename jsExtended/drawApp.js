@@ -163,7 +163,26 @@ function initDrawApp(globals) {
       Hmin--;
       HminNumButton.innerText = String(Hmin);
     }
-  })
+  });
+
+  //正三角形メッシュの制御ボタン
+  var RegularTriangleEdgeNum = document.getElementById("rt-num");
+  var halfLengthTriangleEdge = parseInt(RegularTriangleEdgeNum.innerText);
+  var rtenUp = document.getElementById("rt-up");
+  var rtenDown = document.getElementById("rt-down");
+  rtenUp.addEventListener("click", function() {
+    if (halfLengthTriangleEdge < 500) {
+      halfLengthTriangleEdge += 10;
+      RegularTriangleEdgeNum.innerText = String(halfLengthTriangleEdge);
+    }
+  });
+  rtenDown.addEventListener("click", function() {
+    if (halfLengthTriangleEdge > 0) {
+      halfLengthTriangleEdge -= 10;
+      RegularTriangleEdgeNum.innerText = String(halfLengthTriangleEdge);
+    }
+  });
+
 
   //================= キャンバスの描画関数 ==================
   function drawCanvas() {
@@ -293,7 +312,7 @@ function initDrawApp(globals) {
         const stl1 = gridTool.points[i];
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
-      if(gridTool.points.length%4 == 0) { globals.grids.regularTrianglation(gridTool.points, 50, context, context, gridLineList, lineColors[3]); }
+      if(gridTool.points.length%4 == 0) { globals.grids.regularTrianglation(gridTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]); }
     }
 
     //四分木の方のgrid!
