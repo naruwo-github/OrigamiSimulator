@@ -172,13 +172,13 @@ function initDrawApp(globals) {
   var rtenDown = document.getElementById("rt-down");
   rtenUp.addEventListener("click", function() {
     if (halfLengthTriangleEdge < 500) {
-      halfLengthTriangleEdge += 10;
+      halfLengthTriangleEdge += 5;
       RegularTriangleEdgeNum.innerText = String(halfLengthTriangleEdge);
     }
   });
   rtenDown.addEventListener("click", function() {
     if (halfLengthTriangleEdge > 0) {
-      halfLengthTriangleEdge -= 10;
+      halfLengthTriangleEdge -= 5;
       RegularTriangleEdgeNum.innerText = String(halfLengthTriangleEdge);
     }
   });
