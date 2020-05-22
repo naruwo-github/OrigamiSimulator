@@ -611,7 +611,7 @@ function initGrids(globals) {
         let startLeft = [center[0] - triangleEdgeLength/2, center[1]];
 
         //右側の点
-        while (startRight[0] < op[1][0]*10 && startLeft[0] > op[0][0]*(-10)) {
+        while (startRight[0] < op[1][0]*20 && startLeft[0] > op[0][0]*(-20)) {
             //描画処理
             // ctx.fillStyle = lineColor;
             // ctx.fillRect(startRight[0]-2, startRight[1]-2, 5, 5);
