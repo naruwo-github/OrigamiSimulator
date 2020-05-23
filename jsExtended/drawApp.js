@@ -49,6 +49,11 @@ function initDrawApp(globals) {
   gridTool.flag = false;
   gridTool.points = new Array();
 
+  //正三角形のタイリングツール
+  var regularTrianglationTool = new Object();
+  regularTrianglationTool.flag = false;
+  regularTrianglationTool.points = [];
+
 
   //===暫定的に用いるやつ===
   var qtreeButton = document.getElementById("qtree-mode");
@@ -84,6 +89,10 @@ function initDrawApp(globals) {
   gridNumDown.innerText = "▼";
   var gridMode = document.getElementById("grid-mode");
   gridMode.mode = 0;
+
+
+  //正三角形ツール
+  var regularTriangleButton = document.getElementById("rt-tool");
   //===================================
 
 
@@ -182,6 +191,8 @@ function initDrawApp(globals) {
       RegularTriangleEdgeNum.innerText = String(halfLengthTriangleEdge);
     }
   });
+
+
 
 
   //================= キャンバスの描画関数 ==================
@@ -296,23 +307,23 @@ function initDrawApp(globals) {
     //Gridツール
     //格子を描画する(デフォルトはマゼンタ？)
     //正方格子
-    // if (gridTool.points.length > 0) {
-    //   context.fillStyle = lineColors[0];
-    //   for (let i = 0; i < gridTool.points.length; i++) {
-    //     const stl1 = gridTool.points[i];
-    //     context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
-    //   }
-    //   if(gridTool.points.length%4 == 0) { globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount); }
-    // }
-
-    //正三角形
     if (gridTool.points.length > 0) {
       context.fillStyle = lineColors[0];
       for (let i = 0; i < gridTool.points.length; i++) {
         const stl1 = gridTool.points[i];
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
-      if(gridTool.points.length%4 == 0) { globals.grids.regularTrianglation(gridTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]); }
+      if(gridTool.points.length%4 == 0) { globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount); }
+    }
+
+    //正三角形
+    if (regularTrianglationTool.points.length > 0) {
+      context.fillStyle = lineColors[0];
+      for (let i = 0; i < regularTrianglationTool.points.length; i++) {
+        const stl1 = regularTrianglationTool.points[i];
+        context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
+      }
+      if(regularTrianglationTool.points.length%4 == 0) { globals.grids.regularTrianglation(regularTrianglationTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]); }
     }
 
     //四分木の方のgrid!
@@ -331,6 +342,8 @@ function initDrawApp(globals) {
 
   }
   //=====================================================
+
+
 
 
   //canvas内のクリック判定
@@ -358,6 +371,16 @@ function initDrawApp(globals) {
         gridTool.points.push([ret[0], ret[1]]);
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         gridTool.points.push([e.offsetX, e.offsetY]);
+      }
+    } else if(regularTrianglationTool.flag === true) { //正三角形ツール
+      //クリックした点が展開図情報内の点のいずれかに近い場合、
+      //重ねて配置したいと判定する
+      var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
+      var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1])
+      if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
+        regularTrianglationTool.points.push([ret[0], ret[1]]);
+      }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
+        regularTrianglationTool.points.push([e.offsetX, e.offsetY]);
       }
     } else if(qtreeFlag === true) {
       var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
@@ -490,6 +513,8 @@ function initDrawApp(globals) {
       ruling2Button.style.backgroundColor = buttonColor;
       gridTool.flag = false;
       gridButton.style.backgroundColor = buttonColor;
+      regularTrianglationTool.flag = false;
+      regularTriangleButton.style.backgroundColor = buttonColor;
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
     }
@@ -513,6 +538,8 @@ function initDrawApp(globals) {
       ruling2Button.style.backgroundColor = buttonColor;
       gridTool.flag = false;
       gridButton.style.backgroundColor = buttonColor;
+      regularTrianglationTool.flag = false;
+      regularTriangleButton.style.backgroundColor = buttonColor;
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
     }
@@ -586,6 +613,8 @@ function initDrawApp(globals) {
       ruling1Button.style.backgroundColor = buttonColor;
       gridTool.flag = false;
       gridButton.style.backgroundColor = buttonColor;
+      regularTrianglationTool.flag = false;
+      regularTriangleButton.style.backgroundColor = buttonColor;
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
     }
@@ -609,6 +638,31 @@ function initDrawApp(globals) {
       ruling1Button.style.backgroundColor = buttonColor;
       ruling2 = false;
       ruling2Button.style.backgroundColor = buttonColor;
+      regularTrianglationTool.flag = false;
+      regularTriangleButton.style.backgroundColor = buttonColor;
+      qtreeFlag = false;
+      qtreeButton.style.backgroundColor = buttonColor;
+    }
+  });
+
+  //正三角形グリッドボタン
+  regularTriangleButton.addEventListener("click", function() {
+    if(regularTrianglationTool.flag === true) {
+      regularTrianglationTool.flag = false;
+      regularTriangleButton.style.backgroundColor = buttonColor;
+    } else {
+      regularTrianglationTool.flag = true;
+      regularTriangleButton.style.backgroundColor = '#aaaaaa';
+
+      //ほかのボタン
+      straight = false;
+      slineButton.style.backgroundColor = buttonColor;
+      ruling1 = false;
+      ruling1Button.style.backgroundColor = buttonColor;
+      ruling2 = false;
+      ruling2Button.style.backgroundColor = buttonColor;
+      gridTool.flag = false;
+      gridButton.style.backgroundColor = buttonColor;
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
     }
@@ -634,6 +688,8 @@ function initDrawApp(globals) {
       ruling2Button.style.backgroundColor = buttonColor;
       gridTool.flag = false;
       gridButton.style.backgroundColor = buttonColor;
+      regularTrianglationTool.flag = false;
+      regularTriangleButton.style.backgroundColor = buttonColor;
     }
   })
 
@@ -726,6 +782,8 @@ function initDrawApp(globals) {
       ru2array.pop();
     } else if(gridTool.flag === true) {
       gridTool.points.pop();
+    } else if(regularTrianglationTool.flag === true) {
+      regularTrianglationTool.points.pop();
     } else if(qtreeFlag === true){
       q_tree.points.pop();
     } else {
@@ -748,16 +806,27 @@ function initDrawApp(globals) {
   document.getElementById("clear-button").addEventListener("click", function(){
     //初期化する
     straightLineList = new Array();
+
     beziDistList = new Array();
     beziList = new Array();
+
     splineDistList = new Array();
     splineList = new Array();
+    
     ru2array = new Array();
+    
     dragList = new Array();
+    
     outputList = new Array();
+
     optimizedRuling = new Array();
+
     gridTool.flag = false;
     gridTool.points = new Array();
+
+    regularTrianglationTool.flag = false;
+    regularTrianglationTool.points = new Array();
+
     qtreeFlag = false;
     q_tree.points = new Array();
 
