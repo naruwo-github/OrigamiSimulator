@@ -53,6 +53,10 @@ function initDrawApp(globals) {
   var regularTrianglationTool = new Object();
   regularTrianglationTool.flag = false;
   regularTrianglationTool.points = [];
+  regularTrianglationTool.structure = new Object();
+
+  //正三角形ツール
+  var regularTriangleButton = document.getElementById("rt-tool");
 
 
   //===暫定的に用いるやつ===
@@ -91,8 +95,7 @@ function initDrawApp(globals) {
   gridMode.mode = 0;
 
 
-  //正三角形ツール
-  var regularTriangleButton = document.getElementById("rt-tool");
+
   //===================================
 
 
@@ -323,7 +326,9 @@ function initDrawApp(globals) {
         const stl1 = regularTrianglationTool.points[i];
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
-      if(regularTrianglationTool.points.length%4 == 0) { globals.grids.regularTrianglation(regularTrianglationTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]); }
+      //if(regularTrianglationTool.points.length%4 == 0) { globals.grids.regularTrianglation(regularTrianglationTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]); }
+      if(regularTrianglationTool.points.length%4 == 0) { globals.grids.makeParentHexagon(regularTrianglationTool); }
+      console.log(regularTrianglationTool);
     }
 
     //四分木の方のgrid!
