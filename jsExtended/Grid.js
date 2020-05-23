@@ -710,7 +710,8 @@ function initGrids(globals) {
 
     //細分割可能な正三角メッシュ構造
     class dividableRegularTriangle {
-        constructor(height, coordinates) {
+        constructor(childID, height, coordinates) {
+            this.childID = childID;
             this.height = height;
             //正三角形を構成する座標
             //上の頂点から時計回りにP0,P1,P2で、coordinates = [P0x,P0y, P1x,P1y, P2x,P2y]とする
@@ -762,17 +763,17 @@ function initGrids(globals) {
             //正六角形を形成する正三角形×６個
             //中心の左上の三角形から時計回りに0~5とする
             //正三角形(center, P0dash, P1dash)
-            this.child0 = new dividableRegularTriangle(this.height+1, [this.center[0], this.center[1], this.P0dash[0], this.P0dash[1], this.P1dash[0], this.P1dash[1]]);
+            this.child0 = new dividableRegularTriangle(-1, this.height+1, [this.center[0], this.center[1], this.P0dash[0], this.P0dash[1], this.P1dash[0], this.P1dash[1]]);
             //正三角形(center, P1dash, P2dash)
-            this.child1 = new dividableRegularTriangle(this.height+1, [this.center[0], this.center[1], this.P1dash[0], this.P1dash[1], this.P2dash[0], this.P2dash[1]]);
+            this.child1 = new dividableRegularTriangle(-1, this.height+1, [this.center[0], this.center[1], this.P1dash[0], this.P1dash[1], this.P2dash[0], this.P2dash[1]]);
             //正三角形(center, P2dash, P3dash)
-            this.child2 = new dividableRegularTriangle(this.height+1, [this.center[0], this.center[1], this.P2dash[0], this.P2dash[1], this.P3dash[0], this.P3dash[1]]);
+            this.child2 = new dividableRegularTriangle(-1, this.height+1, [this.center[0], this.center[1], this.P2dash[0], this.P2dash[1], this.P3dash[0], this.P3dash[1]]);
             //正三角形(center, P3dash, P4dash)
-            this.child3 = new dividableRegularTriangle(this.height+1, [this.center[0], this.center[1], this.P3dash[0], this.P3dash[1], this.P4dash[0], this.P4dash[1]]);
+            this.child3 = new dividableRegularTriangle(-1, this.height+1, [this.center[0], this.center[1], this.P3dash[0], this.P3dash[1], this.P4dash[0], this.P4dash[1]]);
             //正三角形(center, P4dash, P5dash)
-            this.child4 = new dividableRegularTriangle(this.height+1, [this.center[0], this.center[1], this.P4dash[0], this.P4dash[1], this.P5dash[0], this.P5dash[1]]);
+            this.child4 = new dividableRegularTriangle(-1, this.height+1, [this.center[0], this.center[1], this.P4dash[0], this.P4dash[1], this.P5dash[0], this.P5dash[1]]);
             //正三角形(center, P5dash, P0dash)
-            this.child5 = new dividableRegularTriangle(this.height+1, [this.center[0], this.center[1], this.P5dash[0], this.P5dash[1], this.P0dash[0], this.P0dash[1]]);
+            this.child5 = new dividableRegularTriangle(-1, this.height+1, [this.center[0], this.center[1], this.P5dash[0], this.P5dash[1], this.P0dash[0], this.P0dash[1]]);
         }
     }
 
@@ -787,13 +788,58 @@ function initGrids(globals) {
     }
 
 
-    function divideRegularTriangle(childTriangle) {
-        //分割する処理を記述
+    function divideRegularTriangle(regularTriangle) {
+        if (regularTriangle) { return; }
+
+        let co = regularTriangle.coordinates;
+        let P0 = [co[0], co[1]];
+        let P1 = [co[2], co[3]];
+        let P2 = [co[4], co[5]];
+        let centerP0P1 = [(P0[0]+P1[0])/2, (P0[1]+P1[1])/2];
+        let centerP1P2 = [(P1[0]+P2[0])/2, (P1[1]+P2[1])/2];
+        let centerP2P0 = [(P2[0]+P0[0])/2, (P2[1]+P0[1])/2];
+
+        regularTriangle.child0 = new dividableRegularTriangle(0, regularTriangle.height+1, [P0[0], P0[1], centerP0P1[0], centerP0P1[1], centerP2P0[0], centerP2P0[1]]);
+        regularTriangle.child1 = new dividableRegularTriangle(1, regularTriangle.height+1, [centerP0P1[0], centerP0P1[1], P1[0], P1[1], centerP1P2[0], centerP1P2[1]]);
+        regularTriangle.child2 = new dividableRegularTriangle(2, regularTriangle.height+1, [centerP2P0[0], centerP2P0[1], centerP1P2[0], centerP1P2[1], P2[0], P2[1]]);
+        regularTriangle.child3 = new dividableRegularTriangle(3, regularTriangle.height+1, [centerP1P2[0], centerP1P2[1], centerP2P0[0], centerP2P0[1], centerP0P1[0], centerP0P1[1]]);
     }
 
+    function drawParentHexagon(hexagon, ctx) {
+        //正六角形の輪郭を描画する
+        globals.drawapp.drawLine(ctx, "rgb(200, 200, 200)", 1.0, hexagon.P0dash[0], hexagon.P0dash[1], hexagon.P3dash[0], hexagon.P3dash[1]);
+        globals.drawapp.drawLine(ctx, "rgb(200, 200, 200)", 1.0, hexagon.P1dash[0], hexagon.P1dash[1], hexagon.P4dash[0], hexagon.P4dash[1]);
+        globals.drawapp.drawLine(ctx, "rgb(200, 200, 200)", 1.0, hexagon.P2dash[0], hexagon.P2dash[1], hexagon.P5dash[0], hexagon.P5dash[1]);
+
+        if (hexagon.child0 === undefined) { return; }
+
+        drawRegularTriangle(hexagon.child0, ctx);
+        drawRegularTriangle(hexagon.child1, ctx);
+        drawRegularTriangle(hexagon.child2, ctx);
+        drawRegularTriangle(hexagon.child3, ctx);
+        drawRegularTriangle(hexagon.child4, ctx);
+        drawRegularTriangle(hexagon.child5, ctx);
+    }
     
-    function drawRegularTriangle(hexagon, ctx) {
-        //描画する処理を記述
+    function drawRegularTriangle(childTriangle, ctx) {
+        let co = childTriangle.coordinates;
+        //正三角形の輪郭を描画する
+        if (childTriangle.childID === -1) {
+            //正六角形の子の場合
+            globals.drawapp.drawLine(ctx, "rgb(255, 255, 0)", 1.0, co[2], co[3], co[4], co[5]);
+        } else if (childTriangle.childID === 3) {
+            //4個目の子供の場合、輪郭を描画する
+            globals.drawapp.drawLine(ctx, "rgb(255, 0, 255)", 1.0, co[0], co[1], co[2], co[3]);
+            globals.drawapp.drawLine(ctx, "rgb(255, 255, 0)", 1.0, co[2], co[3], co[4], co[5]);
+            globals.drawapp.drawLine(ctx, "rgb(255, 0, 255)", 1.0, co[4], co[5], co[0], co[1]);
+        }
+
+        if (childTriangle.child0 === undefined) { return; }
+
+        drawRegularTriangle(childTriangle.child0);
+        drawRegularTriangle(childTriangle.child1);
+        drawRegularTriangle(childTriangle.child2);
+        drawRegularTriangle(childTriangle.child3);
     }
 
 
@@ -840,5 +886,7 @@ function initGrids(globals) {
         dividableRegularTriangle: dividableRegularTriangle,
         parentHexagon: parentHexagon,
         makeParentHexagon: makeParentHexagon,
+        drawParentHexagon: drawParentHexagon,
+        drawRegularTriangle: drawRegularTriangle,
     }
 }

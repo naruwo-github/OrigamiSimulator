@@ -327,8 +327,10 @@ function initDrawApp(globals) {
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
       //if(regularTrianglationTool.points.length%4 == 0) { globals.grids.regularTrianglation(regularTrianglationTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]); }
-      if(regularTrianglationTool.points.length%4 == 0) { globals.grids.makeParentHexagon(regularTrianglationTool); }
-      console.log(regularTrianglationTool);
+      if(regularTrianglationTool.points.length%4 == 0) {
+        globals.grids.makeParentHexagon(regularTrianglationTool);
+        globals.grids.drawParentHexagon(regularTrianglationTool.structure, context);
+      }
     }
 
     //四分木の方のgrid!
