@@ -354,6 +354,7 @@ function initGrids(globals) {
 
 
 
+    //=============================================
     //四分木の構造体
     class q_tree {
         constructor(selfIndex, parentIndex, height, coordinates) {
@@ -583,6 +584,12 @@ function initGrids(globals) {
         autoMesh(tree.child3, hmin, hmax, svgInfo);
     }
 
+    //=============================================
+
+
+
+    
+
     //2点間の距離を求める
     function dist(x1,y1,x2,y2) {
         return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
@@ -591,6 +598,7 @@ function initGrids(globals) {
 
 
 
+    //=============================================
     //正三角形の格子を描画するメソッド
     function regularTrianglation(outlinePoints, triangleEdgeLength, ctx, gridLineList, lineColor) {
         if (outlinePoints.length < 4) {
@@ -693,6 +701,8 @@ function initGrids(globals) {
             startLeft[1] -= triangleEdgeLength*Math.sqrt(3)/2;
         }
     }
+    //=============================================
+
 
 
     //交差判定して交点とか求めるやーつ
@@ -714,6 +724,7 @@ function initGrids(globals) {
             array.push(globals.beziercurve.getIntersectPoint(xs, ys, op[3][0], op[3][1], xe, ye, op[0][0], op[0][1]));
         }
     }
+
 
 
 
