@@ -869,9 +869,15 @@ function initGrids(globals) {
 
     function drawParentHexagon(outlinePoints, hexagon, ctx, gridLineList, lineColor) {
         //正六角形の輪郭を描画する
-        globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P0dash[0], hexagon.P0dash[1], hexagon.P3dash[0], hexagon.P3dash[1]);
-        globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P1dash[0], hexagon.P1dash[1], hexagon.P4dash[0], hexagon.P4dash[1]);
-        globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P2dash[0], hexagon.P2dash[1], hexagon.P5dash[0], hexagon.P5dash[1]);
+        if (isInOutline(hexagon.P0dash[0], hexagon.P0dash[1], outlinePoints) && isInOutline(hexagon.P3dash[0], hexagon.P3dash[1], outlinePoints)) {
+            globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P0dash[0], hexagon.P0dash[1], hexagon.P3dash[0], hexagon.P3dash[1]);
+        }
+        if (isInOutline(hexagon.P1dash[0], hexagon.P1dash[1], outlinePoints) && isInOutline(hexagon.P4dash[0], hexagon.P4dash[1], outlinePoints)) {
+            globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P1dash[0], hexagon.P1dash[1], hexagon.P4dash[0], hexagon.P4dash[1]);
+        }
+        if (isInOutline(hexagon.P2dash[0], hexagon.P2dash[1], outlinePoints) && isInOutline(hexagon.P5dash[0], hexagon.P5dash[1], outlinePoints)) {
+            globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P2dash[0], hexagon.P2dash[1], hexagon.P5dash[0], hexagon.P5dash[1]);
+        }
 
         if (hexagon.child0 === undefined) { return; }
 
@@ -888,21 +894,26 @@ function initGrids(globals) {
         let co = childTriangle.coordinates;
         let center = childTriangle.center;
         ctx.fillRect(center[0]-0.5, center[1]-0.5, 2, 2);
+
         //正三角形の輪郭を描画する
         if (childTriangle.childID === -1) {
             //正六角形の子の場合
             if (isInOutline(co[2], co[3], outlinePoints) && isInOutline(co[4], co[5], outlinePoints)) {
+                //線分が展開図内部にある場合
                 globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
             }
         } else if (childTriangle.childID === 3) {
             //4個目の子供の場合、輪郭を描画する
             if (isInOutline(co[0], co[1], outlinePoints) && isInOutline(co[2], co[3], outlinePoints)) {
+                //線分が展開図内部にある場合
                 globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], co[2], co[3]);
             }
             if (isInOutline(co[2], co[3], outlinePoints) && isInOutline(co[4], co[5], outlinePoints)) {
+                //線分が展開図内部にある場合
                 globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
             }
             if (isInOutline(co[4], co[5], outlinePoints) && isInOutline(co[0], co[1], outlinePoints)) {
+                //線分が展開図内部にある場合
                 globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], co[0], co[1]);
             }
         }
