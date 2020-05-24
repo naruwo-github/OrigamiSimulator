@@ -783,14 +783,45 @@ function initGrids(globals) {
         //source.structure：Object　←コレにparentHexagonを代入する
         let points = source.points;
         source.structure = new parentHexagon([points[0], points[1], points[2], points[3]]);
+
+        let center0 = source.structure.child0.center;
+        let center1 = source.structure.child1.center;
+        let center2 = source.structure.child2.center;
+        let center3 = source.structure.child3.center;
+        let center4 = source.structure.child4.center;
+        let center5 = source.structure.child5.center;
         
         //他の入力点に対して分割を行う処理を記述↓
+        if (points.length >= 4) {
+            for (let i = 4; i < points.length; i++) {
+                let point = points[i];
+                //子0から5で、points[i]から最短のcenterを持つものを探す
+                let dist0 = dist(point[0], point[1], center0[0], center0[1]);
+                let dist1 = dist(point[0], point[1], center1[0], center1[1]);
+                let dist2 = dist(point[0], point[1], center2[0], center2[1]);
+                let dist3 = dist(point[0], point[1], center3[0], center3[1]);
+                let dist4 = dist(point[0], point[1], center4[0], center4[1]);
+                let dist5 = dist(point[0], point[1], center5[0], center5[1]);
+
+                if (Math.min(dist0, dist1, dist2, dist3, dist4, dist5) === dist0) {
+                    reachAimAndDivideRegularTriangle(source.structure.child0, point);
+                } else if (Math.min(dist0, dist1, dist2, dist3, dist4, dist5) === dist1) {
+                    reachAimAndDivideRegularTriangle(source.structure.child1, point);
+                } else if (Math.min(dist0, dist1, dist2, dist3, dist4, dist5) === dist2) {
+                    reachAimAndDivideRegularTriangle(source.structure.child2, point);
+                } else if (Math.min(dist0, dist1, dist2, dist3, dist4, dist5) === dist3) {
+                    reachAimAndDivideRegularTriangle(source.structure.child3, point);
+                } else if (Math.min(dist0, dist1, dist2, dist3, dist4, dist5) === dist4) {
+                    reachAimAndDivideRegularTriangle(source.structure.child4, point);
+                } else if (Math.min(dist0, dist1, dist2, dist3, dist4, dist5) === dist5) {
+                    reachAimAndDivideRegularTriangle(source.structure.child5, point);
+                }
+            }
+        }
     }
 
 
     function divideRegularTriangle(regularTriangle) {
-        if (regularTriangle) { return; }
-
         let co = regularTriangle.coordinates;
         let P0 = [co[0], co[1]];
         let P1 = [co[2], co[3]];
@@ -805,41 +836,75 @@ function initGrids(globals) {
         regularTriangle.child3 = new dividableRegularTriangle(3, regularTriangle.height+1, [centerP1P2[0], centerP1P2[1], centerP2P0[0], centerP2P0[1], centerP0P1[0], centerP0P1[1]]);
     }
 
-    function drawParentHexagon(hexagon, ctx) {
+
+    //分割するところに到達して、divideを呼ぶメソッド
+    function reachAimAndDivideRegularTriangle(regularTriangle, point) {
+        if (regularTriangle.child0 === undefined) {
+            divideRegularTriangle(regularTriangle);
+            return;
+        }
+
+        //4つのcenterで一番近いところにすすむ
+        let center0 = regularTriangle.child0.center;
+        let center1 = regularTriangle.child1.center;
+        let center2 = regularTriangle.child2.center;
+        let center3 = regularTriangle.child3.center;
+        //pointとcenterX間の距離
+        let dist0 = dist(point[0], point[1], center0[0], center0[1]);
+        let dist1 = dist(point[0], point[1], center1[0], center1[1]);
+        let dist2 = dist(point[0], point[1], center2[0], center2[1]);
+        let dist3 = dist(point[0], point[1], center3[0], center3[1]);
+
+        if (Math.min(dist0, dist1, dist2, dist3) === dist0) {
+            reachAimAndDivideRegularTriangle(regularTriangle.child0, point);
+        } else if (Math.min(dist0, dist1, dist2, dist3) === dist1) {
+            reachAimAndDivideRegularTriangle(regularTriangle.child1, point);
+        } else if (Math.min(dist0, dist1, dist2, dist3) === dist2) {
+            reachAimAndDivideRegularTriangle(regularTriangle.child2, point);
+        } else if (Math.min(dist0, dist1, dist2, dist3) === dist3) {
+            reachAimAndDivideRegularTriangle(regularTriangle.child3, point);
+        }
+    }
+
+
+    function drawParentHexagon(outlinePoints, hexagon, ctx, gridLineList, lineColor) {
         //正六角形の輪郭を描画する
-        globals.drawapp.drawLine(ctx, "rgb(200, 200, 200)", 1.0, hexagon.P0dash[0], hexagon.P0dash[1], hexagon.P3dash[0], hexagon.P3dash[1]);
-        globals.drawapp.drawLine(ctx, "rgb(200, 200, 200)", 1.0, hexagon.P1dash[0], hexagon.P1dash[1], hexagon.P4dash[0], hexagon.P4dash[1]);
-        globals.drawapp.drawLine(ctx, "rgb(200, 200, 200)", 1.0, hexagon.P2dash[0], hexagon.P2dash[1], hexagon.P5dash[0], hexagon.P5dash[1]);
+        globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P0dash[0], hexagon.P0dash[1], hexagon.P3dash[0], hexagon.P3dash[1]);
+        globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P1dash[0], hexagon.P1dash[1], hexagon.P4dash[0], hexagon.P4dash[1]);
+        globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P2dash[0], hexagon.P2dash[1], hexagon.P5dash[0], hexagon.P5dash[1]);
 
         if (hexagon.child0 === undefined) { return; }
 
-        drawRegularTriangle(hexagon.child0, ctx);
-        drawRegularTriangle(hexagon.child1, ctx);
-        drawRegularTriangle(hexagon.child2, ctx);
-        drawRegularTriangle(hexagon.child3, ctx);
-        drawRegularTriangle(hexagon.child4, ctx);
-        drawRegularTriangle(hexagon.child5, ctx);
+        drawRegularTriangle(outlinePoints, hexagon.child0, ctx, gridLineList, lineColor);
+        drawRegularTriangle(outlinePoints, hexagon.child1, ctx, gridLineList, lineColor);
+        drawRegularTriangle(outlinePoints, hexagon.child2, ctx, gridLineList, lineColor);
+        drawRegularTriangle(outlinePoints, hexagon.child3, ctx, gridLineList, lineColor);
+        drawRegularTriangle(outlinePoints, hexagon.child4, ctx, gridLineList, lineColor);
+        drawRegularTriangle(outlinePoints, hexagon.child5, ctx, gridLineList, lineColor);
     }
+
     
-    function drawRegularTriangle(childTriangle, ctx) {
+    function drawRegularTriangle(outlinePoints, childTriangle, ctx, gridLineList, lineColor) {
         let co = childTriangle.coordinates;
+        let center = childTriangle.center;
+        ctx.fillRect(center[0]-0.5, center[1]-0.5, 2, 2);
         //正三角形の輪郭を描画する
         if (childTriangle.childID === -1) {
             //正六角形の子の場合
-            globals.drawapp.drawLine(ctx, "rgb(255, 255, 0)", 1.0, co[2], co[3], co[4], co[5]);
+            globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
         } else if (childTriangle.childID === 3) {
             //4個目の子供の場合、輪郭を描画する
-            globals.drawapp.drawLine(ctx, "rgb(255, 0, 255)", 1.0, co[0], co[1], co[2], co[3]);
-            globals.drawapp.drawLine(ctx, "rgb(255, 255, 0)", 1.0, co[2], co[3], co[4], co[5]);
-            globals.drawapp.drawLine(ctx, "rgb(255, 0, 255)", 1.0, co[4], co[5], co[0], co[1]);
+            globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], co[2], co[3]);
+            globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
+            globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], co[0], co[1]);
         }
 
         if (childTriangle.child0 === undefined) { return; }
 
-        drawRegularTriangle(childTriangle.child0);
-        drawRegularTriangle(childTriangle.child1);
-        drawRegularTriangle(childTriangle.child2);
-        drawRegularTriangle(childTriangle.child3);
+        drawRegularTriangle(outlinePoints, childTriangle.child0, ctx, gridLineList, lineColor);
+        drawRegularTriangle(outlinePoints, childTriangle.child1, ctx, gridLineList, lineColor);
+        drawRegularTriangle(outlinePoints, childTriangle.child2, ctx, gridLineList, lineColor);
+        drawRegularTriangle(outlinePoints, childTriangle.child3, ctx, gridLineList, lineColor);
     }
 
 

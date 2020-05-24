@@ -323,13 +323,16 @@ function initDrawApp(globals) {
     if (regularTrianglationTool.points.length > 0) {
       context.fillStyle = lineColors[0];
       for (let i = 0; i < regularTrianglationTool.points.length; i++) {
-        const stl1 = regularTrianglationTool.points[i];
-        context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
+        if (i < 4) {
+          let stl1 = regularTrianglationTool.points[i];
+          context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
+        }
       }
       //if(regularTrianglationTool.points.length%4 == 0) { globals.grids.regularTrianglation(regularTrianglationTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]); }
-      if(regularTrianglationTool.points.length%4 == 0) {
+      
+      if (regularTrianglationTool.points.length >= 4) {
         globals.grids.makeParentHexagon(regularTrianglationTool);
-        globals.grids.drawParentHexagon(regularTrianglationTool.structure, context);
+        globals.grids.drawParentHexagon(regularTrianglationTool.points, regularTrianglationTool.structure, context, gridLineList, lineColors[3]);
       }
     }
 
