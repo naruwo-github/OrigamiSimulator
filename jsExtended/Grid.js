@@ -919,8 +919,8 @@ function initGrids(globals) {
         let center = childTriangle.center;
         ctx.fillRect(center[0]-0.5, center[1]-0.5, 2, 2);
 
-        let array = [];
         //正三角形の輪郭を描画する
+        let array = [];
         if (childTriangle.childID === -1) {
             //正六角形の子の場合
             if (isInOutline(co[2], co[3], outlinePoints) && isInOutline(co[4], co[5], outlinePoints)) {
@@ -929,18 +929,91 @@ function initGrids(globals) {
             }
         } else if (childTriangle.childID === 3) {
             //4個目の子供の場合、輪郭を描画する
+            array = [];
+            judgeAndGetIntersection(outlinePoints, co[0], co[1], co[2], co[3], array);
             if (isInOutline(co[0], co[1], outlinePoints) && isInOutline(co[2], co[3], outlinePoints)) {
-                //線分が展開図内部にある場合
+                //線分の両端が展開図内部にある場合
                 globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], co[2], co[3]);
+            } else if (isInOutline(co[0], co[1], outlinePoints)) {
+                //線分の片方の端が展開図内部にある場合
+                if (array.length === 1) {
+                    globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], array[0][0], array[0][1]);
+                    //枠外の線分
+                    globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[2], co[3], array[0][0], array[0][1]);
+                }
+            } else if (isInOutline(co[2], co[3], outlinePoints)) {
+                //線分の片方の端が展開図内部にある場合
+                if (array.length === 1) {
+                    globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], array[0][0], array[0][1]);
+                    //枠外の線分
+                    globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[0], co[1], array[0][0], array[0][1]);
+                }
+            } else {
+                //線分が輪郭外の時
+                globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[0], co[1], co[2], co[3]);
             }
+
+            array = [];
+            judgeAndGetIntersection(outlinePoints, co[2], co[3], co[4], co[5], array);
             if (isInOutline(co[2], co[3], outlinePoints) && isInOutline(co[4], co[5], outlinePoints)) {
-                //線分が展開図内部にある場合
+                //線分の両端が展開図内部にある場合
                 globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
+            } else if (isInOutline(co[2], co[3], outlinePoints)) {
+                //線分の片方の端が展開図内部にある場合
+                if (array.length === 1) {
+                    globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], array[0][0], array[0][1]);
+                    //枠外の線分
+                    globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[4], co[5], array[0][0], array[0][1]);
+                }
+            } else if (isInOutline(co[4], co[5], outlinePoints)) {
+                //線分の片方の端が展開図内部にある場合
+                if (array.length === 1) {
+                    globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], array[0][0], array[0][1]);
+                    //枠外の線分
+                    globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[2], co[3], array[0][0], array[0][1]);
+                }
+            } else {
+                //線分が輪郭外の時
+                globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[2], co[3], co[4], co[5]);
             }
+
+            array = [];
+            judgeAndGetIntersection(outlinePoints, co[4], co[5], co[0], co[1], array);
             if (isInOutline(co[4], co[5], outlinePoints) && isInOutline(co[0], co[1], outlinePoints)) {
-                //線分が展開図内部にある場合
+                //線分の両端が展開図内部にある場合
                 globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], co[0], co[1]);
+            } else if (isInOutline(co[4], co[5], outlinePoints)) {
+                //線分の片方の端が展開図内部にある場合
+                if (array.length === 1) {
+                    globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], array[0][0], array[0][1]);
+                    //枠外の線分
+                    globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[0], co[1], array[0][0], array[0][1]);
+                }
+            } else if (isInOutline(co[0], co[1], outlinePoints)) {
+                //線分の片方の端が展開図内部にある場合
+                if (array.length === 1) {
+                    globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], array[0][0], array[0][1]);
+                    //枠外の線分
+                    globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[4], co[5], array[0][0], array[0][1]);
+                }
+            } else {
+                //線分が輪郭外の時
+                globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[4], co[5], co[0], co[1]);
             }
+
+
+            // if (isInOutline(co[0], co[1], outlinePoints) && isInOutline(co[2], co[3], outlinePoints)) {
+            //     //線分が展開図内部にある場合
+            //     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], co[2], co[3]);
+            // }
+            // if (isInOutline(co[2], co[3], outlinePoints) && isInOutline(co[4], co[5], outlinePoints)) {
+            //     //線分が展開図内部にある場合
+            //     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
+            // }
+            // if (isInOutline(co[4], co[5], outlinePoints) && isInOutline(co[0], co[1], outlinePoints)) {
+            //     //線分が展開図内部にある場合
+            //     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], co[0], co[1]);
+            // }
         }
 
         if (childTriangle.child0 === undefined) { return; }
