@@ -706,6 +706,7 @@ function initGrids(globals) {
 
 
 
+
     //=============================================
 
     //細分割可能な正三角メッシュ構造
@@ -875,6 +876,7 @@ function initGrids(globals) {
             //現状ここには入らない
         } else if (array.length === 2) {
             globals.drawapp.drawLine(ctx, lineColor, 1.0, array[0][0], array[0][1], array[1][0], array[1][1]);
+            gridLineList.push([[array[0][0], array[0][1]], [array[1][0], array[1][1]], lineColor]);
         }
 
         array = [];
@@ -883,6 +885,7 @@ function initGrids(globals) {
             //現状ここには入らない
         } else if (array.length === 2) {
             globals.drawapp.drawLine(ctx, lineColor, 1.0, array[0][0], array[0][1], array[1][0], array[1][1]);
+            gridLineList.push([[array[0][0], array[0][1]], [array[1][0], array[1][1]], lineColor]);
         }
 
         array = [];
@@ -891,17 +894,8 @@ function initGrids(globals) {
             //現状ここには入らない
         } else if (array.length === 2) {
             globals.drawapp.drawLine(ctx, lineColor, 1.0, array[0][0], array[0][1], array[1][0], array[1][1]);
+            gridLineList.push([[array[0][0], array[0][1]], [array[1][0], array[1][1]], lineColor]);
         }
-
-        // if (isInOutline(hexagon.P0dash[0], hexagon.P0dash[1], outlinePoints) && isInOutline(hexagon.P3dash[0], hexagon.P3dash[1], outlinePoints)) {
-        //     globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P0dash[0], hexagon.P0dash[1], hexagon.P3dash[0], hexagon.P3dash[1]);
-        // }
-        // if (isInOutline(hexagon.P1dash[0], hexagon.P1dash[1], outlinePoints) && isInOutline(hexagon.P4dash[0], hexagon.P4dash[1], outlinePoints)) {
-        //     globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P1dash[0], hexagon.P1dash[1], hexagon.P4dash[0], hexagon.P4dash[1]);
-        // }
-        // if (isInOutline(hexagon.P2dash[0], hexagon.P2dash[1], outlinePoints) && isInOutline(hexagon.P5dash[0], hexagon.P5dash[1], outlinePoints)) {
-        //     globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P2dash[0], hexagon.P2dash[1], hexagon.P5dash[0], hexagon.P5dash[1]);
-        // }
 
         if (hexagon.child0 === undefined) { return; }
 
@@ -926,6 +920,7 @@ function initGrids(globals) {
             if (isInOutline(co[2], co[3], outlinePoints) && isInOutline(co[4], co[5], outlinePoints)) {
                 //線分が展開図内部にある場合
                 globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
+                gridLineList.push([[co[2], co[3]], [co[4], co[5]], lineColor]);
             }
         } else if (childTriangle.childID === 3) {
             //4個目の子供の場合、輪郭を描画する
@@ -934,10 +929,12 @@ function initGrids(globals) {
             if (isInOutline(co[0], co[1], outlinePoints) && isInOutline(co[2], co[3], outlinePoints)) {
                 //線分の両端が展開図内部にある場合
                 globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], co[2], co[3]);
+                gridLineList.push([[co[0], co[1]], [co[2], co[3]], lineColor]);
             } else if (isInOutline(co[0], co[1], outlinePoints)) {
                 //線分の片方の端が展開図内部にある場合
                 if (array.length === 1) {
                     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], array[0][0], array[0][1]);
+                    gridLineList.push([[co[0], co[1]], [array[0][0], array[0][1]], lineColor]);
                     //枠外の線分
                     globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[2], co[3], array[0][0], array[0][1]);
                 }
@@ -945,6 +942,7 @@ function initGrids(globals) {
                 //線分の片方の端が展開図内部にある場合
                 if (array.length === 1) {
                     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], array[0][0], array[0][1]);
+                    gridLineList.push([[co[2], co[3]], [array[0][0], array[0][1]], lineColor]);
                     //枠外の線分
                     globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[0], co[1], array[0][0], array[0][1]);
                 }
@@ -958,10 +956,12 @@ function initGrids(globals) {
             if (isInOutline(co[2], co[3], outlinePoints) && isInOutline(co[4], co[5], outlinePoints)) {
                 //線分の両端が展開図内部にある場合
                 globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
+                gridLineList.push([[co[2], co[3]], [co[4], co[5]], lineColor]);
             } else if (isInOutline(co[2], co[3], outlinePoints)) {
                 //線分の片方の端が展開図内部にある場合
                 if (array.length === 1) {
                     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], array[0][0], array[0][1]);
+                    gridLineList.push([[co[2], co[3]], [array[0][0], array[0][1]], lineColor]);
                     //枠外の線分
                     globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[4], co[5], array[0][0], array[0][1]);
                 }
@@ -969,6 +969,7 @@ function initGrids(globals) {
                 //線分の片方の端が展開図内部にある場合
                 if (array.length === 1) {
                     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], array[0][0], array[0][1]);
+                    gridLineList.push([[co[4], co[5]], [array[0][0], array[0][1]], lineColor]);
                     //枠外の線分
                     globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[2], co[3], array[0][0], array[0][1]);
                 }
@@ -982,10 +983,12 @@ function initGrids(globals) {
             if (isInOutline(co[4], co[5], outlinePoints) && isInOutline(co[0], co[1], outlinePoints)) {
                 //線分の両端が展開図内部にある場合
                 globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], co[0], co[1]);
+                gridLineList.push([[co[4], co[5]], [co[0], co[1]], lineColor]);
             } else if (isInOutline(co[4], co[5], outlinePoints)) {
                 //線分の片方の端が展開図内部にある場合
                 if (array.length === 1) {
                     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], array[0][0], array[0][1]);
+                    gridLineList.push([[co[4], co[5]], [array[0][0], array[0][1]], lineColor]);
                     //枠外の線分
                     globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[0], co[1], array[0][0], array[0][1]);
                 }
@@ -993,6 +996,7 @@ function initGrids(globals) {
                 //線分の片方の端が展開図内部にある場合
                 if (array.length === 1) {
                     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], array[0][0], array[0][1]);
+                    gridLineList.push([[co[0], co[1]], [array[0][0], array[0][1]], lineColor]);
                     //枠外の線分
                     globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[4], co[5], array[0][0], array[0][1]);
                 }
@@ -1000,20 +1004,6 @@ function initGrids(globals) {
                 //線分が輪郭外の時
                 globals.drawapp.drawLine(ctx, "rgb(200, 255, 0)", 1.0, co[4], co[5], co[0], co[1]);
             }
-
-
-            // if (isInOutline(co[0], co[1], outlinePoints) && isInOutline(co[2], co[3], outlinePoints)) {
-            //     //線分が展開図内部にある場合
-            //     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], co[2], co[3]);
-            // }
-            // if (isInOutline(co[2], co[3], outlinePoints) && isInOutline(co[4], co[5], outlinePoints)) {
-            //     //線分が展開図内部にある場合
-            //     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
-            // }
-            // if (isInOutline(co[4], co[5], outlinePoints) && isInOutline(co[0], co[1], outlinePoints)) {
-            //     //線分が展開図内部にある場合
-            //     globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], co[0], co[1]);
-            // }
         }
 
         if (childTriangle.child0 === undefined) { return; }
@@ -1024,6 +1014,68 @@ function initGrids(globals) {
         drawRegularTriangle(outlinePoints, childTriangle.child3, ctx, gridLineList, lineColor);
     }
 
+
+    function autoMeshRegularTriangle(regularTriangle, hmin, hmax, svgInfo) {
+        if (regularTriangle === undefined) { return; }
+
+        if (hmin > hmax) {
+            alert("木の高さ設定が不適切です。（hmin <= hmaxになるように設定してください）");
+            return;
+        }
+
+        if (regularTriangle.height >= hmax) { return; }
+
+        if (regularTriangle.child0 === undefined) {
+            let x0 = regularTriangle.coordinates[0];
+            let y0 = regularTriangle.coordinates[1];
+            let x1 = regularTriangle.coordinates[2];
+            let y1 = regularTriangle.coordinates[3];
+            let x2 = regularTriangle.coordinates[4];
+            let y2 = regularTriangle.coordinates[5];
+            let flag = false;
+
+            if (regularTriangle.height < hmin) {
+                flag = true;
+                divideRegularTriangle(regularTriangle);
+                //divideRegularTriangle(regularTriangle.child0);
+                //divideRegularTriangle(regularTriangle.child1);
+                //divideRegularTriangle(regularTriangle.child2);
+                //divideRegularTriangle(regularTriangle.child3);
+            } else {
+                //木の領域△の中に、折り線(赤や青の線)が含まれていれば分割
+                //線分の交差判定を用いるが、端点は含まない方を扱う
+                for (let i = 0; i < svgInfo.stroke.length; i++) {
+                    if (svgInfo.stroke[i] != "#000") {
+                        if(globals.beziercurve.judgeIntersect2(x0, y0, x1, y1, svgInfo.x1[i], svgInfo.y1[i], svgInfo.x2[i], svgInfo.y2[i])){
+                            flag = true;
+                            break;
+                        }
+                        if(globals.beziercurve.judgeIntersect2(x1, y1, x2, y2, svgInfo.x1[i], svgInfo.y1[i], svgInfo.x2[i], svgInfo.y2[i])){
+                            flag = true;
+                            break;
+                        }
+                        if(globals.beziercurve.judgeIntersect2(x2, y2, x0, y0, svgInfo.x1[i], svgInfo.y1[i], svgInfo.x2[i], svgInfo.y2[i])){
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (flag) {
+                    divideRegularTriangle(regularTriangle);
+                    flag = false;
+                }
+
+            }
+        } else {
+            //子がいる場合
+        }
+
+        autoMeshRegularTriangle(regularTriangle.child0, hmin, hmax, svgInfo);
+        autoMeshRegularTriangle(regularTriangle.child1, hmin, hmax, svgInfo);
+        autoMeshRegularTriangle(regularTriangle.child2, hmin, hmax, svgInfo);
+        autoMeshRegularTriangle(regularTriangle.child3, hmin, hmax, svgInfo);
+    }
 
     //=============================================
 
@@ -1075,5 +1127,6 @@ function initGrids(globals) {
         makeParentHexagon: makeParentHexagon,
         drawParentHexagon: drawParentHexagon,
         drawRegularTriangle: drawRegularTriangle,
+        autoMeshRegularTriangle: autoMeshRegularTriangle,
     }
 }

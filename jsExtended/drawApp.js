@@ -332,6 +332,17 @@ function initDrawApp(globals) {
       
       if (regularTrianglationTool.points.length >= 4) {
         globals.grids.makeParentHexagon(regularTrianglationTool);
+
+        //自動分割する
+        if (autoMeshFlag) {
+          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child0, Hmin, Hmax, globals.svgInformation);
+          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child1, Hmin, Hmax, globals.svgInformation);
+          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child2, Hmin, Hmax, globals.svgInformation);
+          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child3, Hmin, Hmax, globals.svgInformation);
+          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child4, Hmin, Hmax, globals.svgInformation);
+          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child5, Hmin, Hmax, globals.svgInformation);
+        }
+
         globals.grids.drawParentHexagon(regularTrianglationTool.points, regularTrianglationTool.structure, context, gridLineList, lineColors[3]);
       }
     }
