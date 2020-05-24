@@ -868,16 +868,40 @@ function initGrids(globals) {
 
 
     function drawParentHexagon(outlinePoints, hexagon, ctx, gridLineList, lineColor) {
-        //正六角形の輪郭を描画する
-        if (isInOutline(hexagon.P0dash[0], hexagon.P0dash[1], outlinePoints) && isInOutline(hexagon.P3dash[0], hexagon.P3dash[1], outlinePoints)) {
-            globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P0dash[0], hexagon.P0dash[1], hexagon.P3dash[0], hexagon.P3dash[1]);
+        //正六角形の輪郭（を構成する＊の部分（３本の線分））を描画する
+        let array = [];
+        judgeAndGetIntersection(outlinePoints, hexagon.P0dash[0], hexagon.P0dash[1], hexagon.P3dash[0], hexagon.P3dash[1], array);
+        if (array.length === 1) {
+            //現状ここには入らない
+        } else if (array.length === 2) {
+            globals.drawapp.drawLine(ctx, lineColor, 1.0, array[0][0], array[0][1], array[1][0], array[1][1]);
         }
-        if (isInOutline(hexagon.P1dash[0], hexagon.P1dash[1], outlinePoints) && isInOutline(hexagon.P4dash[0], hexagon.P4dash[1], outlinePoints)) {
-            globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P1dash[0], hexagon.P1dash[1], hexagon.P4dash[0], hexagon.P4dash[1]);
+
+        array = [];
+        judgeAndGetIntersection(outlinePoints, hexagon.P1dash[0], hexagon.P1dash[1], hexagon.P4dash[0], hexagon.P4dash[1], array);
+        if (array.length === 1) {
+            //現状ここには入らない
+        } else if (array.length === 2) {
+            globals.drawapp.drawLine(ctx, lineColor, 1.0, array[0][0], array[0][1], array[1][0], array[1][1]);
         }
-        if (isInOutline(hexagon.P2dash[0], hexagon.P2dash[1], outlinePoints) && isInOutline(hexagon.P5dash[0], hexagon.P5dash[1], outlinePoints)) {
-            globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P2dash[0], hexagon.P2dash[1], hexagon.P5dash[0], hexagon.P5dash[1]);
+
+        array = [];
+        judgeAndGetIntersection(outlinePoints, hexagon.P2dash[0], hexagon.P2dash[1], hexagon.P5dash[0], hexagon.P5dash[1], array);
+        if (array.length === 1) {
+            //現状ここには入らない
+        } else if (array.length === 2) {
+            globals.drawapp.drawLine(ctx, lineColor, 1.0, array[0][0], array[0][1], array[1][0], array[1][1]);
         }
+
+        // if (isInOutline(hexagon.P0dash[0], hexagon.P0dash[1], outlinePoints) && isInOutline(hexagon.P3dash[0], hexagon.P3dash[1], outlinePoints)) {
+        //     globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P0dash[0], hexagon.P0dash[1], hexagon.P3dash[0], hexagon.P3dash[1]);
+        // }
+        // if (isInOutline(hexagon.P1dash[0], hexagon.P1dash[1], outlinePoints) && isInOutline(hexagon.P4dash[0], hexagon.P4dash[1], outlinePoints)) {
+        //     globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P1dash[0], hexagon.P1dash[1], hexagon.P4dash[0], hexagon.P4dash[1]);
+        // }
+        // if (isInOutline(hexagon.P2dash[0], hexagon.P2dash[1], outlinePoints) && isInOutline(hexagon.P5dash[0], hexagon.P5dash[1], outlinePoints)) {
+        //     globals.drawapp.drawLine(ctx, lineColor, 1.0, hexagon.P2dash[0], hexagon.P2dash[1], hexagon.P5dash[0], hexagon.P5dash[1]);
+        // }
 
         if (hexagon.child0 === undefined) { return; }
 
@@ -895,6 +919,7 @@ function initGrids(globals) {
         let center = childTriangle.center;
         ctx.fillRect(center[0]-0.5, center[1]-0.5, 2, 2);
 
+        let array = [];
         //正三角形の輪郭を描画する
         if (childTriangle.childID === -1) {
             //正六角形の子の場合
