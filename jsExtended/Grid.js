@@ -891,12 +891,20 @@ function initGrids(globals) {
         //正三角形の輪郭を描画する
         if (childTriangle.childID === -1) {
             //正六角形の子の場合
-            globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
+            if (isInOutline(co[2], co[3], outlinePoints) && isInOutline(co[4], co[5], outlinePoints)) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
+            }
         } else if (childTriangle.childID === 3) {
             //4個目の子供の場合、輪郭を描画する
-            globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], co[2], co[3]);
-            globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
-            globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], co[0], co[1]);
+            if (isInOutline(co[0], co[1], outlinePoints) && isInOutline(co[2], co[3], outlinePoints)) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, co[0], co[1], co[2], co[3]);
+            }
+            if (isInOutline(co[2], co[3], outlinePoints) && isInOutline(co[4], co[5], outlinePoints)) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, co[2], co[3], co[4], co[5]);
+            }
+            if (isInOutline(co[4], co[5], outlinePoints) && isInOutline(co[0], co[1], outlinePoints)) {
+                globals.drawapp.drawLine(ctx, lineColor, 1.0, co[4], co[5], co[0], co[1]);
+            }
         }
 
         if (childTriangle.child0 === undefined) { return; }
@@ -912,6 +920,11 @@ function initGrids(globals) {
 
 
 
+    //ある点が、展開図の輪郭内にあるかどうかを判定するやつ
+    //展開図は４頂点から構成される四辺形（正方形か長方形）であるとする
+    function isInOutline(px, py, outlinePoints) {
+        return outlinePoints[0][0] <= px && px <= outlinePoints[1][0] && outlinePoints[0][1] <= py && py <= outlinePoints[3][1];
+    }
 
 
     //交差判定して交点とか求めるやーつ
