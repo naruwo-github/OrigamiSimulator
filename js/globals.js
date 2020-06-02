@@ -15,6 +15,8 @@ function initGlobals(){
         svgInformation: [],
         //分割線情報持ってくるやーつ
         autoTriangulatedInfo: [],
+        //ステップ数の箱
+        stepNumber: 0,
 
         navMode: "simulation",
         scale: 1,
