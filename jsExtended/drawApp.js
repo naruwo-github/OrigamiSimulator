@@ -200,7 +200,6 @@ function initDrawApp(globals) {
 
   //================= キャンバスの描画関数 ==================
   function drawCanvas() {
-
     //変数の初期化
     splineDistList = new Array();
     beziDistList = new Array();
@@ -762,6 +761,7 @@ function initDrawApp(globals) {
     }
     //修正した展開図をシミュレータへ投げる
     globals.importer.simulateAgain(globals.svgFile,outputList,gridLineList);
+    globals.stepNum = 0;
     globals.threeView.startSimulation();
 
     //20描画にシミュレーションを停止する処理

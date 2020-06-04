@@ -559,15 +559,20 @@ function initDynamicSolver(globals){
             lastPosition[4*i+1] = _position.y;
             lastPosition[4*i+2] = _position.z;
         }
-        //globals.model.positionArray.push(totalMovedPosition/nodes.length);
-        if(totalMovedPosition/nodes.length <= 0.00001 && totalMovedPosition > 0.0) {
-            console.log(totalMovedPosition/nodes.length);
-            globals.threeView.pauseSimulation();
-        }
 
         globals.gpuMath.initTextureFromData("u_lastPosition", textureDim, textureDim, "FLOAT", lastPosition, true);
         globals.gpuMath.initFrameBufferForTexture("u_lastPosition", true);
 
+        //globals.model.positionArray.push(totalMovedPosition/nodes.length);
+        //収束条件（変位）
+        // if(totalMovedPosition/nodes.length <= 0.00001 && totalMovedPosition > 0.0) {
+        //     console.log(totalMovedPosition/nodes.length);
+        //     globals.threeView.pauseSimulation();
+        // }
+        //収束条件（ステップ数）
+        if (isNaN(globals.stepNum)) { globals.stepNum = 0; }
+        if (globals.stepNum === 1000) { globals.threeView.pauseSimulation(); }
+        globals.stepNum++;
     }
 
     function setCreasePercent(percent){
