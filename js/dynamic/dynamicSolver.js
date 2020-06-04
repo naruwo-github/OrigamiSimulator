@@ -571,7 +571,7 @@ function initDynamicSolver(globals){
         // }
         //収束条件（ステップ数）
         if (isNaN(globals.stepNum)) { globals.stepNum = 0; }
-        if (globals.stepNum === 300) { globals.threeView.pauseSimulation(); }
+        if (globals.stepNum === 1000) { globals.threeView.pauseSimulation(); }
         globals.stepNum++;
     }
 
