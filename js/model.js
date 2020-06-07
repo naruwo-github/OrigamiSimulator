@@ -207,8 +207,9 @@ function initModel(globals){
             return;
         }
 
-        nextFold = fold;
-        nextCreaseParams = creaseParams;
+        nextFold = fold;//parseSVGしたもの
+        nextCreaseParams = creaseParams;//Array(N)[Array(6), Array(6), ...]
+        //ここでArray(6)=[num, num, num, num, num, angle1]である   
 
         globals.needsSync = true;
         globals.simNeedsSync = true;

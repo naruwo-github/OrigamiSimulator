@@ -540,9 +540,9 @@ function initPattern(globals){
             for(let i = 0; i < gridList.length; i++){
                 var line = document.createElementNS(ns, 'line');
                 const element = gridList[i];
-                line.setAttribute('stroke', "#ff00ff");
+                //line.setAttribute('stroke', "#ff00ff");
                 //格子ツールの色を指定
-                //line.setAttribute('stroke', "#ffff00");
+                line.setAttribute('stroke', "#ffff00");
                 line.setAttribute('opacity', "1");
                 line.setAttribute('x1', element[0][0]);
                 line.setAttribute('y1', element[0][1]);
@@ -729,10 +729,18 @@ function initPattern(globals){
             return false;
         }
 
+        /*ここの段階では、foldDataは（例）
+        edges_assignment: Array(N)[B, B, ...]
+        edges_foldAngle: Array(N)[null, -180, ...]
+        edges_vertices: Array(N)[Array(2), Array(5), ...]
+        vertices_coords: Array(M)[Array(2), Array(8), ...]
+        Array(k)のkは不定
+        */
+
         foldData = FOLD.filter.collapseNearbyVertices(foldData, globals.vertTol);
         foldData = FOLD.filter.removeLoopEdges(foldData);//remove edges that points to same vertex
         foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData);//remove duplicate edges
-        // foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections and add vertices/edges
+        foldData = FOLD.filter.subdivideCrossingEdges_vertices(foldData, globals.vertTol);//find intersections and add vertices/edges
 
         foldData = findIntersections(foldData, globals.vertTol);
         //cleanup after intersection operation
@@ -741,16 +749,50 @@ function initPattern(globals){
         foldData = FOLD.filter.removeDuplicateEdges_vertices(foldData);//remove duplicate edges
 
         foldData = FOLD.convert.edges_vertices_to_vertices_vertices_unsorted(foldData);
+        /*ここの段階でfoldDataに
+        vertices_vertices: Array(M)[Array(k), Array(k), ...]
+        が増える
+        
+        edges_assignment: Array(N)[B, B, ...]
+        edges_foldAngle: Array(N)[null, -180, ...]
+        edges_vertices: Array(N)[Array(2), Array(5), ...]
+        vertices_coords: Array(M)[Array(2), Array(8), ...]
+        vertices_vertices: Array(M)[Array(k), Array(k), ...]
+        */
+
         foldData = removeStrayVertices(foldData);//delete stray anchors
         //foldData = removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
         foldData = removeRedundantVertices(foldData, 0.005);//remove vertices that split edge
-
+        //foldData = removeRedundantVertices(foldData, 0.0075);//remove vertices that split edge
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
+        /*ここで
+        faces_vertices: Array(l)[Array(m), Array(n), ...]
+        が追加される
+        
+        edges_assignment: Array(N)[B, B, ...]
+        edges_foldAngle: Array(N)[null, -180, ...]
+        edges_vertices: Array(N)[Array(2), Array(5), ...]
+        faces_vertices: Array(l)[Array(m), Array(n), ...]
+        vertices_coords: Array(M)[Array(2), Array(8), ...]
+        vertices_vertices: Array(M)[Array(k), Array(k), ...]
+        */
 
         foldData = edgesVerticesToVerticesEdges(foldData);
-        foldData = removeBorderFaces(foldData);//expose holes surrounded by all border edges
+        /*ここで
+        vertices_edges: Array(M)[Array(2), Array(3), ...]
+        が追加される（構成はvertices_verticesと同じかも）
+        
+        edges_assignment: Array(N)[B, B, ...]
+        edges_foldAngle: Array(N)[null, -180, ...]
+        edges_vertices: Array(N)[Array(2), Array(5), ...]
+        faces_vertices: Array(l)[Array(m), Array(n), ...]
+        vertices_coords: Array(M)[Array(2), Array(8), ...]
+        vertices_edges: Array(M)[Array(2), Array(3), ...]
+        vertices_vertices: Array(M)[Array(k), Array(k), ...]
+        */
 
+        foldData = removeBorderFaces(foldData);//expose holes surrounded by all border edges
         foldData = reverseFaceOrder(foldData);//set faces to counter clockwise
 
         return processFold(foldData);
@@ -1059,6 +1101,8 @@ function initPattern(globals){
     }
 
     function removeRedundantVertices(fold, epsilon){
+        //展開図中の○px以内の点を同じ点として処理する関数
+        //○＝epsilonで、svg入力の時のモーダルがその設定箇所
 
         var old2new = [];
         var numRedundant = 0;

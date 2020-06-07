@@ -327,8 +327,10 @@ function initDrawApp(globals) {
           context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
         }
       }
+      //分割しないやつ
       //if(regularTrianglationTool.points.length%4 == 0) { globals.grids.regularTrianglation(regularTrianglationTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]); }
       
+      //分割ありのやつ
       if (regularTrianglationTool.points.length >= 4) {
         globals.grids.makeParentHexagon(regularTrianglationTool);
 
@@ -936,7 +938,7 @@ function initDrawApp(globals) {
   function makeExtendedSVGFile(fileReader, original, output, optimized, gridline) {
     //出力svgファイルの宣言
     let text = `<?xml version="1.0" encoding="utf-8"?>
-    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1000px" height="1000px" viewBox="0 0 1000.0 1000.0">
+    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1000px" height="1200px" viewBox="0 0 1000.0 1200.0">
     <title>outputSVG</title>
     `;
 
@@ -1036,6 +1038,8 @@ function initDrawApp(globals) {
       text += `<g>`;
       for (let i = 0; i < yellow.length; i++) {
         text += `<line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${yellow[i][3]}" y1="${yellow[i][5]}" x2="${yellow[i][4]}" y2="${yellow[i][6]}"/>`;
+        //見やすいから緑で出力する用
+        //text += `<line fill="none" stroke="#0f0" stroke-miterlimit="10" x1="${yellow[i][3]}" y1="${yellow[i][5]}" x2="${yellow[i][4]}" y2="${yellow[i][6]}"/>`;
       }
       text += `</g>`;
     }
@@ -1051,7 +1055,11 @@ function initDrawApp(globals) {
     if (magenta.length > 0) {
       text += `<g>`;
       for (let i = 0; i < magenta.length; i++) {
-        text += `<line fill="none" stroke="#f0f" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        //text += `<line fill="none" stroke="#f0f" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        //見やすいから緑で出力してみる
+        //text += `<line fill="none" stroke="#0f0" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        //黄色にしてみる
+        text += `<line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
       }
       text += `</g>`;
     }

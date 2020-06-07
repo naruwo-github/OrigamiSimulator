@@ -53,19 +53,29 @@ convert.sort_vertices_vertices = function(fold) {
   return results;
 };
 
+//面が欠けるときは、この中でその面のインデックスが出力されている
 convert.vertices_vertices_to_faces_vertices = function(fold) {
+  //変数宣言
   var face, i, j, k, key, len, len1, neighbors, next, ref, ref1, ref2, ref3, u, uv, v, w, x;
   next = {};
+  //refはfoldのキーがvertices_verticesの値
   ref = fold.vertices_vertices;
+  //refは配列の配列になるArray[Array[11,2], Array[3,11], Array[0,4],...,Array[0,1,10]]
   for (v in ref) {
-    neighbors = ref[v];
+    //vは0,1,2,...
+    neighbors = ref[v];//neighborsはArray[11,2],[3,11],,順にとっていく
     v = parseInt(v);
     for (i = j = 0, len = neighbors.length; j < len; i = ++j) {
-      u = neighbors[i];
+      u = neighbors[i];//uは11,2,...ととっていく（この例では）
+      //{11,0: 2, 2,0: 11}+{3,1: 11, 11,1: 3}+{0,2: 4, 4,2:0}...
       next[u + "," + v] = neighbors[modulo(i - 1, neighbors.length)];
     }
   }
+  //ここまででnextを定義し終えたってこと
+
+  //ここでfaces_verticesを一旦空にしてるね
   fold.faces_vertices = [];
+  //ref1はnextのキーだけ持った配列["11,0", "2,0", "3,1",...]
   ref1 = (function() {
     var results;
     results = [];
@@ -74,29 +84,34 @@ convert.vertices_vertices_to_faces_vertices = function(fold) {
     }
     return results;
   })();
+  //ref1の定義完了
+
   for (k = 0, len1 = ref1.length; k < len1; k++) {
-    uv = ref1[k];
-    w = next[uv];
+    uv = ref1[k];//"11,0"
+    w = next[uv];//2
     if (w == null) {
+      //next[uv]がnullの時ここに入る
       continue;
     }
+    //ここでnext[uv]をnullにしてるのはなんでだろう？？
     next[uv] = null;
     ref2 = uv.split(','), u = ref2[0], v = ref2[1];
     u = parseInt(u);
     v = parseInt(v);
-    face = [u, v];
-    while (w !== face[0]) {
-      if (w == null) {
+    face = [u, v];//[11, 0]
+    while (w !== face[0]) {//2 !== 11
+      if (w === null) {
+        //面が欠けている時は、ここに入ってしまう？
         console.warn('Confusion with face', face);
         break;
       }
-      face.push(w);
-      ref3 = [v, w], u = ref3[0], v = ref3[1];
-      w = next[u + "," + v];
-      next[u + "," + v] = null;
+      face.push(w);//[11, 0, 2]
+      ref3 = [v, w], u = ref3[0], v = ref3[1];//[0, 2], 0, 2,
+      w = next[u + "," + v];//w=next[0, 2]
+      next[u + "," + v] = null;//ここでnextにnullを入れてるところがあるね
     }
     next[face[face.length - 1] + "," + face[0]] = null;
-    if ((w != null) && geom.polygonOrientation((function() {
+    if ((w !== null) && geom.polygonOrientation((function() {
       var l, len2, results;
       results = [];
       for (l = 0, len2 = face.length; l < len2; l++) {
