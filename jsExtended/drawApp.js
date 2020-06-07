@@ -1038,6 +1038,8 @@ function initDrawApp(globals) {
       text += `<g>`;
       for (let i = 0; i < yellow.length; i++) {
         text += `<line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${yellow[i][3]}" y1="${yellow[i][5]}" x2="${yellow[i][4]}" y2="${yellow[i][6]}"/>`;
+        //見やすいから緑で出力する用
+        //text += `<line fill="none" stroke="#0f0" stroke-miterlimit="10" x1="${yellow[i][3]}" y1="${yellow[i][5]}" x2="${yellow[i][4]}" y2="${yellow[i][6]}"/>`;
       }
       text += `</g>`;
     }
@@ -1053,7 +1055,11 @@ function initDrawApp(globals) {
     if (magenta.length > 0) {
       text += `<g>`;
       for (let i = 0; i < magenta.length; i++) {
-        text += `<line fill="none" stroke="#f0f" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        //text += `<line fill="none" stroke="#f0f" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        //見やすいから緑で出力してみる
+        //text += `<line fill="none" stroke="#0f0" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        //黄色にしてみる
+        text += `<line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
       }
       text += `</g>`;
     }
