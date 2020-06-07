@@ -327,8 +327,10 @@ function initDrawApp(globals) {
           context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
         }
       }
+      //分割しないやつ
       //if(regularTrianglationTool.points.length%4 == 0) { globals.grids.regularTrianglation(regularTrianglationTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]); }
       
+      //分割ありのやつ
       if (regularTrianglationTool.points.length >= 4) {
         globals.grids.makeParentHexagon(regularTrianglationTool);
 
@@ -936,7 +938,7 @@ function initDrawApp(globals) {
   function makeExtendedSVGFile(fileReader, original, output, optimized, gridline) {
     //出力svgファイルの宣言
     let text = `<?xml version="1.0" encoding="utf-8"?>
-    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1000px" height="1000px" viewBox="0 0 1000.0 1000.0">
+    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1000px" height="1200px" viewBox="0 0 1000.0 1200.0">
     <title>outputSVG</title>
     `;
 
