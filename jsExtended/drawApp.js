@@ -370,11 +370,11 @@ function initDrawApp(globals) {
 
   //canvas内のクリック判定
   canvas.addEventListener("click", e => {
+    //クリックした点が展開図情報内の点のいずれかに近い場合、
+    //重ねて配置したいと判定する
+    var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
+    var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1]);
     if(straight === true) { //直線ツールがON!!
-      //クリックした点が展開図情報内の点のいずれかに近い場合、
-      //重ねて配置したいと判定する
-      var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
-      var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1])
       if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
         straightLineList.push([ret[0], ret[1]]);
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
@@ -385,28 +385,18 @@ function initDrawApp(globals) {
       var closest = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
       ru2array.push(closest);
     } else if(gridTool.flag === true) { //GridTool!!
-      //クリックした点が展開図情報内の点のいずれかに近い場合、
-      //重ねて配置したいと判定する
-      var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
-      var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1])
       if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
         gridTool.points.push([ret[0], ret[1]]);
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         gridTool.points.push([e.offsetX, e.offsetY]);
       }
     } else if(regularTrianglationTool.flag === true) { //正三角形ツール
-      //クリックした点が展開図情報内の点のいずれかに近い場合、
-      //重ねて配置したいと判定する
-      var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
-      var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1])
       if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
         regularTrianglationTool.points.push([ret[0], ret[1]]);
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         regularTrianglationTool.points.push([e.offsetX, e.offsetY]);
       }
     } else if(qtreeFlag === true) {
-      var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY)
-      var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1])
       if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
         q_tree.points.push([ret[0], ret[1]]);
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
