@@ -741,21 +741,19 @@ function initDrawApp(globals) {
   //svg出力ボタンが押された時の処理
   document.getElementById("go-simulation").addEventListener("click", function() {
     drawCanvas();
-    //直線ツールの描画結果を追加する
-    for(var i = 0; i < straightLineList.length; i++) {
-      var stl = straightLineList[i];
-      outputList.push([stl[0], stl[1]]);
+    if (straightLineList.length > 0) {    //直線ツールの描画結果を追加する
+      for (const stl of straightLineList) {
+        outputList.push([stl[0], stl[1]]);
+      }
     }
-    //optimized rulingを追加する
-    for(var i = 0; i < optimizedRuling.length; i++) {
-      var stl = optimizedRuling[i];
-      outputList.push([stl[0],stl[1]]);
+    if (optimizedRuling.length > 0) {     //optimized rulingを追加する
+      for (const stl of optimizedRuling) {
+        outputList.push([stl[0], stl[1]]);
+      }
     }
-    //修正した展開図をシミュレータへ投げる
-    globals.importer.simulateAgain(globals.svgFile,outputList,gridLineList);
+    globals.importer.simulateAgain(globals.svgFile, outputList, gridLineList);
     globals.stepNum = 0;
     globals.threeView.startSimulation();
-
     //20描画にシミュレーションを停止する処理
     // setTimeout(function() {
     //   globals.threeView.pauseSimulation();
