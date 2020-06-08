@@ -152,7 +152,7 @@ function initPattern(globals){
         if (assignment == "C") return "#0f0";//cut
         if (assignment == "F") return "#ff0";//facet
         if (assignment == "U") return "#f0f";//hinge
-        return "#0ff"
+        return "#0ff";
     }
     function opacityForAngle(angle, assignment){
         if (angle === null || assignment == "F") return 1;
@@ -180,7 +180,7 @@ function initPattern(globals){
     }
 
     function parsePath(_verticesRaw, _segmentsRaw, $elements){
-        for (var i=0;i<$elements.length;i++){
+        for (let i = 0; i < $elements.length; i++){
             var path = $elements[i];
             var pathVertices = [];
             if (path === undefined || path.getPathData === undefined){//mobile problem
@@ -197,13 +197,12 @@ function initPattern(globals){
                 return;
             }
             var segments = path.getPathData();
-            for (var j=0;j<segments.length;j++){
+            for (let j = 0; j < segments.length; j++) {
                 var segment = segments[j];
                 var type = segment.type;
+                var vertex;
                 switch(type){
-
                     case "m"://dx, dy
-                        var vertex;
                         if (j === 0){//problem with inkscape files
                             vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
                         } else {
@@ -218,7 +217,7 @@ function initPattern(globals){
                     case "l"://dx, dy
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                         if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
-                        var vertex = _verticesRaw[_verticesRaw.length-1].clone();
+                        vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x += segment.values[0];
                         vertex.z += segment.values[1];
                         _verticesRaw.push(vertex);
@@ -228,7 +227,7 @@ function initPattern(globals){
                     case "v"://dy
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                         if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
-                        var vertex = _verticesRaw[_verticesRaw.length-1].clone();
+                        vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.z += segment.values[0];
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
@@ -237,14 +236,14 @@ function initPattern(globals){
                     case "h"://dx
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                         if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
-                        var vertex = _verticesRaw[_verticesRaw.length-1].clone();
+                        vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x += segment.values[0];
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
                         break;
 
                     case "M"://x, y
-                        var vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
+                        vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
                         break;
@@ -259,7 +258,7 @@ function initPattern(globals){
                     case "V"://y
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                         if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
-                        var vertex = _verticesRaw[_verticesRaw.length-1].clone();
+                        vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.z = segment.values[0];
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
@@ -268,14 +267,14 @@ function initPattern(globals){
                     case "H"://x
                         _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                         if (path.targetAngle && _segmentsRaw.length>0) _segmentsRaw[_segmentsRaw.length-1].push(path.targetAngle);
-                        var vertex = _verticesRaw[_verticesRaw.length-1].clone();
+                        vertex = _verticesRaw[_verticesRaw.length-1].clone();
                         vertex.x = segment.values[0];
                         _verticesRaw.push(vertex);
                         pathVertices.push(vertex);
                         break;
                 }
             }
-            for (var j=0;j<pathVertices.length;j++){
+            for (let j = 0; j < pathVertices.length; j++) {
                 applyTransformation(pathVertices[j], path.transform);
             }
         }
@@ -355,13 +354,13 @@ function initPattern(globals){
             globals.svgimg = img;
             //console.log("svg's URL: " + url);
             //↓初期化しておく
-            globals.svgInformation.stroke = new Array();
-            globals.svgInformation.opacity = new Array();
-            globals.svgInformation.x1 = new Array();
-            globals.svgInformation.y1 = new Array();
-            globals.svgInformation.x2 = new Array();
-            globals.svgInformation.y2 = new Array();
-            globals.svgInformation.stroke_width = new Array();
+            globals.svgInformation.stroke = [];
+            globals.svgInformation.opacity = [];
+            globals.svgInformation.x1 = [];
+            globals.svgInformation.y1 = [];
+            globals.svgInformation.x2 = [];
+            globals.svgInformation.y2 = [];
+            globals.svgInformation.stroke_width = [];
             //
 
             var _$svg = $(svg);
@@ -443,12 +442,12 @@ function initPattern(globals){
             var viewBoxTxt = min.x + " " + min.z + " " + max.x + " " + max.z;
 
             var ns = 'http://www.w3.org/2000/svg';
-            var svg = document.createElementNS(ns, 'svg');
+            svg = document.createElementNS(ns, 'svg');
             svg.setAttribute('viewBox', viewBoxTxt);
-            for (var i=0;i<rawFold.edges_vertices.length;i++){
+            for (let i = 0; i < rawFold.edges_vertices.length; i++) {
                 var line = document.createElementNS(ns, 'line');
                 var edge = rawFold.edges_vertices[i];
-                var vertex = rawFold.vertices_coords[edge[0]];
+                let vertex = rawFold.vertices_coords[edge[0]];
                 line.setAttribute('stroke', colorForAssignment(rawFold.edges_assignment[i]));
                 line.setAttribute('opacity', opacityForAngle(rawFold.edges_foldAngle[i], rawFold.edges_assignment[i]));
                 line.setAttribute('x1', vertex[0]);
@@ -538,7 +537,7 @@ function initPattern(globals){
 
             //grid line
             for(let i = 0; i < gridList.length; i++){
-                var line = document.createElementNS(ns, 'line');
+                let line = document.createElementNS(ns, 'line');
                 const element = gridList[i];
                 //line.setAttribute('stroke', "#ff00ff");
                 //格子ツールの色を指定
@@ -605,7 +604,7 @@ function initPattern(globals){
             //find max and min vertices
             var max = new THREE.Vector3(-Infinity,-Infinity,-Infinity);
             var min = new THREE.Vector3(Infinity,Infinity,Infinity);
-            for (var i=0;i<rawFold.vertices_coords.length;i++){
+            for (let i = 0; i < rawFold.vertices_coords.length; i++) {
                 var vertex = new THREE.Vector3(rawFold.vertices_coords[i][0], rawFold.vertices_coords[i][1], rawFold.vertices_coords[i][2]);
                 max.max(vertex);
                 min.min(vertex);
@@ -626,13 +625,13 @@ function initPattern(globals){
             max.add(border.multiplyScalar(2));
             var viewBoxTxt = min.x + " " + min.z + " " + max.x + " " + max.z;
 
-            var ns = 'http://www.w3.org/2000/svg';
-            var svg = document.createElementNS(ns, 'svg');
+            ns = 'http://www.w3.org/2000/svg';
+            svg = document.createElementNS(ns, 'svg');
             svg.setAttribute('viewBox', viewBoxTxt);
-            for (var i=0;i<rawFold.edges_vertices.length;i++){
-                var line = document.createElementNS(ns, 'line');
-                var edge = rawFold.edges_vertices[i];
-                var vertex = rawFold.vertices_coords[edge[0]];
+            for (let i = 0; i < rawFold.edges_vertices.length; i++) {
+                let line = document.createElementNS(ns, 'line');
+                let edge = rawFold.edges_vertices[i];
+                let vertex = rawFold.vertices_coords[edge[0]];
                 line.setAttribute('stroke', colorForAssignment(rawFold.edges_assignment[i]));
                 line.setAttribute('opacity', opacityForAngle(rawFold.edges_foldAngle[i], rawFold.edges_assignment[i]));
                 line.setAttribute('x1', vertex[0]);
@@ -660,10 +659,10 @@ function initPattern(globals){
                 svg.appendChild(line);
               }
               */
-            for(var i = 0; i < outputList.length; i+=2){
-                var line = document.createElementNS(ns, 'line');
-                var stl1 = outputList[i];
-                var stl2 = outputList[i+1];
+            for(let i = 0; i < outputList.length; i+=2) {
+                let line = document.createElementNS(ns, 'line');
+                let stl1 = outputList[i];
+                let stl2 = outputList[i+1];
                 line.setAttribute('stroke', "#ff0");
                 line.setAttribute('opacity', "1");
                 line.setAttribute('x1', stl1[0]);
@@ -821,8 +820,8 @@ function initPattern(globals){
 
         foldData = triangulatePolys(fold, true);
 
-        for (var i=0;i<foldData.vertices_coords.length;i++){
-            var vertex = foldData.vertices_coords[i];
+        for (let i = 0; i < foldData.vertices_coords.length; i++) {
+            let vertex = foldData.vertices_coords[i];
             if (vertex.length === 2) {//make vertices_coords 3d
                 foldData.vertices_coords[i] = [vertex[0], 0, vertex[1]];
             }
@@ -857,10 +856,10 @@ function initPattern(globals){
 
     function edgesVerticesToVerticesEdges(fold){
         var verticesEdges = [];
-        for (var i=0;i<fold.vertices_coords.length;i++){
+        for (let i = 0; i < fold.vertices_coords.length; i++) {
             verticesEdges.push([]);
         }
-        for (var i=0;i<fold.edges_vertices.length;i++){
+        for (let i = 0; i < fold.edges_vertices.length; i++) {
             var edge = fold.edges_vertices[i];
             verticesEdges[edge[0]].push(i);
             verticesEdges[edge[1]].push(i);
@@ -871,12 +870,12 @@ function initPattern(globals){
 
     function facesVerticesToVerticesFaces(fold){
         var verticesFaces = [];
-        for (var i=0;i<fold.vertices_coords.length;i++){
+        for (let i = 0; i < fold.vertices_coords.length; i++) {
             verticesFaces.push([]);
         }
-        for (var i=0;i<fold.faces_vertices.length;i++){
-            var face = fold.faces_vertices[i];
-            for (var j=0;j<face.length;j++){
+        for (let i = 0; i < fold.faces_vertices.length; i++) {
+            let face = fold.faces_vertices[i];
+            for (let j = 0; j < face.length; j++) {
                 verticesFaces[face[j]].push(i);
             }
         }
