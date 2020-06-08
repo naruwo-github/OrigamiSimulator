@@ -120,6 +120,7 @@ convert.vertices_vertices_to_faces_vertices = function(fold) {
       }
       return results;
     })()) > 0) {
+      //ここで面を追加しているね
       fold.faces_vertices.push(face);
     }
   }
