@@ -412,7 +412,7 @@ function initDrawApp(globals) {
     canvasReload(); //canvasのリロード
     drawCanvas();
     globals.threeView.startSimulation(); //シミュレーションをON
-  })
+  });
 
   canvas.addEventListener("mousedown", e => {
     if(ruling1 == true) { //rulingツール1がon
@@ -480,18 +480,18 @@ function initDrawApp(globals) {
   });
 
   canvas.addEventListener("mouseup", e => {
-    if(dragging == true) {
+    if (dragging == true) {
       /*if(cpMove == true) {
         //これはベジェ
         beziList.splice(movedIndex,1,[e.offsetX,e.offsetY]);
         cpMove = false;
         dragging = false;
-      }else */if(cpMove2 == true) {
+      }else */if (cpMove2 == true) {
         //これはスプライン
-        splineList.splice(movedIndex2,1,[e.offsetX,e.offsetY])
+        splineList.splice(movedIndex2,1,[e.offsetX,e.offsetY]);
         cpMove2 = false;
         dragging = false;
-      }else{
+      } else {
         dragging = false;
 
         /*
@@ -503,12 +503,12 @@ function initDrawApp(globals) {
         globals.beziercurve.defineSplinePoint(dragList, splineList);
 
         //tmpCooListの初期化
-        dragList = new Array();
+        dragList = [];
       }
       canvasReload();
       drawCanvas();
     }
-  })
+  });
 
   //直線ボタンが押された時の処理
   slineButton.addEventListener("click", function(){
@@ -602,7 +602,7 @@ function initDrawApp(globals) {
   document.getElementById("optimize-button").addEventListener("click", function(){
     //rulingの最適化動作を行う
     //console.log("ruling optimizing...");
-    optimizedRuling = new Array();
+    optimizedRuling = [];
     canvasReload();
     drawCanvas();
 
@@ -706,7 +706,7 @@ function initDrawApp(globals) {
       regularTrianglationTool.flag = false;
       regularTriangleButton.style.backgroundColor = buttonColor;
     }
-  })
+  });
 
   gridMode.addEventListener("click", function() {
     if (gridMode.mode == 0) {
@@ -778,7 +778,7 @@ function initDrawApp(globals) {
       straightLineList.pop();
     } else if(ruling1 === true) {
       if(optimizedRuling.length > 0) {
-        optimizedRuling = new Array();
+        optimizedRuling = [];
       } else {
         /*
         //ベジェ曲線の制御点を4つ消す
@@ -819,30 +819,30 @@ function initDrawApp(globals) {
   //clear all button
   document.getElementById("clear-button").addEventListener("click", function(){
     //初期化する
-    straightLineList = new Array();
+    straightLineList = [];
 
-    beziDistList = new Array();
-    beziList = new Array();
+    beziDistList = [];
+    beziList = [];
 
-    splineDistList = new Array();
-    splineList = new Array();
+    splineDistList = [];
+    splineList = [];
     
-    ru2array = new Array();
+    ru2array = [];
     
-    dragList = new Array();
+    dragList = [];
     
-    outputList = new Array();
+    outputList = [];
 
-    optimizedRuling = new Array();
+    optimizedRuling = [];
 
     gridTool.flag = false;
-    gridTool.points = new Array();
+    gridTool.points = [];
 
     regularTrianglationTool.flag = false;
-    regularTrianglationTool.points = new Array();
+    regularTrianglationTool.points = [];
 
     qtreeFlag = false;
-    q_tree.points = new Array();
+    q_tree.points = [];
 
     canvasReload();
     drawCanvas();
@@ -935,12 +935,12 @@ function initDrawApp(globals) {
 
     //ここから展開図情報を挿入していく
     //輪郭(黒)、山折り(赤)、谷折り(青)、分割線(黄色)、切り取り線(緑)、何もしない線(マゼンタ)に分けてからそれぞれまとめて追加する
-    let black = new Array();
-    let red = new Array();
-    let blue = new Array();
-    let yellow = new Array();
-    let green = new Array();
-    let magenta = new Array();
+    let black = [];
+    let red = [];
+    let blue = [];
+    let yellow = [];
+    let green = [];
+    let magenta = [];
 
     let opacity = original.opacity;
     let stroke = original.stroke;
@@ -1138,5 +1138,5 @@ function initDrawApp(globals) {
   return {
     drawLine: drawLine,
     dist: dist,
-  }
+  };
 }
