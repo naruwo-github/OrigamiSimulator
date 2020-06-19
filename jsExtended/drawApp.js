@@ -332,20 +332,44 @@ function initDrawApp(globals) {
       //if (regularTrianglationTool.points.length%4 == 0) { globals.grids.regularTrianglation(regularTrianglationTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]); }
       
       //分割ありのやつ
-      if (regularTrianglationTool.points.length >= 4) {
-        globals.grids.makeParentHexagon(regularTrianglationTool);
+      // if (regularTrianglationTool.points.length >= 4) {
+      //   globals.grids.makeParentHexagon(regularTrianglationTool);
 
-        //自動分割する
-        if (autoMeshFlag) {
-          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child0, Hmin, Hmax, globals.svgInformation);
-          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child1, Hmin, Hmax, globals.svgInformation);
-          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child2, Hmin, Hmax, globals.svgInformation);
-          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child3, Hmin, Hmax, globals.svgInformation);
-          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child4, Hmin, Hmax, globals.svgInformation);
-          globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child5, Hmin, Hmax, globals.svgInformation);
+      //   //自動分割する
+      //   if (autoMeshFlag) {
+      //     globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child0, Hmin, Hmax, globals.svgInformation);
+      //     globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child1, Hmin, Hmax, globals.svgInformation);
+      //     globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child2, Hmin, Hmax, globals.svgInformation);
+      //     globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child3, Hmin, Hmax, globals.svgInformation);
+      //     globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child4, Hmin, Hmax, globals.svgInformation);
+      //     globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child5, Hmin, Hmax, globals.svgInformation);
+      //   }
+
+      //   globals.grids.drawParentHexagon(regularTrianglationTool.points, regularTrianglationTool.structure, context, gridLineList, lineColors[3]);
+      // }
+
+      if (!autoMeshFlag) {
+        //分割しないやつ
+        if (regularTrianglationTool.points.length%4 == 0) {
+          globals.grids.regularTrianglation(regularTrianglationTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]);
         }
+      } else {
+        //分割ありのやつ
+        if (regularTrianglationTool.points.length >= 4) {
+          globals.grids.makeParentHexagon(regularTrianglationTool);
 
-        globals.grids.drawParentHexagon(regularTrianglationTool.points, regularTrianglationTool.structure, context, gridLineList, lineColors[3]);
+          //自動分割する
+          if (autoMeshFlag) {
+            globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child0, Hmin, Hmax, globals.svgInformation);
+            globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child1, Hmin, Hmax, globals.svgInformation);
+            globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child2, Hmin, Hmax, globals.svgInformation);
+            globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child3, Hmin, Hmax, globals.svgInformation);
+            globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child4, Hmin, Hmax, globals.svgInformation);
+            globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child5, Hmin, Hmax, globals.svgInformation);
+          }
+
+          globals.grids.drawParentHexagon(regularTrianglationTool.points, regularTrianglationTool.structure, context, gridLineList, lineColors[3]);
+        }
       }
     }
 
@@ -1046,11 +1070,11 @@ function initDrawApp(globals) {
     if (magenta.length > 0) {
       text += `<g>`;
       for (let i = 0; i < magenta.length; i++) {
-        //text += `<line fill="none" stroke="#f0f" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        text += `<line fill="none" stroke="#f0f" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
         //見やすいから緑で出力してみる
-        //text += `<line fill="none" stroke="#0f0" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        //text += `<line fill="none" stroke="#0f0" stroke-miterlimit="10" stroke-width="2" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
         //黄色にしてみる
-        text += `<line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        //text += `<line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
       }
       text += `</g>`;
     }
