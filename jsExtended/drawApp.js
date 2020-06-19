@@ -952,10 +952,9 @@ function initDrawApp(globals) {
   //修正した展開図の情報をsvgファイルに変換する処理
   function makeExtendedSVGFile(fileReader, original, output, optimized, gridline) {
     //出力svgファイルの宣言
-    let text = `<?xml version="1.0" encoding="utf-8"?>
-    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1000px" height="1200px" viewBox="0 0 1000.0 1200.0">
-    <title>outputSVG</title>
-    `;
+    let text = `<?xml version="1.0" encoding="utf-8"?>\n`
+    +`<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1000px" height="1200px" viewBox="0 0 1000.0 1200.0">\n`
+    +`    <title>outputSVG</title>\n`;
 
     //ここから展開図情報を挿入していく
     //輪郭(黒)、山折り(赤)、谷折り(青)、分割線(黄色)、切り取り線(緑)、何もしない線(マゼンタ)に分けてからそれぞれまとめて追加する
@@ -1026,60 +1025,60 @@ function initDrawApp(globals) {
     //格納作業
     //黒
     if (black.length > 0) {
-      text += `<g>`;
+      text += `    <g>\n`;
       for (let i = 0; i < black.length; i++) {
-        text += `<line fill="none" stroke="#000" stroke-miterlimit="10" x1="${black[i][3]}" y1="${black[i][5]}" x2="${black[i][4]}" y2="${black[i][6]}"/>`;
+        text += `        <line fill="none" stroke="#000" stroke-miterlimit="10" x1="${black[i][3]}" y1="${black[i][5]}" x2="${black[i][4]}" y2="${black[i][6]}"/>\n`;
       }
-      text += `</g>`;
+      text += `    </g>\n`;
     }
     //赤
     if (red.length > 0) {
-      text += `<g>`;
+      text += `    <g>\n`;
       for (let i = 0; i < red.length; i++) {
-        text += `<line fill="none" stroke="#f00" stroke-miterlimit="10" x1="${red[i][3]}" y1="${red[i][5]}" x2="${red[i][4]}" y2="${red[i][6]}"/>`;
+        text += `        <line fill="none" stroke="#f00" stroke-miterlimit="10" x1="${red[i][3]}" y1="${red[i][5]}" x2="${red[i][4]}" y2="${red[i][6]}"/>\n`;
       }
-      text += `</g>`;
+      text += `    </g>\n`;
     }
     //青
     if (blue.length > 0) {
-      text += `<g>`;
+      text += `    <g>\n`;
       for (let i = 0; i < blue.length; i++) {
-        text += `<line fill="none" stroke="#00f" stroke-miterlimit="10" x1="${blue[i][3]}" y1="${blue[i][5]}" x2="${blue[i][4]}" y2="${blue[i][6]}"/>`;
+        text += `        <line fill="none" stroke="#00f" stroke-miterlimit="10" x1="${blue[i][3]}" y1="${blue[i][5]}" x2="${blue[i][4]}" y2="${blue[i][6]}"/>\n`;
       }
-      text += `</g>`;
+      text += `    </g>\n`;
     }
     //黄
     if (yellow.length > 0) {
-      text += `<g>`;
+      text += `    <g>\n`;
       for (let i = 0; i < yellow.length; i++) {
-        text += `<line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${yellow[i][3]}" y1="${yellow[i][5]}" x2="${yellow[i][4]}" y2="${yellow[i][6]}"/>`;
+        text += `        <line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${yellow[i][3]}" y1="${yellow[i][5]}" x2="${yellow[i][4]}" y2="${yellow[i][6]}"/>\n`;
         //見やすいから緑で出力する用
-        //text += `<line fill="none" stroke="#0f0" stroke-miterlimit="10" x1="${yellow[i][3]}" y1="${yellow[i][5]}" x2="${yellow[i][4]}" y2="${yellow[i][6]}"/>`;
+        //text += `        <line fill="none" stroke="#0f0" stroke-miterlimit="10" x1="${yellow[i][3]}" y1="${yellow[i][5]}" x2="${yellow[i][4]}" y2="${yellow[i][6]}"/>\n`;
       }
-      text += `</g>`;
+      text += `    </g>\n`;
     }
     //緑
     if (green.length > 0) {
-      text += `<g>`;
+      text += `    <g>\n`;
       for (let i = 0; i < green.length; i++) {
-        text += `<line fill="none" stroke="#0f0" stroke-miterlimit="10" x1="${green[i][3]}" y1="${green[i][5]}" x2="${green[i][4]}" y2="${green[i][6]}"/>`;
+        text += `        <line fill="none" stroke="#0f0" stroke-miterlimit="10" x1="${green[i][3]}" y1="${green[i][5]}" x2="${green[i][4]}" y2="${green[i][6]}"/>\n`;
       }
-      text += `</g>`;
+      text += `    </g>\n`;
     }
     //マゼンタ
     if (magenta.length > 0) {
-      text += `<g>`;
+      text += `    <g>\n`;
       for (let i = 0; i < magenta.length; i++) {
-        text += `<line fill="none" stroke="#f0f" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        text += `        <line fill="none" stroke="#f0f" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>\n`;
         //見やすいから緑で出力してみる
-        //text += `<line fill="none" stroke="#0f0" stroke-miterlimit="10" stroke-width="2" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        //text += `        <line fill="none" stroke="#0f0" stroke-miterlimit="10" stroke-width="2" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>\n`;
         //黄色にしてみる
-        //text += `<line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>`;
+        //text += `        <line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>\n`;
       }
-      text += `</g>`;
+      text += `    </g>\n`;
     }
 
-    text += `</svg>`;
+    text += `</svg>\n`;
     fileReader.text = text;
 
     /*
