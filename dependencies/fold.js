@@ -53,29 +53,22 @@ convert.sort_vertices_vertices = function(fold) {
   return results;
 };
 
-//面が欠けるときは、この中でその面のインデックスが出力されている
+//面が欠けるときはこの関数内部で判定されている
 convert.vertices_vertices_to_faces_vertices = function(fold) {
-  //変数宣言
   var face, i, j, k, key, len, len1, neighbors, next, ref, ref1, ref2, ref3, u, uv, v, w, x;
   next = {};
-  //refはfoldのキーがvertices_verticesの値
-  ref = fold.vertices_vertices;
-  //refは配列の配列になるArray[Array[11,2], Array[3,11], Array[0,4],...,Array[0,1,10]]
+  ref = fold.vertices_vertices;//refはvertices_vertices（隣接する頂点のインデックスを格納したもの）
+
   for (v in ref) {
-    //vは0,1,2,...
-    neighbors = ref[v];//neighborsはArray[11,2],[3,11],,順にとっていく
+    neighbors = ref[v];
     v = parseInt(v);
     for (i = j = 0, len = neighbors.length; j < len; i = ++j) {
-      u = neighbors[i];//uは11,2,...ととっていく（この例では）
-      //{11,0: 2, 2,0: 11}+{3,1: 11, 11,1: 3}+{0,2: 4, 4,2:0}...
+      u = neighbors[i];
       next[u + "," + v] = neighbors[modulo(i - 1, neighbors.length)];
     }
-  }
-  //ここまででnextを定義し終えたってこと
+  }                         //ここまででnextを定義し終えた//nextってどういう意味なんだろう？
 
-  //ここでfaces_verticesを一旦空にしてるね
-  fold.faces_vertices = [];
-  //ref1はnextのキーだけ持った配列["11,0", "2,0", "3,1",...]
+  fold.faces_vertices = []; //foldに新たな辞書 faces_vertices : [] を追加
   ref1 = (function() {
     var results;
     results = [];
@@ -83,34 +76,34 @@ convert.vertices_vertices_to_faces_vertices = function(fold) {
       results.push(key);
     }
     return results;
-  })();
-  //ref1の定義完了
+  })();                     //ref1はnextのキーだけ持った配列
 
   for (k = 0, len1 = ref1.length; k < len1; k++) {
-    uv = ref1[k];//"11,0"
-    w = next[uv];//2
-    if (w == null) {
-      //next[uv]がnullの時ここに入る
-      continue;
+    uv = ref1[k];
+    w = next[uv];
+    if (w == null) {        //next[uv]がnullの時ここに入る→nextとref1のサイズが一致してない時に起こる？
+      continue;             //continueは今のループを終了し、次のループを回し始める
     }
-    //ここでnext[uv]をnullにしてるのはなんでだろう？？
+    
+    //===ここから下はwがnullでないことが保証されている？はず===
     next[uv] = null;
     ref2 = uv.split(','), u = ref2[0], v = ref2[1];
     u = parseInt(u);
     v = parseInt(v);
-    face = [u, v];//[11, 0]
-    while (w !== face[0]) {//2 !== 11
+    face = [u, v];
+    while (w !== face[0]) { //w(next[uv]="a,b":cのc値)が、[u,v]のu("a,b":cのa値)と違う間回るループ
       if (w === null) {
         //面が欠けている時は、ここに入ってしまう？
         console.warn('Confusion with face', face);
         break;
       }
-      face.push(w);//[11, 0, 2]
-      ref3 = [v, w], u = ref3[0], v = ref3[1];//[0, 2], 0, 2,
-      w = next[u + "," + v];//w=next[0, 2]
-      next[u + "," + v] = null;//ここでnextにnullを入れてるところがあるね
+      face.push(w);
+      ref3 = [v, w], u = ref3[0], v = ref3[1]; //u,vがv,wで上書きされる
+      //ここでwを更新している
+      w = next[u + "," + v];
+      next[u + "," + v] = null; //一度使ったらnullにする
     }
-    next[face[face.length - 1] + "," + face[0]] = null;
+    next[face[face.length - 1] + "," + face[0]] = null; //特定のnextをnullにしてる
     if ((w !== null) && geom.polygonOrientation((function() {
       var l, len2, results;
       results = [];
@@ -120,7 +113,7 @@ convert.vertices_vertices_to_faces_vertices = function(fold) {
       }
       return results;
     })()) > 0) {
-      //ここで面を追加しているね
+      //114行目のif文がtrueなら、ここの行が実行される。
       fold.faces_vertices.push(face);
     }
   }
