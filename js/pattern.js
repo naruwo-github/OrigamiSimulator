@@ -491,7 +491,7 @@ function initPattern(globals){
     //------------------------------------------------------------------
     //svgを再シミュレートするやつ
     //function loadSVGAgain(url,cooX,cooY){
-    function loadSVGAgain(url,outputList,gridList){
+    function loadSVGAgain(url, outputList, gridList){
         SVGloader.load(url, function(svg){
             //svgをimage形式でグローバル化する
             var img = new Image();
@@ -528,6 +528,10 @@ function initPattern(globals){
                 var stl2 = outputList[i+1];
                 line.setAttribute('stroke', "#ffff00");
                 line.setAttribute('opacity', "1");
+                // line.setAttribute('x1', parseInt(stl1[0]));
+                // line.setAttribute('y1', parseInt(stl1[1]));
+                // line.setAttribute('x2', parseInt(stl2[0]));
+                // line.setAttribute('y2', parseInt(stl2[1]));
                 line.setAttribute('x1', stl1[0]);
                 line.setAttribute('y1', stl1[1]);
                 line.setAttribute('x2', stl2[0]);
@@ -543,6 +547,10 @@ function initPattern(globals){
                 //格子ツールの色を指定
                 line.setAttribute('stroke', "#ffff00");
                 line.setAttribute('opacity', "1");
+                // line.setAttribute('x1', parseInt(element[0][0]));
+                // line.setAttribute('y1', parseInt(element[0][1]));
+                // line.setAttribute('x2', parseInt(element[1][0]));
+                // line.setAttribute('y2', parseInt(element[1][1]));
                 line.setAttribute('x1', element[0][0]);
                 line.setAttribute('y1', element[0][1]);
                 line.setAttribute('x2', element[1][0]);
@@ -761,9 +769,7 @@ function initPattern(globals){
         */
 
         foldData = removeStrayVertices(foldData);//delete stray anchors
-        //foldData = removeRedundantVertices(foldData, 0.01);//remove vertices that split edge
         foldData = removeRedundantVertices(foldData, 0.005);//remove vertices that split edge
-        //foldData = removeRedundantVertices(foldData, 0.0075);//remove vertices that split edge
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
         /*ここで
