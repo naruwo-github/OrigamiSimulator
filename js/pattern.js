@@ -1263,18 +1263,12 @@ function initPattern(globals){
                     assignments.push("F");
                     triangulatedFaces.push([face[0], face[1], face[3]]);
                     triangulatedFaces.push([face[1], face[2], face[3]]);
-
-                    //これが分割するために追加した直線?
-                    //console.log([face[1], face[3]]);
                 } else {
                     edges.push([face[0], face[2]]);
                     foldAngles.push(0);
                     assignments.push("F");
                     triangulatedFaces.push([face[0], face[1], face[2]]);
                     triangulatedFaces.push([face[0], face[2], face[3]]);
-
-                    //これが分割するために追加した直線?
-                    //console.log([face[0], face[2]]);
                 }
                 continue;
             }
@@ -1295,8 +1289,7 @@ function initPattern(globals){
                 if (!is2d) faceVert.push(vertex[2]);
             }
 
-            //ここで三角形分割を行なっている？
-            //三角メッシュを作っているのか？ 
+            //ここで三角形分割を行なっている
             var triangles = earcut(faceVert, null, is2d? 2:3);
 
             for (var j=0;j<triangles.length;j+=3){
@@ -1362,7 +1355,7 @@ function initPattern(globals){
         }
         fold.faces_vertices = triangulatedFaces;
 
-        //globals.autoTriangulatedInfoへ三角形分割の結果を格納
+        //===globals.autoTriangulatedInfoへ三角形分割の結果を格納===
         var returnInfo = [];
         for (let index = 0; index < globals.autoTriangulatedInfo.length; index++) {
             const element = globals.autoTriangulatedInfo[index];
@@ -1373,6 +1366,7 @@ function initPattern(globals){
             returnInfo.push(fold.vertices_coords[end]);
         }
         globals.autoTriangulatedInfo = returnInfo;
+        //======================================================
 
         return fold;
     }
