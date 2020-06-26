@@ -209,7 +209,8 @@ function initDrawApp(globals) {
     //三角形分割の結果の描画
     drawTrianglationResult(context, globals.autoTriangulatedInfo);
     //展開図情報の出力
-    //console.log(globals.svgInformation);
+    // console.log("svg information");
+    // console.log(globals.svgInformation);
 
     //直線ツールの点
     context.fillStyle = lineColors[0];
@@ -834,9 +835,12 @@ function initDrawApp(globals) {
     //素のsvg
     //downloadFile('fileNotFix.svg', readerFile.result);
     //修正込みのsvg
-    var outputSVG = new FileReader();
-    makeExtendedSVGFile(outputSVG, globals.svgInformation, outputList, optimizedRuling, gridLineList);
-    downloadFile('developmentView.svg', outputSVG.text);
+    // var outputSVG = new FileReader();
+    // makeExtendedSVGFile(outputSVG, globals.svgInformation, outputList, optimizedRuling, gridLineList);
+    // downloadFile('developmentView.svg', outputSVG.text);
+    var outputPOLY = new FileReader();
+    convertOriginalSvgToPoly(outputPOLY, globals.svgInformation);
+    downloadFile('fromSVG.poly', outputPOLY.text);
   });
 
   //clear all button
