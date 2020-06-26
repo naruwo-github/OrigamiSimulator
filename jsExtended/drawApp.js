@@ -100,7 +100,6 @@ function initDrawApp(globals) {
 
 
   var readerFile = new FileReader(); //svg(分割線が追加されてないやつ)のdlに使う
-  var outputSVG = new FileReader();
 
   //順に山、分割線(Ruling)、谷、分割線(ただの線)、切り取り線
   var lineColors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", "rgb(0, 0, 255)", 
@@ -832,11 +831,11 @@ function initDrawApp(globals) {
 
   //現在読み込んであるsvgをダウンロードする
   document.getElementById("dl-svg").addEventListener("click", function(){
+    //素のsvg
     //downloadFile('fileNotFix.svg', readerFile.result);
-
-    //修正後のやつ
+    //修正込みのsvg
+    var outputSVG = new FileReader();
     makeExtendedSVGFile(outputSVG, globals.svgInformation, outputList, optimizedRuling, gridLineList);
-    //downloadFile('developmentView.svg', outputSVG.result);
     downloadFile('developmentView.svg', outputSVG.text);
   });
 
@@ -1019,6 +1018,8 @@ function initDrawApp(globals) {
       for (let i = 0; i < gridline.length; i++) {
         let tmp = gridline[i];
         magenta.push([1, "#f0f", stroke_width[0], tmp[0][0], tmp[1][0], tmp[0][1], tmp[1][1]]);
+        //緑で出力
+        //green.push([1, "#f0f", stroke_width[0], tmp[0][0], tmp[1][0], tmp[0][1], tmp[1][1]]);
       }
     }
 
@@ -1052,8 +1053,6 @@ function initDrawApp(globals) {
       text += `    <g>\n`;
       for (let i = 0; i < yellow.length; i++) {
         text += `        <line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${yellow[i][3]}" y1="${yellow[i][5]}" x2="${yellow[i][4]}" y2="${yellow[i][6]}"/>\n`;
-        //見やすいから緑で出力する用
-        //text += `        <line fill="none" stroke="#0f0" stroke-miterlimit="10" x1="${yellow[i][3]}" y1="${yellow[i][5]}" x2="${yellow[i][4]}" y2="${yellow[i][6]}"/>\n`;
       }
       text += `    </g>\n`;
     }
@@ -1070,10 +1069,6 @@ function initDrawApp(globals) {
       text += `    <g>\n`;
       for (let i = 0; i < magenta.length; i++) {
         text += `        <line fill="none" stroke="#f0f" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>\n`;
-        //見やすいから緑で出力してみる
-        //text += `        <line fill="none" stroke="#0f0" stroke-miterlimit="10" stroke-width="2" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>\n`;
-        //黄色にしてみる
-        //text += `        <line fill="none" stroke="#ff0" stroke-miterlimit="10" x1="${magenta[i][3]}" y1="${magenta[i][5]}" x2="${magenta[i][4]}" y2="${magenta[i][6]}"/>\n`;
       }
       text += `    </g>\n`;
     }
