@@ -134,7 +134,10 @@ function initDrawApp(globals) {
   //----------------------------------------------------------------------
 
 
-  //自動メッシュの設定あれこれ
+  //=====================================================
+  //========== 自動メッシュONフラグと、木の高さ詳細 ===========
+  //=====================================================
+  //自動メッシュの設定
   var Hmin = 3;
   var Hmax = 5;
   var autoMeshButton = document.getElementById("auto-mesh");
@@ -175,8 +178,13 @@ function initDrawApp(globals) {
       HminNumButton.innerText = String(Hmin);
     }
   });
+  //=====================================================
+  //=====================================================
+  //=====================================================
 
-  //正三角形メッシュの制御ボタン
+  //=====================================================
+  //=========== 正三角形タイリングの入力と個数調整 ============
+  //=====================================================
   var RegularTriangleEdgeNum = document.getElementById("rt-num");
   var halfLengthTriangleEdge = parseInt(RegularTriangleEdgeNum.innerText);
   var rtenUp = document.getElementById("rt-up");
@@ -193,11 +201,13 @@ function initDrawApp(globals) {
       RegularTriangleEdgeNum.innerText = String(halfLengthTriangleEdge);
     }
   });
+  //=====================================================
+  //=====================================================
+  //=====================================================
 
-
-
-
-  //================= キャンバスの描画関数 ==================
+  //=====================================================
+  //================= キャンバスの描画関数 =================
+  //=====================================================
   function drawCanvas() {
     //変数の初期化
     splineDistList = [];
@@ -388,6 +398,8 @@ function initDrawApp(globals) {
     }
 
   }
+  //=====================================================
+  //=====================================================
   //=====================================================
 
 
@@ -835,9 +847,15 @@ function initDrawApp(globals) {
     //素のsvg
     //downloadFile('fileNotFix.svg', readerFile.result);
     //修正込みのsvg
-    // var outputSVG = new FileReader();
-    // makeExtendedSVGFile(outputSVG, globals.svgInformation, outputList, optimizedRuling, gridLineList);
-    // downloadFile('developmentView.svg', outputSVG.text);
+    var outputSVG = new FileReader();
+    makeExtendedSVGFile(outputSVG, globals.svgInformation, outputList, optimizedRuling, gridLineList);
+    downloadFile('developmentView.svg', outputSVG.text);
+    // var outputPOLY = new FileReader();
+    // convertOriginalSvgToPoly(outputPOLY, globals.svgInformation);
+    // downloadFile('fromSVG.poly', outputPOLY.text);
+  });
+
+  document.getElementById("dl-poly").addEventListener("click", function() {
     var outputPOLY = new FileReader();
     convertOriginalSvgToPoly(outputPOLY, globals.svgInformation);
     downloadFile('fromSVG.poly', outputPOLY.text);

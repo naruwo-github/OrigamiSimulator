@@ -19,6 +19,7 @@ function convertOriginalSvgToPoly(fileReader, original) {
     y2: [num, ...]
     */
 
+    let stroke = original.stroke;
     let x1 = original.x1;
     let x2 = original.x2;
     let y1 = original.y1;
@@ -28,13 +29,17 @@ function convertOriginalSvgToPoly(fileReader, original) {
     //頂点
     text += `${vertexNumber*2} 2 0 0\n`;
     for (let index = 0; index < x1.length; index++) {
-        text += `${index*2+1} ${x1[index]} ${y1[index]} 0\n`;
-        text += `${index*2+2} ${x2[index]} ${y2[index]} 0\n`;
+      text += `${index*2+1} ${x1[index]} ${y1[index]} 0\n`;
+      text += `${index*2+2} ${x2[index]} ${y2[index]} 0\n`;
     }
     //セグメント
     text += `${vertexNumber} 0\n`;
     for (let index = 0; index < x1.length; index++) {
-        text += `${index+1} ${index*2+1} ${index*2+2} 0\n`;
+      //セグメントにマーカーが付けれるらしい。山折りが１、谷折りが２としてみるか
+      let marker = 0;
+      if (stroke[index] === "#f00") { marker = 1; }
+      if (stroke[index] === "#00f") { marker = 2; }
+      text += `${index+1} ${index*2+1} ${index*2+2} ${marker}\n`;
     }
     //ホールインデックスとホールの座標はなし
     text += `0\n`;
