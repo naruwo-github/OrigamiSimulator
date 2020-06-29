@@ -4,7 +4,7 @@
 //このファイルは、ファイル出力関係を扱う
 
 //素のsvgをpolyファイルに変換し、出力する関数
-function convertOriginalSvgToPoly(fileReader, original) {
+function convertOriginalSvgToPoly(fileReader, original, anchor) {
     /*
     ここで受け取るsvgは厳密なsvgでない
     ファイル出力用に値の一部を格納した配列である
@@ -27,10 +27,15 @@ function convertOriginalSvgToPoly(fileReader, original) {
     let vertexNumber = x1.length;
     var text= ``; //出力用の文字列
     //頂点
-    text += `${vertexNumber*2} 2 0 0\n`;
+    text += `${vertexNumber*2+anchor.length} 2 0 0\n`;
     for (let index = 0; index < x1.length; index++) {
       text += `${index*2+1} ${x1[index]} ${y1[index]} 0\n`;
       text += `${index*2+2} ${x2[index]} ${y2[index]} 0\n`;
+    }
+    //アンカーポイントも頂点同様追加
+    for (let index = 0; index < anchor.length; index++) {
+      const point = anchor[index];
+      text += `${x1.length*2+index+1} ${point[0]} ${point[1]}\n`;
     }
     //セグメント
     text += `${vertexNumber} 0\n`;
