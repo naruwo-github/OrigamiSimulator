@@ -205,6 +205,17 @@ function initDrawApp(globals) {
   //=====================================================
   //=====================================================
 
+  var anchorPoints = document.getElementById("anchor-points");
+  anchorPoints.flag = false;
+  anchorPoints.points = [];
+  anchorPoints.addEventListener("click", function() {
+    anchorPoints.flag = !anchorPoints.flag;
+    if (anchorPoints.flag) {
+      anchorPoints.style.backgroundColor = "rgb(255, 170, 120)";
+    } else {
+      anchorPoints.style.backgroundColor = "rgb(150, 150, 150)";
+    }
+  });
   //=====================================================
   //================= キャンバスの描画関数 =================
   //=====================================================
@@ -397,6 +408,12 @@ function initDrawApp(globals) {
       globals.grids.drawQTree(q_tree.structure, context, gridLineList, lineColors[3]);
     }
 
+    //アンカーポイントの描画
+    for (let i = 0; i < anchorPoints.points.length; i++) {
+      const point = anchorPoints.points[i];
+      context.fillStyle = lineColors[1];
+      context.fillRect(point[0]-3, point[1]-3, 7, 7);
+    }
   }
   //=====================================================
   //=====================================================
@@ -441,6 +458,8 @@ function initDrawApp(globals) {
       }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         q_tree.points.push([e.offsetX, e.offsetY]);
       }
+    } else if(anchorPoints.flag) {
+      anchorPoints.points.push([e.offsetX, e.offsetY]);
     } else {
      canvasReload(); //canvasのリロード
      readerFile.readAsText(globals.svgFile); //svgファイルをテキストで取得
@@ -857,7 +876,7 @@ function initDrawApp(globals) {
 
   document.getElementById("dl-poly").addEventListener("click", function() {
     var outputPOLY = new FileReader();
-    convertOriginalSvgToPoly(outputPOLY, globals.svgInformation);
+    convertOriginalSvgToPoly(outputPOLY, globals.svgInformation, anchorPoints.points);
     downloadFile('fromSVG.poly', outputPOLY.text);
   });
 
