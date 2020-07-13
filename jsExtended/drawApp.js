@@ -186,19 +186,19 @@ function initDrawApp(globals) {
   //=========== 正三角形タイリングの入力と個数調整 ============
   //=====================================================
   var RegularTriangleEdgeNum = document.getElementById("rt-num");
-  var halfLengthTriangleEdge = parseInt(RegularTriangleEdgeNum.innerText);
+  var triangleEdgeDenominator = parseInt(RegularTriangleEdgeNum.innerText);
   var rtenUp = document.getElementById("rt-up");
   var rtenDown = document.getElementById("rt-down");
   rtenUp.addEventListener("click", function() {
-    if (halfLengthTriangleEdge < 500) {
-      halfLengthTriangleEdge += 5;
-      RegularTriangleEdgeNum.innerText = String(halfLengthTriangleEdge);
+    if (triangleEdgeDenominator < 200) {
+      triangleEdgeDenominator += 1;
+      RegularTriangleEdgeNum.innerText = String(triangleEdgeDenominator);
     }
   });
   rtenDown.addEventListener("click", function() {
-    if (halfLengthTriangleEdge > 0) {
-      halfLengthTriangleEdge -= 5;
-      RegularTriangleEdgeNum.innerText = String(halfLengthTriangleEdge);
+    if (triangleEdgeDenominator > 0) {
+      triangleEdgeDenominator -= 1;
+      RegularTriangleEdgeNum.innerText = String(triangleEdgeDenominator);
     }
   });
   //=====================================================
@@ -350,7 +350,7 @@ function initDrawApp(globals) {
         }
       }
       //分割しないやつ
-      //if (regularTrianglationTool.points.length%4 == 0) { globals.grids.regularTrianglation(regularTrianglationTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]); }
+      //if (regularTrianglationTool.points.length%4 == 0) { globals.grids.regularTrianglation(regularTrianglationTool.points, triangleEdgeDenominator, context, gridLineList, lineColors[3]); }
       
       //分割ありのやつ
       // if (regularTrianglationTool.points.length >= 4) {
@@ -372,7 +372,7 @@ function initDrawApp(globals) {
       if (!autoMeshFlag) {
         //分割しないやつ
         if (regularTrianglationTool.points.length%4 == 0) {
-          globals.grids.regularTrianglation(regularTrianglationTool.points, halfLengthTriangleEdge, context, gridLineList, lineColors[3]);
+          globals.grids.regularTrianglation(regularTrianglationTool.points, triangleEdgeDenominator, context, gridLineList, lineColors[3]);
         }
       } else {
         //分割ありのやつ
@@ -880,9 +880,8 @@ function initDrawApp(globals) {
     downloadFile('fromSVG.poly', outputPOLY.text);
   });
 
-  //clear all button
+  // NOTE: Clear Allボタン押下時の処理
   document.getElementById("clear-button").addEventListener("click", function(){
-    //初期化する
     straightLineList = [];
 
     beziDistList = [];

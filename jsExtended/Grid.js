@@ -599,12 +599,14 @@ function initGrids(globals) {
 
 
     //=============================================
-    //正三角形の格子を描画するメソッド
-    function regularTrianglation(outlinePoints, triangleEdgeLength, ctx, gridLineList, lineColor) {
+    // NOTE: 正三角形の格子を描画するメソッド
+    function regularTrianglation(outlinePoints, triangleEdgeDenominator, ctx, gridLineList, lineColor) {
         if (outlinePoints.length < 4) {
             return;
         }
         let op = outlinePoints;
+        let outlineWidth = Math.min(dist(op[0][0], op[0][1], op[1][0], op[1][1]), dist(op[1][0], op[1][1], op[2][0], op[2][1]));
+        let edgeOfTriangle = outlineWidth / triangleEdgeDenominator;
         let center = [
             (op[0][0]+op[1][0]+op[2][0]+op[3][0])/4,
             (op[0][1]+op[1][1]+op[2][1]+op[3][1])/4
@@ -615,8 +617,8 @@ function initGrids(globals) {
         vecLeftTop.normalize();
         vecRightTop.normalize();
         
-        let startRight = [center[0] + triangleEdgeLength/2, center[1]];
-        let startLeft = [center[0] - triangleEdgeLength/2, center[1]];
+        let startRight = [center[0] + edgeOfTriangle/2, center[1]];
+        let startLeft = [center[0] - edgeOfTriangle/2, center[1]];
 
         //右側の点
         while (startRight[0] < op[1][0]*20 && startLeft[0] > op[0][0]*(-20)) {
@@ -680,15 +682,15 @@ function initGrids(globals) {
             // gridLineList.push([[rightUpperRight.x, rightUpperRight.y], [rightLowerLeft.x, rightLowerLeft.y], lineColor]);
 
             //更新処理
-            startRight[0] += triangleEdgeLength;
-            startLeft[0] -= triangleEdgeLength;
+            startRight[0] += edgeOfTriangle;
+            startLeft[0] -= edgeOfTriangle;
         }
         //上下の点
         //真ん中の横線引いちゃう
         globals.drawapp.drawLine(ctx, lineColor, 1.0, op[0][0], startLeft[1], op[1][0], startLeft[1]);
         gridLineList.push([[op[0][0], startRight[1]], [op[1][0], startRight[1]], lineColor]);
-        startRight[1] += triangleEdgeLength*Math.sqrt(3)/2;
-        startLeft[1] -= triangleEdgeLength*Math.sqrt(3)/2;
+        startRight[1] += edgeOfTriangle*Math.sqrt(3)/2;
+        startLeft[1] -= edgeOfTriangle*Math.sqrt(3)/2;
         while (startRight[1] < op[2][1] && startLeft[1] > op[0][1]) {
             //描画処理
             globals.drawapp.drawLine(ctx, lineColor, 0.8, op[0][0], startRight[1], op[1][0], startRight[1]);
@@ -697,8 +699,8 @@ function initGrids(globals) {
             gridLineList.push([[op[0][0], startLeft[1]], [op[1][0], startLeft[1]], lineColor]);
 
             //更新処理
-            startRight[1] += triangleEdgeLength*Math.sqrt(3)/2;
-            startLeft[1] -= triangleEdgeLength*Math.sqrt(3)/2;
+            startRight[1] += edgeOfTriangle*Math.sqrt(3)/2;
+            startLeft[1] -= edgeOfTriangle*Math.sqrt(3)/2;
         }
     }
     //=============================================
