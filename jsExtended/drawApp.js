@@ -117,12 +117,11 @@ function initDrawApp(globals) {
   downButton.innerHTML = "▼";
 
   //テストボタン
-  var testButton = document.getElementById("test-button");
-  var testCount = parseInt(testButton.innerText);
-  testButton.addEventListener("click", function() {
-    testCount+=1;
-    //console.log("testCount = " + testCount);
-    testButton.innerText = String(testCount);
+  var rotateGridButton = document.getElementById("grid-angle");
+  var rotationGridAngle = parseInt(rotateGridButton.innerText);
+  rotateGridButton.addEventListener("click", function() {
+    rotationGridAngle+=1;
+    rotateGridButton.innerText = String(rotationGridAngle);
     canvasReload();
     drawCanvas();
   });
@@ -337,7 +336,7 @@ function initDrawApp(globals) {
         const stl1 = gridTool.points[i];
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
-      if (gridTool.points.length%4 == 0) { globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, testCount); }
+      if (gridTool.points.length%4 == 0) { globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, rotationGridAngle); }
     }
 
     //正三角形
