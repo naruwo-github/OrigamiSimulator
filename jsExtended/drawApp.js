@@ -135,7 +135,6 @@ function initDrawApp(globals) {
 
   //=====================================================
   //========== 自動メッシュONフラグと、木の高さ詳細 ===========
-  //=====================================================
   //自動メッシュの設定
   var Hmin = 3;
   var Hmax = 5;
@@ -178,12 +177,8 @@ function initDrawApp(globals) {
     }
   });
   //=====================================================
-  //=====================================================
-  //=====================================================
 
-  //=====================================================
   //=========== 正三角形タイリングの入力と個数調整 ============
-  //=====================================================
   var RegularTriangleEdgeNum = document.getElementById("rt-num");
   var triangleEdgeDenominator = parseInt(RegularTriangleEdgeNum.innerText);
   var rtenUp = document.getElementById("rt-up");
@@ -201,9 +196,6 @@ function initDrawApp(globals) {
     }
   });
   //=====================================================
-  //=====================================================
-  //=====================================================
-
   var anchorPoints = document.getElementById("anchor-points");
   anchorPoints.flag = false;
   anchorPoints.points = [];
@@ -216,8 +208,11 @@ function initDrawApp(globals) {
     }
   });
   //=====================================================
-  //================= キャンバスの描画関数 =================
+  var terminalInputButton = document.getElementById("terminal-on-grid");
+  terminalInputButton.points = [];
+  terminalInputButton.flag = false;
   //=====================================================
+  //================= キャンバスの描画関数 =================
   function drawCanvas() {
     //変数の初期化
     splineDistList = [];
@@ -459,6 +454,12 @@ function initDrawApp(globals) {
       }
     } else if(anchorPoints.flag) {
       anchorPoints.points.push([e.offsetX, e.offsetY]);
+    } else if (terminalInputButton.flag) {
+      if (tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
+        terminalInputButton.points.push([ret[0], ret[1]]);
+      } else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
+        terminalInputButton.points.push([e.offsetX, e.offsetY]);
+      }
     } else {
      canvasReload(); //canvasのリロード
      readerFile.readAsText(globals.svgFile); //svgファイルをテキストで取得
@@ -586,6 +587,8 @@ function initDrawApp(globals) {
       regularTriangleButton.style.backgroundColor = buttonColor;
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
+      terminalInputButton.flag = false;
+      terminalInputButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -611,57 +614,9 @@ function initDrawApp(globals) {
       regularTriangleButton.style.backgroundColor = buttonColor;
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
+      terminalInputButton.flag = false;
+      terminalInputButton.style.backgroundColor = buttonColor;
     }
-  });
-
-  colorButton.addEventListener("click", function() {
-    if(colorButton.innerText == "Mount Fold") {
-      colorButton.innerText = "Ruling";
-      colorButton.style.backgroundColor = lineColors[1];
-    } else if(colorButton.innerText == "Ruling") {
-      colorButton.innerText = "Valley Fold";
-      colorButton.style.backgroundColor = lineColors[2];
-    } else if(colorButton.innerText == "Valley Fold") {
-      colorButton.innerText = "Undriven Crease";
-      colorButton.style.backgroundColor = lineColors[3];
-    } else if(colorButton.innerText == "Undriven Crease") {
-      colorButton.innerText = "Cut Line";
-      colorButton.style.backgroundColor = lineColors[4];
-    } else if(colorButton.innerText == "Cut Line") {
-      colorButton.innerText = "Mount Fold";
-      colorButton.style.backgroundColor = lineColors[0];
-    }
-  });
-
-  //ruling本数の増減
-  upButton.addEventListener("click", function() {
-    if(rulingNum < 1100) {
-      rulingNum++;
-      //rulingNum+=100;
-      displayRulingNum.innerText = String(rulingNum);
-      canvasReload();
-      drawCanvas();
-    }
-  });
-  downButton.addEventListener("click", function() {
-    if(rulingNum > 0) {
-      rulingNum--;
-      displayRulingNum.innerText = String(rulingNum);
-      canvasReload();
-      drawCanvas();
-    }
-  });
-
-  //optimize button
-  document.getElementById("optimize-button").addEventListener("click", function(){
-    //rulingの最適化動作を行う
-    //console.log("ruling optimizing...");
-    optimizedRuling = [];
-    canvasReload();
-    drawCanvas();
-
-    globals.ruling.extendRulings(optimizedRuling,context,startEndInformation);
-    //console.log("ruling optimizing ended.");
   });
 
   //rulingツール2ボタンが押された時の処理
@@ -686,6 +641,8 @@ function initDrawApp(globals) {
       regularTriangleButton.style.backgroundColor = buttonColor;
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
+      terminalInputButton.flag = false;
+      terminalInputButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -711,6 +668,8 @@ function initDrawApp(globals) {
       regularTriangleButton.style.backgroundColor = buttonColor;
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
+      terminalInputButton.flag = false;
+      terminalInputButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -734,6 +693,8 @@ function initDrawApp(globals) {
       gridButton.style.backgroundColor = buttonColor;
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
+      terminalInputButton.flag = false;
+      terminalInputButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -759,7 +720,119 @@ function initDrawApp(globals) {
       gridButton.style.backgroundColor = buttonColor;
       regularTrianglationTool.flag = false;
       regularTriangleButton.style.backgroundColor = buttonColor;
+      terminalInputButton.flag = false;
+      terminalInputButton.style.backgroundColor = buttonColor;
     }
+  });
+
+  terminalInputButton.addEventListener("click", function() {
+    if(terminalInputButton.flag === true) {
+      terminalInputButton.flag = false;
+      terminalInputButton.style.backgroundColor = buttonColor;
+    } else {
+      terminalInputButton.flag = true;
+      terminalInputButton.style.backgroundColor = '#aaaaaa';
+
+      //ほかのボタン
+      straight = false;
+      slineButton.style.backgroundColor = buttonColor;
+      ruling1 = false;
+      ruling1Button.style.backgroundColor = buttonColor;
+      ruling2 = false;
+      ruling2Button.style.backgroundColor = buttonColor;
+      gridTool.flag = false;
+      gridButton.style.backgroundColor = buttonColor;
+      regularTrianglationTool.flag = false;
+      regularTriangleButton.style.backgroundColor = buttonColor;
+      qtreeFlag = false;
+      qtreeButton.style.backgroundColor = buttonColor;
+    }
+  });
+
+  //デリートボタンが押された時の処理
+  document.getElementById("delete-button").addEventListener("click", function(){
+    if (straight === true) {
+      straightLineList.pop();
+    } else if (ruling1 === true) {
+      if(optimizedRuling.length > 0) {
+        optimizedRuling = [];
+      } else {
+        /*
+        //ベジェ曲線の制御点を4つ消す
+        for(var i = 0; i < 4; i++){
+          beziList.pop();
+        }
+        */
+        //スプライン曲線の制御点を7つ消す
+        for(var i = 0; i < 7; i++){
+          splineList.pop();
+        }
+
+      }
+    }else if (ruling2 === true) {
+      ru2array.pop();
+    } else if (gridTool.flag === true) {
+      gridTool.points.pop();
+    } else if (regularTrianglationTool.flag === true) {
+      regularTrianglationTool.points.pop();
+    } else if (qtreeFlag === true){
+      q_tree.points.pop();
+    } else if (terminalInputButton.flag === true) {
+      terminalInputButton.points.pop();
+    } else {
+    }
+    canvasReload();
+    drawCanvas();
+  });
+
+  colorButton.addEventListener("click", function() {
+    if (colorButton.innerText == "Mount Fold") {
+      colorButton.innerText = "Ruling";
+      colorButton.style.backgroundColor = lineColors[1];
+    } else if (colorButton.innerText == "Ruling") {
+      colorButton.innerText = "Valley Fold";
+      colorButton.style.backgroundColor = lineColors[2];
+    } else if (colorButton.innerText == "Valley Fold") {
+      colorButton.innerText = "Undriven Crease";
+      colorButton.style.backgroundColor = lineColors[3];
+    } else if (colorButton.innerText == "Undriven Crease") {
+      colorButton.innerText = "Cut Line";
+      colorButton.style.backgroundColor = lineColors[4];
+    } else if (colorButton.innerText == "Cut Line") {
+      colorButton.innerText = "Mount Fold";
+      colorButton.style.backgroundColor = lineColors[0];
+    }
+  });
+
+  //ruling本数の増減
+  upButton.addEventListener("click", function() {
+    if (rulingNum < 1100) {
+      rulingNum++;
+      //rulingNum+=100;
+      displayRulingNum.innerText = String(rulingNum);
+      canvasReload();
+      drawCanvas();
+    }
+  });
+  downButton.addEventListener("click", function() {
+    if (rulingNum > 0) {
+      rulingNum--;
+      displayRulingNum.innerText = String(rulingNum);
+      canvasReload();
+      drawCanvas();
+    }
+  });
+
+  //optimize button
+  document.getElementById("optimize-button").addEventListener("click", function(){
+    //rulingの最適化動作を行う
+    //console.log("ruling optimizing...");
+    optimizedRuling = [];
+    canvasReload();
+    drawCanvas();
+
+    globals.ruling.extendRulings(optimizedRuling,context,startEndInformation);
+    //console.log("ruling optimizing ended.");
   });
 
   gridMode.addEventListener("click", function() {
@@ -822,40 +895,6 @@ function initDrawApp(globals) {
     $("#navDrawApp").parent().removeClass("open");
     $("#drawAppViewer").hide();
 
-    canvasReload();
-    drawCanvas();
-  });
-
-  //デリートボタンが押された時の処理
-  document.getElementById("delete-button").addEventListener("click", function(){
-    if(straight === true) {
-      straightLineList.pop();
-    } else if(ruling1 === true) {
-      if(optimizedRuling.length > 0) {
-        optimizedRuling = [];
-      } else {
-        /*
-        //ベジェ曲線の制御点を4つ消す
-        for(var i = 0; i < 4; i++){
-          beziList.pop();
-        }
-        */
-        //スプライン曲線の制御点を7つ消す
-        for(var i = 0; i < 7; i++){
-          splineList.pop();
-        }
-
-      }
-    }else if(ruling2 === true) {
-      ru2array.pop();
-    } else if(gridTool.flag === true) {
-      gridTool.points.pop();
-    } else if(regularTrianglationTool.flag === true) {
-      regularTrianglationTool.points.pop();
-    } else if(qtreeFlag === true){
-      q_tree.points.pop();
-    } else {
-    }
     canvasReload();
     drawCanvas();
   });

@@ -1251,34 +1251,40 @@
             height="YYY"
             style="border: 1px solid #000000;"></canvas>
         </div>
+        <!-- ここで各種ボタンを設定する　ボタンの配置する行によって改行する -->
+        <!-- 画面左 -->
         <div>
-            <!-- ここで各種ボタンを設定する -->
-            <!-- 直線ツールと制御線ツール -->
+            <!-- 直線ツール -->
             <button class="drawAppButtons1" id="sline-button" style="top:70px;">StraightLine</button>
+            <!-- 制御線ツール -->
             <button class="drawAppButtons1" id="ruling1-button" style="top:130px;">Ruling (B-Spline)</button>
-            <!-- 制御線ツールのいろと本数 -->
+            <!-- 制御線ツールの色（まだ未完成）と本数 -->
             <button class="drawAppButtons3" id="ruling1-color" style="top:190px; left: 10px; height: 50px; font-size: 12px;">Ruling</button>
             <button class="drawAppButtons3" id="ruling-num" style="top: 190px; left: 70px; height: 50px;">Num</button>
             <button class="drawAppButtons3" id="up-num" style="top: 190px; left: 130px; height: 22px;">Up</button>
             <button class="drawAppButtons3" id="down-num" style="top: 215px; left: 130px; height: 22px;">Down</button>
-            <!-- 最適化とrulingツール2 -->
+            <!-- ルーリング最適化とルーリングツールその② -->
             <button class="drawAppButtons1" id="optimize-button" style="top:250px; left: 10px; width: 80px; font-size: 14px;">Ruling Optimize</button>
             <button class="drawAppButtons1" id="ruling2-button" style="top:250px; left: 100px; width: 80px; font-size: 14px;">Ruling Vertex Use</button>
-            <!-- 格子ツール -->
+            <!-- 格子ツールと格子数とその増減 -->
             <button class="drawAppButtons4" id="grid-button" style="top: 310px;">Grid</button>
             <button class="drawAppButtons3" id="grid-num" style="top: 310px; width: 50px; height: 50px; left: 70px;">Grid Num</button>
             <button class="drawAppButtons3" id="grid-up" style="top: 310px; height: 22px; left: 130px;">Grid Up</button>
             <button class="drawAppButtons3" id="grid-down" style="top: 335px; height: 22px; left: 130px;">Grid Down</button>
-            <button class="drawAppButtons1" id="grid-mode" style="top: 365px; height: 25px; left: 10px;">Grid Mode 1</button>
-            <button class="drawAppButtons1" id="qtree-mode" style="top: 400px; height: 25px; left: 10px;">QuadTree</button>
-            <!-- 再シミュレート、削除、ダウンロード、全削除 -->
-            <button class="drawAppButtons2" id="go-simulation" style="top: 435px; left: 10px;">Simulate</button>
-            <button class="drawAppButtons2" id="delete-button" style="top: 435px; left: 100px;">Delete</button>
-            <button class="drawAppButtons2" id="dl-svg" style="left: 10px; top: 495px;">DL Svg</button>
-            <button class="drawAppButtons2" id="clear-button" style="left: 100px; top: 495px;">Clear</button>
-            <!-- テスト用のボタン -->
-            <button class="drawAppButtons1" id="grid-angle" style="left: 10px; top: 555px;">0</button>
+            <!-- 格子の回転角度を制御するボタン -->
+            <button class="drawAppButtons1" id="grid-angle" style="top: 365px; left: 10px; height: 25px;">0</button>
+            <!-- 格子ツールのモード切り替え -->
+            <button class="drawAppButtons1" id="grid-mode" style="top: 395px; height: 25px; left: 10px;">Grid Mode 1</button>
+            <!-- 四分木ツール -->
+            <button class="drawAppButtons1" id="qtree-mode" style="top: 425px; height: 25px; left: 10px;">QuadTree</button>
+            <!-- 再シミュレート、削除 -->
+            <button class="drawAppButtons2" id="go-simulation" style="top: 455px; left: 10px;">Simulate</button>
+            <button class="drawAppButtons2" id="delete-button" style="top: 455px; left: 100px;">Delete</button>
+            <!-- ダウンロード、全削除 -->
+            <button class="drawAppButtons2" id="dl-svg" style="left: 10px; top: 515px;">DL Svg</button>
+            <button class="drawAppButtons2" id="clear-button" style="left: 100px; top: 515px;">Clear</button>
         </div>
+        <!-- 画面右 -->
         <div>
             <!-- 自動分割のフラグ -->
             <button class="drawAppButtons6" id="auto-mesh" style="top: 70px; right: 100px;">false</button>
@@ -1299,10 +1305,12 @@
             <button class="drawAppButtons3" id="rt-up" style="top: 250px; right: 10px; height: 22px;">▲</button>
             <button class="drawAppButtons3" id="rt-down" style="top: 275px; right: 10px; height: 22px;">▼</button>
             <!--細分化できる正三角形のやつ-->
-            <button id="rt-tool" style="position: fixed; top: 310px; right: 10px; width: 100px; height: 50px; background-color: rgb(255, 170, 120);">RegTriGrid</button>
+            <button class="drawAppButtons7" id="rt-tool" style="top: 310px;">Regular Triangle Grid</button>
             <!--polyに変換してダウンロード-->
             <button class="drawAppButtons2" id="dl-poly" style="right: 10px; top: 370px;">DL POLY</button>
             <button class="drawAppButtons2" id="anchor-points" style="right: 100px; top: 370px;">Anchor Points</button>
+            <!-- 折り線の端点を輪郭線上に乗せる -->
+            <button class="drawAppButtons7" id="terminal-on-grid" style="top: 430px;">Terminal Input</button>
         </div>
 </div>
 

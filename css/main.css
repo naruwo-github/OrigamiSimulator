@@ -221,6 +221,26 @@ p{
     background-color: rgb(255, 170, 120);
 }
 
+.drawAppButtons7{
+    position: fixed;
+    width: 170px;
+    height: 50px;
+    right: 10px;
+    font-family: 'Century Gothic';
+
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    background-color: rgb(255, 150, 100);
+}
+
+.drawAppButtons7:hover{
+    width: 176px;
+    height: 56px;
+    right: 7px;
+    background-color: rgb(255, 170, 120);
+}
+
 /*
 .baseButton {
     position: fixed;
