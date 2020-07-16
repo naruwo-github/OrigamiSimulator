@@ -240,7 +240,7 @@ function initGrids(globals) {
         //格子数がgridnumber
         //格子数Nに対し、N+1、2N+1、4N+2、5N+2を弾く
         const lines = gridnumber;
-        var grids = new Array();
+        var grids = [];
         for (let i = 0; i < outlinePoints.length; i+=4) {
             //輪郭を構成する頂点群(4つと決め打ち)
             const element0 = outlinePoints[0];
@@ -277,10 +277,10 @@ function initGrids(globals) {
             //grids内の座標をangleだけ回転移動
             rotationalMovement(ctx, grids, outlinePoints, angle);
 
-            var handleGrids = new Array();
+            var handleGrids = [];
             //grids内にある線を用いて交差判定
             for (let i = 0; i < grids.length; i++) {
-                handleGrids = new Array();
+                handleGrids = [];
                 //弾く格子ライン
                 if (i !== 2 * gridnumber && i !== 2 * gridnumber + 1 && i !== 4 * gridnumber && i !== 4 * gridnumber +1 || angle%90 !== 0) {
                         let tmp = grids[i];

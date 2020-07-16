@@ -5,25 +5,23 @@
 //展開図の修正機能の追加を目的としている
 
 function initDrawApp(globals) {
-  //----------------------------------------------------------------------
-  //========== キャンバスの宣言 ==========
-  const canvas = document.querySelector('#draw-area'); //canvasを取得
-  const context = canvas.getContext('2d'); //描画準備のためcontextを取得
-  //canvasの大きさをwindowと同じにする
+  // NOTE: キャンバス、コンテキストの準備
+  const canvas = document.querySelector('#draw-area');
+  const context = canvas.getContext('2d');
   $('#draw-area').attr('width', $(window).width());
   $('#draw-area').attr('height', $(window).height());
   context.font = "40px 'Century Gothic'";
   context.strokeText("Click here",$(window).width()/2-100,$(window).height()/2);
-  //===================================
 
-  var straightLineList = []; //直線の座標を格納する
-  var straight = false; //直線モードのフラグ
-  var slineButton = document.getElementById("sline-button"); //直線ボタン
+  var straightLineList = [];
+  var straight = false;
+  var straightLineButton = document.getElementById("sline-button");
 
-  var buttonColor = slineButton.style.backgroundColor; //ボタンの元の色
+  // NOTE: ボタンの元の色を記憶しておく
+  const buttonColor = straightLineButton.style.backgroundColor;
 
-  var splineList = []; //スプライン曲線の座標を格納する
-  var splineDistList = []; //スプライン曲線の長さを保存する
+  var splineList = [];
+  var splineDistList = [];
 
   var beziList = []; //ベジェ曲線の座標を格納する
   var beziDistList = []; //ベジェ曲線の長さを保存する
@@ -103,7 +101,7 @@ function initDrawApp(globals) {
 
   //順に山、分割線(Ruling)、谷、分割線(ただの線)、切り取り線
   var lineColors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", "rgb(0, 0, 255)", 
-  "rgb(255, 0, 255)", "rgb(0, 255, 255)"];
+  "rgb(255, 0, 255)", "rgb(0, 255, 255)", "rgb(255, 255, 0)", "rgb(30, 30, 30)"];
   var colorButton = document.getElementById("ruling1-color");
   colorButton.style.color = "rgb(255, 255, 255)";
   colorButton.style.backgroundColor = lineColors[1];
@@ -211,23 +209,22 @@ function initDrawApp(globals) {
   var terminalInputButton = document.getElementById("terminal-on-grid");
   terminalInputButton.points = [];
   terminalInputButton.flag = false;
+  terminalInputButton.inputLineList = [];
   //=====================================================
-  //================= キャンバスの描画関数 =================
+  
+
+  // NOTE: キャンバスの描画関数
   function drawCanvas() {
-    //変数の初期化
+    // NOTE: 変数の初期化
     splineDistList = [];
     beziDistList = [];
     outputList = [];
     startEndInformation = [];
     gridLineList = [];
-    
-    //三角形分割の結果の描画
+    // NOTE: 三角形分割結果の描画
     drawTrianglationResult(context, globals.autoTriangulatedInfo);
-    //展開図情報の出力
-    // console.log("svg information");
-    // console.log(globals.svgInformation);
 
-    //直線ツールの点
+    // NOTE: 直線ツールの点
     context.fillStyle = lineColors[0];
     for (let index = 0; index < straightLineList.length; index+=2) {
       const stl1 = straightLineList[index];
@@ -265,8 +262,7 @@ function initDrawApp(globals) {
     }
     */
 
-
-    //スプライン曲線を描画
+    // NOTE: スプライン曲線を描画
     if (splineList.length > 0 && splineList.length % 7 == 0) {
       //splineツールの制御点
       let i, t;
@@ -309,7 +305,7 @@ function initDrawApp(globals) {
       }
     }
 
-    //optimized rulingの描画
+    // NOTE: optimized rulingの描画
     if (optimizedRuling.length > 0) {
       for (let i = 0; i < optimizedRuling.length - 1; i+=2) {
         var coo1 = optimizedRuling[i];
@@ -318,13 +314,11 @@ function initDrawApp(globals) {
       }
     }
 
-    //rulingツール2のrulingを描画する
+    // NOTE: rulingツール2のrulingを描画する
     context.strokeStyle = "rgb(50, 200, 255)";
     globals.ruling.drawRulingVertexUse(ru2array,context,outputList);
 
-    //Gridツール
-    //格子を描画する(デフォルトはマゼンタ？)
-    //正方格子
+    // NOTE: Gridツール
     if (gridTool.points.length > 0) {
       context.fillStyle = lineColors[0];
       for (let i = 0; i < gridTool.points.length; i++) {
@@ -408,6 +402,31 @@ function initDrawApp(globals) {
       context.fillStyle = lineColors[1];
       context.fillRect(point[0]-3, point[1]-3, 7, 7);
     }
+
+    // NOTE: 折り線の上に重ねる直線の点（試しに表示させる）
+    context.fillStyle = lineColors[1];
+    for (let index = 0; index < terminalInputButton.points.length; index++) {
+      const stl1 = terminalInputButton.points[index];
+      const stl2 = terminalInputButton.points[index+1];
+      context.fillRect(stl1[0]-3, stl1[1]-3, 5, 5);
+      if (stl2 !== undefined) {
+        context.fillRect(stl2[0]-3, stl2[1]-3, 5, 5);
+        drawLine(context, lineColors[3], 2, stl1[0], stl1[1], stl2[0], stl2[1]);
+      }
+    }
+    for (let index = 0; index < terminalInputButton.inputLineList.length; index++) {
+      const element = terminalInputButton.inputLineList[index];
+      for (let j = 0; j < element.length - 1; j++) {
+        const stl1 = element[j];
+        const stl2 = element[j+1];
+        context.fillRect(stl1[0]-3, stl1[1]-3, 5, 5);
+        if (stl2 !== undefined) {
+          context.fillRect(stl2[0]-3, stl2[1]-3, 5, 5);
+          drawLine(context, lineColors[6], 2, stl1[0], stl1[1], stl2[0], stl2[1]);
+        }
+      }
+    }
+
   }
   //=====================================================
   //=====================================================
@@ -472,7 +491,6 @@ function initDrawApp(globals) {
   canvas.addEventListener("mousedown", e => {
     if(ruling1 == true) { //rulingツール1がon
       dragging = true;
-
       /*
       //以下、移動する制御点(ベジェ曲線の)を求める
       if(beziList.length > 0){
@@ -493,7 +511,6 @@ function initDrawApp(globals) {
         }
       }
       */
-
       //移動する制御点(スプライン曲線の)を求める
       if(splineList.length > 0) {
         var distance = 10000;
@@ -548,15 +565,12 @@ function initDrawApp(globals) {
         dragging = false;
       } else {
         dragging = false;
-
         /*
         //ここでベジェ曲線の制御点を求める処理を
         globals.beziercurve.defineBeziPoint(dragList, beziList);
         */
-
         //ここでスプライン曲線の制御点を求める処理
         globals.beziercurve.defineSplinePoint(dragList, splineList);
-
         //tmpCooListの初期化
         dragList = [];
       }
@@ -566,16 +580,15 @@ function initDrawApp(globals) {
   });
 
   //直線ボタンが押された時の処理
-  slineButton.addEventListener("click", function(){
+  straightLineButton.addEventListener("click", function(){
     if(straight === true) {
       //console.log("straight line mode ended...");
       straight = false;
-      slineButton.style.backgroundColor = buttonColor;
+      straightLineButton.style.backgroundColor = buttonColor;
     } else {
       //console.log("straight line mode started...");
       straight = true;
-      slineButton.style.backgroundColor = '#aaaaaa';
-
+      straightLineButton.style.backgroundColor = '#aaaaaa';
       //ほかのボタン
       ruling1 = false;
       ruling1Button.style.backgroundColor = buttonColor;
@@ -602,10 +615,9 @@ function initDrawApp(globals) {
       //console.log("ruling mode1 started...");
       ruling1 = true;
       ruling1Button.style.backgroundColor = '#aaaaaa';
-
       //ほかのボタン
       straight = false;
-      slineButton.style.backgroundColor = buttonColor;
+      straightLineButton.style.backgroundColor = buttonColor;
       ruling2 = false;
       ruling2Button.style.backgroundColor = buttonColor;
       gridTool.flag = false;
@@ -629,10 +641,9 @@ function initDrawApp(globals) {
       //console.log("ruling mode2 started...");
       ruling2 = true;
       ruling2Button.style.backgroundColor = '#aaaaaa';
-
       //ほかのボタン
       straight = false;
-      slineButton.style.backgroundColor = buttonColor;
+      straightLineButton.style.backgroundColor = buttonColor;
       ruling1 = false;
       ruling1Button.style.backgroundColor = buttonColor;
       gridTool.flag = false;
@@ -656,10 +667,9 @@ function initDrawApp(globals) {
       //console.log("grid line mode started...");
       gridTool.flag = true;
       gridButton.style.backgroundColor = '#aaaaaa';
-
       //ほかのボタン
       straight = false;
-      slineButton.style.backgroundColor = buttonColor;
+      straightLineButton.style.backgroundColor = buttonColor;
       ruling1 = false;
       ruling1Button.style.backgroundColor = buttonColor;
       ruling2 = false;
@@ -681,10 +691,9 @@ function initDrawApp(globals) {
     } else {
       regularTrianglationTool.flag = true;
       regularTriangleButton.style.backgroundColor = '#aaaaaa';
-
       //ほかのボタン
       straight = false;
-      slineButton.style.backgroundColor = buttonColor;
+      straightLineButton.style.backgroundColor = buttonColor;
       ruling1 = false;
       ruling1Button.style.backgroundColor = buttonColor;
       ruling2 = false;
@@ -708,10 +717,9 @@ function initDrawApp(globals) {
       //console.log("qtree mode started...");
       qtreeFlag= true;
       qtreeButton.style.backgroundColor = '#aaaaaa';
-
       //ほかのボタン
       straight = false;
-      slineButton.style.backgroundColor = buttonColor;
+      straightLineButton.style.backgroundColor = buttonColor;
       ruling1 = false;
       ruling1Button.style.backgroundColor = buttonColor;
       ruling2 = false;
@@ -732,10 +740,9 @@ function initDrawApp(globals) {
     } else {
       terminalInputButton.flag = true;
       terminalInputButton.style.backgroundColor = '#aaaaaa';
-
       //ほかのボタン
       straight = false;
-      slineButton.style.backgroundColor = buttonColor;
+      straightLineButton.style.backgroundColor = buttonColor;
       ruling1 = false;
       ruling1Button.style.backgroundColor = buttonColor;
       ruling2 = false;
@@ -746,6 +753,19 @@ function initDrawApp(globals) {
       regularTriangleButton.style.backgroundColor = buttonColor;
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
+    }
+  });
+
+  window.addEventListener("keypress", function(e) {
+    if (e.keyCode === 13) {
+      // console.log("Enter pressed!");
+      if (terminalInputButton.flag === true) {
+        let tmpList = terminalInputButton.points;
+        terminalInputButton.points = [];
+        terminalInputButton.inputLineList.push(tmpList);
+      }
+      canvasReload();
+      drawCanvas();
     }
   });
 
@@ -778,8 +798,13 @@ function initDrawApp(globals) {
     } else if (qtreeFlag === true){
       q_tree.points.pop();
     } else if (terminalInputButton.flag === true) {
-      terminalInputButton.points.pop();
+      if (terminalInputButton.points.length > 0) {
+        terminalInputButton.points.pop();
+      } else {
+        terminalInputButton.inputLineList.pop();
+      }
     } else {
+      // NOTE: ...
     }
     canvasReload();
     drawCanvas();
@@ -808,7 +833,6 @@ function initDrawApp(globals) {
   upButton.addEventListener("click", function() {
     if (rulingNum < 1100) {
       rulingNum++;
-      //rulingNum+=100;
       displayRulingNum.innerText = String(rulingNum);
       canvasReload();
       drawCanvas();
@@ -823,16 +847,12 @@ function initDrawApp(globals) {
     }
   });
 
-  //optimize button
   document.getElementById("optimize-button").addEventListener("click", function(){
-    //rulingの最適化動作を行う
-    //console.log("ruling optimizing...");
+    // NOTE: rulingの最適化動作を行う
     optimizedRuling = [];
     canvasReload();
     drawCanvas();
-
     globals.ruling.extendRulings(optimizedRuling,context,startEndInformation);
-    //console.log("ruling optimizing ended.");
   });
 
   gridMode.addEventListener("click", function() {
