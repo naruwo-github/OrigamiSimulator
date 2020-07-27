@@ -157,7 +157,7 @@ function initBezierCurve(globals){
 
     //4点P1~P4に対して、2直線P1P3、P2P4の交点の座標を求める関数
     //P1~P4はそれぞれ(x1,y1)~(x4,y4)で与えるものとする
-    function getIntersectPoint(x1,y1,x2,y2,x3,y3,x4,y4) {
+    function getIntersectPoint(x1, y1, x2, y2, x3, y3, x4, y4) {
         var S1 = (x4-x2)*(y1-y2) - (y4-y2)*(x1-x2);
         var S2 = (x4-x2)*(y2-y3) - (y4-y2)*(x2-x3);
         var rx = x1 + (x3-x1) * S1 / (S1+S2);

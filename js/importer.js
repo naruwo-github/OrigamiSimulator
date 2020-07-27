@@ -171,7 +171,7 @@ function initImporter(globals){
     //読み込む関数を作ろう
     //ファイルを入力にとって、シミュレーションを開始する
     //function simulateAgain(svgFile,cooX,cooY) {
-    function simulateAgain(svgFile,outputList,gridList) {
+    function simulateAgain(svgFile, outputList, gridList) {
         var file = svgFile;
         var extension = file.name.split(".");
         var name = extension[0];
@@ -190,7 +190,8 @@ function initImporter(globals){
                     globals.extension = extension;
                     globals.url = null;
                     //globals.pattern.loadSVGAgain(reader.result,cooX,cooY);
-                    globals.pattern.loadSVGAgain(reader.result,outputList,gridList);
+                    console.log(reader.result);
+                    globals.pattern.loadSVGAgain(reader.result, outputList, gridList);
                 });
                 /*
                 return function (e) {

@@ -179,3 +179,71 @@ function makeExtendedSVGFile(fileReader, original, output, optimized, gridline) 
     text += `</svg>\n`;
     fileReader.text = text;
 }
+
+function makeTerminalProblemFixedDevelopment(fileReader, original, gridList, newFoldingObject) {
+  let text = `<?xml version="1.0" encoding="utf-8"?>\n`
+    +`<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1000px" height="1200px" viewBox="0 0 1000.0 1200.0">\n`
+    +`    <title>outputSVG</title>\n`;
+  
+  // NOTE: ここで輪郭＋その他いろいろの出力を作成する
+  let black = [];
+  let red = [];
+  let blue = [];
+  let opacity = original.opacity;
+  let stroke = original.stroke;
+  let stroke_width = original.stroke_width;
+  let x1 = original.x1;
+  let x2 = original.x2;
+  let y1 = original.y1;
+  let y2 = original.y2;
+
+  // NOTE: 展開図情報内から輪郭情報だけ取り出してsvgに 
+  for (let i = 0; i < stroke.length; i++) {
+    if (stroke[i] === "#000" || stroke[i] === "rgb(0, 0, 0)") {
+      black.push([opacity[i], stroke[i], stroke_width[i], x1[i], x2[i], y1[i], y2[i]]);
+    }
+  }
+
+  // NOTE: 新たに生成した折り線情報内を、red, blueに格納していく
+  // NOTE: newFoldingObject = { colors: [c0,c1, ..., cn], lines: [array0[], array1[], ..., arrayn[]]}
+  for (let i = 0; i < newFoldingObject.colors.length; i++) {
+    const color = newFoldingObject.colors[i];
+    const lines = newFoldingObject.lines[i];
+    for (let j = 0; j < lines.length - 1; j++) {
+      const p0 = lines[j];
+      const p1 = lines[j+1];
+      if (color === "rgb(255, 0, 0)") {
+        red.push([1, "#f00", stroke_width[0], p0[0], p1[0], p0[1], p1[1]]);
+      } else if (color === "rgb(0, 0, 255)") {
+        blue.push([1, "#00f", stroke_width[0], p0[0], p1[0], p0[1], p1[1]]);
+      }
+    }
+  }
+
+  if (black.length > 0) {
+    text += `    <g>\n`;
+    for (let i = 0; i < black.length; i++) {
+      text += `        <line fill="none" stroke="#000" stroke-width="${black[i][2]}" stroke-miterlimit="10" x1="${black[i][3]}" y1="${black[i][5]}" x2="${black[i][4]}" y2="${black[i][6]}"/>\n`;
+    }
+    text += `    </g>\n`;
+  }
+
+  if (red.length > 0) {
+    text += `    <g>\n`;
+    for (let i = 0; i < red.length; i++) {
+      text += `        <line fill="none" stroke="#f00" stroke-width="${red[i][2]}" stroke-miterlimit="10" x1="${red[i][3]}" y1="${red[i][5]}" x2="${red[i][4]}" y2="${red[i][6]}"/>\n`;
+    }
+    text += `    </g>\n`;
+  }
+
+  if (blue.length > 0) {
+    text += `    <g>\n`;
+    for (let i = 0; i < blue.length; i++) {
+      text += `        <line fill="none" stroke="#00f" stroke-width="${blue[i][2]}" stroke-miterlimit="10" x1="${blue[i][3]}" y1="${blue[i][5]}" x2="${blue[i][4]}" y2="${blue[i][6]}"/>\n`;
+    }
+    text += `    </g>\n`;
+  }
+
+  text += `</svg>\n`;
+  fileReader.text = text;
+}
