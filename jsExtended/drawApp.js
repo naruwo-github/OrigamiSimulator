@@ -70,7 +70,7 @@ function initDrawApp(globals) {
   var gridButton = document.getElementById("grid-button");
   //中身はこんな感じ↓ gridLineList = ([[x0,y0],[x1,y1],color],,,[[xn-1,yn-1],[xn,yn],color])
   var gridLineList = [];
-  var gridnumber = 10;
+  var gridnumber = 32;
   var gridNum = document.getElementById("grid-num");
   gridNum.innerText = gridnumber;
   var gridNumUp = document.getElementById("grid-up");
@@ -210,6 +210,21 @@ function initDrawApp(globals) {
   terminalInputButton.points = [];
   terminalInputButton.flag = false;
   terminalInputButton.inputLineList = [];
+  terminalInputButton.inputLineColors = [];
+  var terminalInputColor = document.getElementById("terminal-line-color");
+  terminalInputColor.style.backgroundColor = lineColors[0];
+  terminalInputColor.style.color = "rgb(200, 200, 200)";
+  terminalInputColor.addEventListener("click", function() {
+    if (terminalInputColor.style.backgroundColor === lineColors[0]) {
+      terminalInputColor.style.backgroundColor = lineColors[2];
+      terminalInputColor.innerText = "Valley";
+    } else if (terminalInputColor.style.backgroundColor === lineColors[2]) {
+      terminalInputColor.style.backgroundColor = lineColors[0];
+      terminalInputColor.innerText = "Mountain";
+    }
+  });
+  // NOTE: 新たに生成する折り線情報を持つオブジェクト
+  var newFoldingLineObject = { colors: [], lines: []};
   //=====================================================
   
 
@@ -221,6 +236,8 @@ function initDrawApp(globals) {
     outputList = [];
     startEndInformation = [];
     gridLineList = [];
+    newFoldingLineObject = { colors: [], lines: []};
+
     // NOTE: 三角形分割結果の描画
     drawTrianglationResult(context, globals.autoTriangulatedInfo);
 
@@ -396,14 +413,14 @@ function initDrawApp(globals) {
       globals.grids.drawQTree(q_tree.structure, context, gridLineList, lineColors[3]);
     }
 
-    //アンカーポイントの描画
+    // NOTE: アンカーポイントの描画（polyFile用のやつ）
     for (let i = 0; i < anchorPoints.points.length; i++) {
       const point = anchorPoints.points[i];
       context.fillStyle = lineColors[1];
       context.fillRect(point[0]-3, point[1]-3, 7, 7);
     }
 
-    // NOTE: 折り線の上に重ねる直線の点（試しに表示させる）
+    // NOTE: 以下、折り線端点問題のプログラム
     context.fillStyle = lineColors[1];
     for (let index = 0; index < terminalInputButton.points.length; index++) {
       const stl1 = terminalInputButton.points[index];
@@ -411,7 +428,7 @@ function initDrawApp(globals) {
       context.fillRect(stl1[0]-3, stl1[1]-3, 5, 5);
       if (stl2 !== undefined) {
         context.fillRect(stl2[0]-3, stl2[1]-3, 5, 5);
-        drawLine(context, lineColors[3], 2, stl1[0], stl1[1], stl2[0], stl2[1]);
+        drawLine(context, lineColors[4], 2, stl1[0], stl1[1], stl2[0], stl2[1]);
       }
     }
     for (let index = 0; index < terminalInputButton.inputLineList.length; index++) {
@@ -423,6 +440,94 @@ function initDrawApp(globals) {
         if (stl2 !== undefined) {
           context.fillRect(stl2[0]-3, stl2[1]-3, 5, 5);
           drawLine(context, lineColors[6], 2, stl1[0], stl1[1], stl2[0], stl2[1]);
+        }
+      }
+    }
+
+
+    // NOTE: 折り線と格子の交点を明示する
+    let intersectPointList = [];
+
+    for (let index = 0; index < terminalInputButton.inputLineList.length; index++) {
+      let newFoldingLineList = [];
+      let tmpList = [];
+      const element = terminalInputButton.inputLineList[index];
+      const start = element[0];
+      const end = element[element.length - 1];
+      for (let j = 0; j < element.length - 1; j++) {
+        const stl1 = element[j];
+        const stl2 = element[j+1];
+        if (stl2 !== undefined) {
+          for (let k = 0; k < gridLineList.length; k++) {
+            // gridLineList = ([[x0,y0],[x1,y1],color],,,[[xn-1,yn-1],[xn,yn],color])
+            const stl3 = gridLineList[k][0];
+            const stl4 = gridLineList[k][1];
+
+            // 交点検出＆追加
+            if (globals.beziercurve.judgeIntersect2(stl1[0], stl1[1], stl2[0], stl2[1], stl3[0], stl3[1], stl4[0], stl4[1])) {
+              tmpList.push(globals.beziercurve.getIntersectPoint(stl1[0], stl1[1], stl3[0], stl3[1], stl2[0], stl2[1], stl4[0], stl4[1]));
+            }
+
+          }
+        }
+      }
+
+      // NOTE: ここで、折り線の生成を行ってみる
+      let tmpListCopy = tmpList;
+      let startPoint = start;
+      let endPoint = end;
+
+      // 新たに生成する折り線情報を持つリスト
+      newFoldingLineList = [startPoint];
+
+      // NOTE: startを、tmpListCopy内の近い点から純に結んでいき、endで終わる
+      while (tmpListCopy.length > 0) {
+        let provisionalDist = 10000;
+        let index = 0;
+        // NOTE: 次のループの中でstartPointと結ぶ点を決める
+        for (let i = 0; i < tmpListCopy.length; i++) {
+          let tmpPoint = tmpListCopy[i];
+          let tmpDist = dist(startPoint[0], startPoint[1], tmpPoint[0], tmpPoint[1]);
+          if (tmpDist <= provisionalDist) {
+            index = i;
+            provisionalDist = tmpDist;
+          }
+        }
+        // 確定した点を格納
+        newFoldingLineList.push(tmpListCopy[index]);
+        // 開始点の更新
+        startPoint = tmpListCopy[index];
+        // 格納した点をtmpListCopyから削除
+        tmpListCopy.splice(index, 1);
+        console.log(tmpListCopy);
+      }
+      // 終点を格納＆完成
+      newFoldingLineList.push(endPoint);
+      // NOTE: 折り線端点モンダイを解決した折り線情報を格納
+      newFoldingLineObject.colors.push(terminalInputButton.inputLineColors[index]);
+      newFoldingLineObject.lines.push(newFoldingLineList);
+
+      intersectPointList.push(tmpList);
+    }
+
+    context.fillStyle = lineColors[4];
+    for (let i = 0; i < intersectPointList.length; i++) {
+      let tmpList = intersectPointList[i];
+      for (let j = 0; j < tmpList.length; j++) {
+        let tmp = tmpList[j];
+        context.fillRect(tmp[0]-3, tmp[1]-3, 5, 5);
+      }
+    }
+
+    // 試しにnewfoldinglineを描画してみるか
+    for (let i = 0; i < newFoldingLineObject.colors.length; i++) {
+      const color = newFoldingLineObject.colors[i];
+      const lines = newFoldingLineObject.lines[i];
+      for (let j = 0; j < lines.length - 1; j++) {
+        const p0 = lines[j];
+        const p1 = lines[j+1];
+        if (p0 !== undefined && p1 !== undefined) {
+          drawLine(context, color, 5, p0[0], p0[1], p1[0], p1[1]);
         }
       }
     }
@@ -756,6 +861,12 @@ function initDrawApp(globals) {
     }
   });
 
+  document.getElementById("dl-terminal-development").addEventListener("click", function() {
+    var outputSVG = new FileReader();
+    makeTerminalProblemFixedDevelopment(outputSVG, globals.svgInformation, gridLineList, newFoldingLineObject);
+    downloadFile('terminalProblemFixed.svg', outputSVG.text);
+  });
+
   window.addEventListener("keypress", function(e) {
     if (e.keyCode === 13) {
       // console.log("Enter pressed!");
@@ -763,6 +874,8 @@ function initDrawApp(globals) {
         let tmpList = terminalInputButton.points;
         terminalInputButton.points = [];
         terminalInputButton.inputLineList.push(tmpList);
+        terminalInputButton.inputLineColors.push(terminalInputColor.style.backgroundColor);
+        console.log(terminalInputButton);
       }
       canvasReload();
       drawCanvas();
@@ -802,6 +915,7 @@ function initDrawApp(globals) {
         terminalInputButton.points.pop();
       } else {
         terminalInputButton.inputLineList.pop();
+        terminalInputButton.inputLineColors.pop();
       }
     } else {
       // NOTE: ...
@@ -901,6 +1015,7 @@ function initDrawApp(globals) {
         outputList.push([stl[0], stl[1]]);
       }
     }
+
     globals.importer.simulateAgain(globals.svgFile, outputList, gridLineList);
     globals.stepNum = 0;
     globals.threeView.startSimulation();
@@ -990,8 +1105,7 @@ function initDrawApp(globals) {
     for(var i = 0; i < info.stroke.length; i++) {
       //drawLine(ctx,info.stroke[i],info.stroke_width[i],info.x1,info.y1,info.x2,info.y2);
       drawLine(ctx,"rgb("+String(hex2rgb(info.stroke[i]))+")", Number(info.stroke_width[i]), parseInt(info.x1[i]), parseInt(info.y1[i]), parseInt(info.x2[i]), parseInt(info.y2[i]));
-      //点
-      //ctx.fillStyle = "rgb(50, 200, 255)";
+      // 点
       ctx.fillStyle = "rgb(134, 74, 43)";
       ctx.fillRect(parseInt(info.x1[i])-3,parseInt(info.y1[i])-3,7,7);
       ctx.fillRect(parseInt(info.x2[i])-3,parseInt(info.y2[i])-3,7,7);
