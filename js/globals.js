@@ -6,17 +6,13 @@
 function initGlobals(){
 
     var _globals = {
-        //グローバル変数の中でsvgを取得できるように宣言する
-        //img.src=urlでimg形式で保存するやつ
-        svgimg: null,
-        //file格納したやつ
-        svgFile: null,
-        //svg形式の正確な座標や色情報
-        svgInformation: [],
-        //分割線情報持ってくるやーつ
-        autoTriangulatedInfo: [],
-        //ステップ数の箱
-        stepNumber: 0,
+        svgimg: null,　// NOTE: img.src=urlでimg形式で保存するやつ
+        svgFile: null, // NOTE: svgファイルを持つ
+        svgInformation: [], // NOTE: svg形式の正確な座標や色情報
+        autoTriangulatedInfo: [],　// NOTE: EarClipping法による三角形分割線情報を持つ
+        stepNumber: 0, // NOTE: 計算ステップ数
+        timeOfInputFixedSvg: null, // NOTE: 再入力を開始した時間
+        timeOfStopSimulation: null, // NOTE: シミュレーションが停止した時間
 
         navMode: "simulation",
         scale: 1,

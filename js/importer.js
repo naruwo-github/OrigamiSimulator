@@ -191,6 +191,7 @@ function initImporter(globals){
                     globals.url = null;
                     //globals.pattern.loadSVGAgain(reader.result,cooX,cooY);
                     console.log(reader.result);
+                    globals.timeOfInputFixedSvg = performance.now(); // 入力開始の時間
                     globals.pattern.loadSVGAgain(reader.result, outputList, gridList);
                 });
                 /*

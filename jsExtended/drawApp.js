@@ -1016,13 +1016,11 @@ function initDrawApp(globals) {
       }
     }
 
+    // NOTE: ここからシミュレーションが停止するまでの時間を計測する
+    // simulateAgainのなかで、ダイアログのimportを押してから測った方がいい
     globals.importer.simulateAgain(globals.svgFile, outputList, gridLineList);
     globals.stepNum = 0;
     globals.threeView.startSimulation();
-    //20描画にシミュレーションを停止する処理
-    // setTimeout(function() {
-    //   globals.threeView.pauseSimulation();
-    // }, 1000*30);
 
     //Simulate Modeへ遷移する
     globals.navMode = "simulation";
