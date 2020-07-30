@@ -571,7 +571,15 @@ function initDynamicSolver(globals){
         // }
         //収束条件（ステップ数）
         if (isNaN(globals.stepNum)) { globals.stepNum = 0; }
-        if (globals.stepNum === 1000) { globals.threeView.pauseSimulation(); }
+        if (globals.stepNum === 1000) {
+            globals.threeView.pauseSimulation();
+            globals.timeOfStopSimulation = performance.now();
+
+            // NOTE: 取得してる値はミリセック(ms)
+            let time = globals.timeOfStopSimulation - globals.timeOfInputFixedSvg;
+            console.log("time: " + time + "ms");
+            console.log("time: " + time / 1000 + "s");
+        }
         globals.stepNum++;
     }
 
