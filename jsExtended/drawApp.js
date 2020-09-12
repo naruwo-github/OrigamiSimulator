@@ -238,6 +238,9 @@ function initDrawApp(globals) {
     gridLineList = [];
     newFoldingLineObject = { colors: [], lines: []};
 
+    //一時的にやってる
+    anchorPoints.points = [];
+
     // NOTE: 三角形分割結果の描画
     drawTrianglationResult(context, globals.autoTriangulatedInfo);
 
@@ -342,7 +345,49 @@ function initDrawApp(globals) {
         const stl1 = gridTool.points[i];
         context.fillRect(stl1[0]-3, stl1[1]-3, 7, 7);
       }
-      if (gridTool.points.length%4 == 0) { globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, rotationGridAngle); }
+      if (gridTool.points.length%4 == 0) {
+        globals.grids.drawGridWithAngle(gridnumber, gridLineList, context, lineColors[3], gridTool.points, rotationGridAngle);
+        // ここで、格子によって生成される格子同士＆輪郭との交点をanchorPoint.listに格納する
+        // rotationGridAngleは考慮しない
+        
+        // pointsの4点から、P0~P3を決定する：最小のxかつyを持つ点がP0(x0, y0)、最大のxかつyを持つ点がP3(x3, y3)、P1とP2はP1(x3, y0)、P2(x0, y3)と決まる
+        let xMin = 10000;
+        let yMin = 10000;
+        let xMax = 0;
+        let yMax = 0;
+        for (let i = 0; i < gridTool.points.length; i++) {
+          const tmpPoint = gridTool.points[i];
+          if (xMin >= tmpPoint[0]) {
+            xMin = tmpPoint[0];
+          } else {
+            xMax = tmpPoint[0];
+          }
+          if (yMin >= tmpPoint[1]) {
+            yMin = tmpPoint[1];
+          } else {
+            yMax = tmpPoint[1];
+          }
+        }
+        let P0 = [xMin, yMin];
+        let P1 = [xMax, yMin];
+        let P2 = [xMax, yMax];
+        let P3 = [xMin, yMax];
+        let n = gridnumber;
+        let dx = dist(P0[0], P0[1], P1[0], P1[1]) / n;
+        let dy = dist(P0[0], P0[1], P3[0], P3[1]) / n;
+        for (let i = 1; i < n; i++) {
+          for (let j = 1; j < n; j++) {
+            anchorPoints.points.push([P0[0] + dx * i, P0[1] + dy * j]);
+          }
+        }
+
+        // 格子の線の端点もanchorPoints.pointsに格納していく
+        for (let i = 0; i < gridLineList.length; i++) {
+          const tmpLine = gridLineList[i];
+          anchorPoints.points.push(tmpLine[0]);
+          anchorPoints.points.push(tmpLine[1]);
+        }
+      }
     }
 
     //正三角形
