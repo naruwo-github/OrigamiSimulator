@@ -62,13 +62,21 @@ $(function() {
     globals.vive = initViveInterface(globals);
     globals.videoAnimator = initVideoAnimator(globals);
 
-    //
     globals.drawapp = initDrawApp(globals);
     globals.beziercurve = initBezierCurve(globals);
     globals.ruling = initRulings(globals);
     globals.grids = initGrids(globals);
-    //
 
     //globals.pattern.loadSVG("assets/Tessellations/huffmanWaterbomb.svg");
-    $(".demo[data-url='Tessellations/huffmanWaterbomb.svg']").click();//load demo model
+    //$(".demo[data-url='Tessellations/huffmanWaterbomb.svg']").click();//load demo model
+    
+    // Load demo model: waterbomb unless model specified in URL via ?model=FILE
+    // where FILE is the data-url attribute of an <a class="demo">.
+    var model = 'Tessellations/huffmanWaterbomb.svg';
+    var match = /[\\?&]model=([^&#]*)/.exec(location.search);
+    if (match) {
+        model = match[1];
+    }
+    model = model.replace(/'/g, ''); // avoid messing up query
+    $(".demo[data-url='"+model+"']").click();
 });

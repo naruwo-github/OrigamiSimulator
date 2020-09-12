@@ -203,7 +203,11 @@ function initPattern(globals){
                 var vertex;
                 switch(type){
                     case "m"://dx, dy
-                        if (j === 0){//problem with inkscape files
+                        if (j === 0){
+                            // "If a relative moveto (m) appears as the first
+                            // element of the path, then it is treated as a
+                            // pair of absolute coordinates"
+                            // [https://www.w3.org/TR/SVG/paths.html#PathDataMovetoCommands]
                             vertex = new THREE.Vector3(segment.values[0], 0, segment.values[1]);
                         } else {
                             vertex = _verticesRaw[_verticesRaw.length-1].clone();
@@ -347,6 +351,11 @@ function initPattern(globals){
 
     //svgファイルを読み込む部分
     function loadSVG(url){
+        // Some SVG files start with UTF-8 byte order mark (BOM) EF BB BF,
+        // which encodes in Base64 to 77u/ -- remove this, as it breaks the
+        // XML/SVG parser.
+        url = url.replace(/^(data:image\/svg\+xml;base64,)77u\//, '$1');
+
         SVGloader.load(url, function(svg){
             //svgをimage形式でグローバル化する
             var img = new Image();
@@ -364,6 +373,10 @@ function initPattern(globals){
             //
 
             var _$svg = $(svg);
+            if (_$svg.find('parsererror').length) {
+                globals.warn("Error parsing SVG: " + svg.innerText);
+                return console.warn(_$svg.find('parsererror')[0]);
+            }
 
             clearAll();
 
@@ -383,6 +396,8 @@ function initPattern(globals){
             // }
 
             //format all appropriate svg elements
+            _$svg.find("symbol").remove();
+            _$svg.find("defs > :not(style)").remove();
             var $paths = _$svg.find("path");
             var $lines = _$svg.find("line");
             var $rects = _$svg.find("rect");
@@ -769,7 +784,9 @@ function initPattern(globals){
         */
 
         foldData = removeStrayVertices(foldData);//delete stray anchors
-        foldData = removeRedundantVertices(foldData, 0.005);//remove vertices that split edge
+
+        // foldData = removeRedundantVertices(foldData, 0.005);//remove vertices that split edge
+        
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
         /*ここで

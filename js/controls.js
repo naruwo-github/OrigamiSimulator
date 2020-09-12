@@ -693,6 +693,13 @@ function initControls(globals){
         if (!globals.simulationRunning) $("#reset").hide();
         globals.model.reset();
     });
+    setLink("#gauss", function(){
+        if (!globals.simulationRunning) {
+            // simulationが停止しているときにのみ動作させる
+            console.log("gauss button tapped!");
+            // ここで面法線求めるか？
+        }
+    });
     setLink("#resetBottom", function(){
         globals.model.reset();
     });
