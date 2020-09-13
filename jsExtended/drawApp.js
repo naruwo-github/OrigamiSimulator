@@ -577,6 +577,26 @@ function initDrawApp(globals) {
       }
     }
 
+    // ここで試しに法線求めてみる
+    // let faces = globals.model.getFaces();
+    // let positions = globals.model.getPositionsArray();
+    // let verticesArray = [];
+    // let surfNorm = [];
+    // for (let i = 0; i < positions.length; i++) {
+    //   const vector = new THREE.Vector3(positions[3*i], positions[3*i+1], positions[3*i+2]);
+    //   verticesArray.push(vector);
+    // }
+    // for (let i = 0; i < faces.length; i++) {
+    //   let vector0 = verticesArray[faces[i][0]];
+    //   let vector1 = verticesArray[faces[i][1]];
+    //   let vector2 = verticesArray[faces[i][2]];
+    //   let vec1 = vector1.sub(vector0);
+    //   let vec2 = vector2.sub(vector1);
+    //   let n = vec1.cross(vec2);
+    //   n.normalize();
+    //   surfNorm.push(n);
+    // }
+
   }
   //=====================================================
   //=====================================================

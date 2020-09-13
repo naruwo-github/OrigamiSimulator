@@ -224,15 +224,15 @@ function initModel(globals){
 
     function sync(){
 
-        for (var i=0;i<nodes.length;i++){
+        for (let i = 0; i < nodes.length; i++) {
             nodes[i].destroy();
         }
 
-        for (var i=0;i<edges.length;i++){
+        for (let i = 0; i < edges.length; i++) {
             edges[i].destroy();
         }
 
-        for (var i=0;i<creases.length;i++){
+        for (let i = 0; i < creases.length; i++) {
             creases[i].destroy();
         }
 
@@ -245,23 +245,23 @@ function initModel(globals){
         var _edges = fold.edges_vertices;
 
         var _vertices = [];
-        for (var i=0;i<fold.vertices_coords.length;i++){
+        for (let i = 0; i < fold.vertices_coords.length; i++) {
             var vertex = fold.vertices_coords[i];
             _vertices.push(new THREE.Vector3(vertex[0], vertex[1], vertex[2]));
         }
 
-        for (var i=0;i<_vertices.length;i++){
+        for (let i = 0; i < _vertices.length; i++) {
             nodes.push(new Node(_vertices[i].clone(), nodes.length));
         }
         // _nodes[_faces[0][0]].setFixed(true);
         // _nodes[_faces[0][1]].setFixed(true);
         // _nodes[_faces[0][2]].setFixed(true);
 
-        for (var i=0;i<_edges.length;i++) {
+        for (let i = 0; i < _edges.length; i++) {
             edges.push(new Beam([nodes[_edges[i][0]], nodes[_edges[i][1]]]));
         }
 
-        for (var i=0;i<creaseParams.length;i++) {//allCreaseParams.length
+        for (let i = 0; i < creaseParams.length; i++) {//allCreaseParams.length
             var _creaseParams = creaseParams[i];//face1Ind, vert1Ind, face2Ind, ver2Ind, edgeInd, angle
             var type = _creaseParams[5]!=0 ? 1:0;
             //edge, face1Index, face2Index, targetTheta, type, node1, node2, index
@@ -278,7 +278,7 @@ function initModel(globals){
         }
 
         vertices = [];
-        for (var i=0;i<nodes.length;i++){
+        for (let i = 0; i < nodes.length; i++) {
             vertices.push(nodes[i].getOriginalPosition());
         }
 
@@ -303,12 +303,12 @@ function initModel(globals){
         colors = new Float32Array(vertices.length*3);
         indices = new Uint16Array(faces.length*3);
 
-        for (var i=0;i<vertices.length;i++){
+        for (let i = 0; i < vertices.length; i++) {
             positions[3*i] = vertices[i].x;
             positions[3*i+1] = vertices[i].y;
             positions[3*i+2] = vertices[i].z;
         }
-        for (var i=0;i<faces.length;i++){
+        for (let i = 0; i < faces.length; i++) {
             var face = faces[i];
             indices[3*i] = face[0];
             indices[3*i+1] = face[1];
@@ -327,7 +327,7 @@ function initModel(globals){
             F: [],
             C: []
         };
-        for (var i=0;i<fold.edges_assignment.length;i++){
+        for (let i = 0; i < fold.edges_assignment.length; i++) {
             var edge = fold.edges_vertices[i];
             var assignment = fold.edges_assignment[i];
             lineIndices[assignment].push(edge[0]);
@@ -336,7 +336,7 @@ function initModel(globals){
         _.each(lines, function(line, key){
             var indicesArray = lineIndices[key];
             var indices = new Uint16Array(indicesArray.length);
-            for (var i=0;i<indicesArray.length;i++){
+            for (let i = 0; i < indicesArray.length; i++) {
                 indices[i] = indicesArray[i];
             }
             lines[key].geometry.addAttribute('position', positionsAttribute);
@@ -363,18 +363,18 @@ function initModel(globals){
         globals.scale = scale;
 
         //scale geometry
-        for (var i=0;i<positions.length;i++){
+        for (let i = 0; i < positions.length; i++) {
             positions[i] *= scale;
         }
-        for (var i=0;i<vertices.length;i++){
+        for (let i = 0; i < vertices.length; i++) {
             vertices[i].multiplyScalar(scale);
         }
 
         //update vertices and edges
-        for (var i=0;i<vertices.length;i++){
+        for (let i = 0; i < vertices.length; i++) {
             nodes[i].setOriginalPosition(positions[3*i], positions[3*i+1], positions[3*i+2]);
         }
-        for (var i=0;i<edges.length;i++){
+        for (let i = 0; i < edges.length; i++) {
             edges[i].recalcOriginalLength();
         }
 
@@ -438,5 +438,5 @@ function initModel(globals){
         updateMeshVisibility: updateMeshVisibility,
 
         getDimensions: getDimensions//for save stl
-    }
+    };
 }

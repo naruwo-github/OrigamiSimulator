@@ -130,6 +130,6 @@ function init3DUI(globals) {
 
     return {
         hideHighlighters: hideHighlighters
-    }
+    };
 
 }
