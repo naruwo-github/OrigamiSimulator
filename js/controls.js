@@ -698,6 +698,9 @@ function initControls(globals){
             // simulationが停止しているときにのみ動作させる
             console.log("gauss button tapped!");
             // ここで面法線求めるか？
+            
+            // 球を描画するページを表示
+            window.open('gauss_sphere.html', null, 'width=500,height=500,toolbar=yes,menubar=yes,scrollbars=yes');
         }
     });
     setLink("#resetBottom", function(){

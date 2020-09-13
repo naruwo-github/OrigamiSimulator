@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/104/three.min.js"></script>
+    <title>ガウスマップ</title>
+    <!-- CSS -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        div#canvas-frame {
+            width: 500px;
+            height: 500px;
+        }
+    </style>
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function(e) {
+            startThree();
+        }, false)
+ 
+        // if(!window.opener || window.opener.closed){
+        //     window.alert('親ウィンドウがありません。');
+        //     return false;
+        // }
+
+        let parent = window.opener; //クロスオリジン要求のため、デバッガで起動しないと動かない
+        // console.log(parent.globals);
+        let model = parent.globals.model;
+        let faces = model.getFaces();
+        let positions = model.getPositionsArray();
+
+        function startThree() {
+            initThree(); //レンダラー、シーン設定
+            initCamera(); //カメラ作成
+            initObject(); //3D図形作成
+            draw(); //描画
+            
+            tick(); //マウス入力によって視点を回転させる関数
+        }
+        //グローバル変数の宣言
+        let scene,
+            canvasFrame, renderer, camera, sphere;
+        //レンダラー、シーンを設定
+        function initThree() {
+            canvasFrame = document.getElementById('canvas-frame'); //生成されるcanvas要素を配置するdiv要素
+            //レンダラーオブジェクトの作成
+            renderer = new THREE.WebGLRenderer({
+                antialias: true
+            });
+            //レンダラーの背景色
+            renderer.setClearColor(0x999999, 1.0);
+            //レンダラーのサイズ
+            renderer.setSize(canvasFrame.clientWidth, canvasFrame.clientHeight);
+            //レンダラーの解像度
+            renderer.setPixelRatio(window.devicePixelRatio);
+            if (!renderer) alert('初期化失敗！');
+            //レンダラーが生成するcanvasをdiv要素に配置
+            canvasFrame.appendChild(renderer.domElement);
+            //シーンオブジェクトを生成
+            scene = new THREE.Scene();
+        }
+        //カメラを設定
+        function initCamera() {
+            //カメラの作成
+            camera = new THREE.PerspectiveCamera(45, canvasFrame.clientWidth / canvasFrame.clientHeight);
+            camera.position.set(20, 100, 1000); //カメラの位置を指定
+        }
+        //描画する3D図形を作成
+        function initObject() {
+            //「軸」オブジェクトの作成
+            const axes = new THREE.AxesHelper(1000);
+            //シーンに追加
+            scene.add(axes);
+            //「球体」オブジェクトの作成
+            const geometry = new THREE.SphereGeometry(100, 32, 32); //形状（ジオメトリ）の作成
+            const material = new THREE.MeshNormalMaterial();
+            sphere = new THREE.Mesh(geometry, material); //オブジェクトの作成
+            //シーンに追加
+            scene.add(sphere);
+
+            // let faces = globals.model.getFaces();
+            // let positions = globals.model.getPositionsArray();
+            let verticesArray = [];
+            //let surfNorm = [];
+            for (let i = 0; i < positions.length; i++) {
+                const vector = new THREE.Vector3(positions[3*i], positions[3*i+1], positions[3*i+2]);
+                verticesArray.push(vector);
+            }
+            for (let i = 0; i < faces.length; i++) {
+                console.log(faces);
+                let vector0 = verticesArray[faces[i][0]];
+                let vector1 = verticesArray[faces[i][1]];
+                let vector2 = verticesArray[faces[i][2]];
+                let vec1 = vector1.sub(vector0);
+                let vec2 = vector2.sub(vector1);
+                let n = vec1.cross(vec2);
+                n.normalize();
+                n.multiplyScalar(150);
+                //surfNorm.push(n);
+                let geometry = new THREE.Geometry();
+                geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+                geometry.vertices.push(new THREE.Vector3(n.x, n.y, n.z));
+                let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 10}));
+                // NOTE: ブラウザの制限で、linewidthの値は1になってしまうらしい
+                scene.add(line);
+            }
+        }
+ 
+        function draw() {
+            renderer.render(scene, camera);
+        }
+
+
+        let rot = 0; // 角度
+        let mouseX = 0; // マウス座標
+        // マウス座標はマウスが動いた時のみ取得できる
+        document.addEventListener("mousemove", (event) => {
+            mouseX = event.pageX;
+        });
+
+        // 毎フレーム時に実行されるループイベントです
+        function tick() {
+            // マウスの位置に応じて角度を設定
+            // マウスのX座標がステージの幅の何%の位置にあるか調べてそれを360度で乗算する
+            const targetRot = (mouseX / window.innerWidth) * 360;
+            // イージングの公式を用いて滑らかにする
+            // 値 += (目標値 - 現在の値) * 減速値
+            rot += (targetRot - rot) * 0.02;
+
+            // ラジアンに変換する
+            const radian = rot * Math.PI / 180;
+            // 角度に応じてカメラの位置を設定
+            camera.position.x = 1000 * Math.sin(radian);
+            camera.position.z = 1000 * Math.cos(radian);
+            // 原点方向を見つめる
+            camera.lookAt(new THREE.Vector3(0, 0, 0));
+            draw();
+            requestAnimationFrame(tick);
+        }
+        
+    </script>
+</head>
+ 
+<body>
+    <div id="canvas-frame"></div>
+</body>
+
+</html>

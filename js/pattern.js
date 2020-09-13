@@ -785,7 +785,7 @@ function initPattern(globals){
 
         foldData = removeStrayVertices(foldData);//delete stray anchors
 
-        // foldData = removeRedundantVertices(foldData, 0.005);//remove vertices that split edge
+        foldData = removeRedundantVertices(foldData, 0.005);//remove vertices that split edge
         
         foldData.vertices_vertices = FOLD.convert.sort_vertices_vertices(foldData);
         foldData = FOLD.convert.vertices_vertices_to_faces_vertices(foldData);
