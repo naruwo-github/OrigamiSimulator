@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/104/three.min.js"></script>
+    <script src="jsExtended/OrbitControls.js"></script>
     <title>ガウスマップ</title>
     <!-- CSS -->
     <style>
@@ -44,7 +45,8 @@
         }
         //グローバル変数の宣言
         let scene,
-            canvasFrame, renderer, camera, sphere;
+            canvasFrame, renderer, camera, sphere, controls;
+        
         //レンダラー、シーンを設定
         function initThree() {
             canvasFrame = document.getElementById('canvas-frame'); //生成されるcanvas要素を配置するdiv要素
@@ -115,9 +117,13 @@
         }
  
         function draw() {
+            // OrbitControl使う場合
+            // controls = new THREE.OrbitControls(camera); // カメラコントローラを作成
+            // controls.enableDamping = true;
+            // controls.dampingFactor = 0.2;
+
             renderer.render(scene, camera);
         }
-
 
         let rotX = 0; // 角度
         let mouseX = 0; // マウス座標
@@ -152,6 +158,12 @@
             draw();
             requestAnimationFrame(tick);
         }
+        
+        // function tick() {
+        //     controls.update();
+        //     draw();
+        //     requestAnimationFrame(tick);
+        // }
         
     </script>
 </head>
