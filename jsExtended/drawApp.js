@@ -377,15 +377,25 @@ function initDrawApp(globals) {
         let dy = dist(P0[0], P0[1], P3[0], P3[1]) / n;
         for (let i = 1; i < n; i++) {
           for (let j = 1; j < n; j++) {
-            anchorPoints.points.push([P0[0] + dx * i, P0[1] + dy * j]);
+
+            // ここに、近い点を弾く処理を入れるか
+            let x = P0[0] + dx * i;
+            let y = P0[1] + dy * j;
+            let distToClosestPoint = distClosestPointOnDevelopment(x, y, globals.svgInformation);
+            if (distToClosestPoint >= dx / 2.0) { anchorPoints.points.push([x, y]); }
           }
         }
 
         // 格子の線の端点もanchorPoints.pointsに格納していく
         for (let i = 0; i < gridLineList.length; i++) {
           const tmpLine = gridLineList[i];
-          anchorPoints.points.push(tmpLine[0]);
-          anchorPoints.points.push(tmpLine[1]);
+          // anchorPoints.points.push(tmpLine[0]);
+          // anchorPoints.points.push(tmpLine[1]);
+          // ここにも近い点を弾く処理を入れる
+          let distToClosestPoint1 = distClosestPointOnDevelopment(tmpLine[0][0], tmpLine[0][1], globals.svgInformation);
+          if (distToClosestPoint1 >= dx / 2.0) { anchorPoints.points.push([tmpLine[0][0], tmpLine[0][1]]); }
+          let distToClosestPoint2 = distClosestPointOnDevelopment(tmpLine[1][0], tmpLine[1][1], globals.svgInformation);
+          if (distToClosestPoint2 >= dx / 2.0) { anchorPoints.points.push([tmpLine[1][0], tmpLine[1][1]]); }
         }
       }
     }
@@ -444,7 +454,7 @@ function initDrawApp(globals) {
       }
     }
 
-    //四分木の方のgrid!
+    // NOTE: 四分木の方のgrid!
     for (let i = 0; i < q_tree.points.length; i++) {
       if (i < 4) {
         const point = q_tree.points[i];
@@ -1209,12 +1219,12 @@ function initDrawApp(globals) {
     });
   }
 
-  //2点間の距離を求める
+  // NOTE: 2点間の距離を求める
   function dist(x1,y1,x2,y2){
     return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
   }
 
-  //三角形分割の結果を取得し描画する
+  // NOTE: 三角形分割の結果を取得し描画する
   function drawTrianglationResult(ctx, trianglatedInformation) {
     for (let index = 0; index < trianglatedInformation.length; index+=2) {
       const start = trianglatedInformation[index];
@@ -1223,7 +1233,22 @@ function initDrawApp(globals) {
     }
   }
 
-  //ruling描画メソッドないで用いる2点を結んで直線を描画するメソッド
+  // NOTE: 引数の点と、展開図情報内で最も近い点との距離を算出する
+  function distClosestPointOnDevelopment(x, y, svg) {
+    let x1 = svg.x1;
+    let y1 = svg.y1;
+    let x2 = svg.x2;
+    let y2 = svg.y2;
+    let min = 10000;
+    for (let i = 0; i < x1.length; i++) {
+      let tmp1 = dist(x, y, x1[i], y1[i]);
+      let tmp2 = dist(x, y, x2[i], y2[i]);
+      min = Math.min(min, tmp1, tmp2);
+    }
+    return min;
+  }
+
+  // NOTE: ruling描画メソッドないで用いる2点を結んで直線を描画するメソッド
   function drawLine(ctx, color, width, x1, y1, x2, y2) {
     ctx.strokeStyle = color;     //線の色
     ctx.lineWidth = width;      //線の太さ
