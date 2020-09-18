@@ -125,14 +125,54 @@
             renderer.render(scene, camera);
         }
 
+        let mouseDownFlag = false;
         let rotX = 0; // 角度
         let mouseX = 0; // マウス座標
         let rotY = 0;
         let mouseY = 0;
+
+        document.addEventListener("mousedown", (event) => {
+            mouseDownFlag = true;
+        });
+
+        document.addEventListener("mouseup", (event) => {
+            mouseDownFlag = false;
+        });
+
+        document.addEventListener('keydown', (event) => {
+            switch (event.keyCode) {
+                case 37:
+                    console.log("left");
+                    camera.position.x -= 20;
+                    break;
+
+                case 38:
+                    console.log("top");
+                    camera.position.y += 20;
+                    break;
+
+                case 39:
+                    console.log("right");
+                    camera.position.x += 20;
+                    break;
+
+                case 40:
+                    console.log("left");
+                    camera.position.y -= 20;
+                    break;
+            
+                default:
+                    console.log("def");
+                    break;
+            }
+        });
+
         // マウス座標はマウスが動いた時のみ取得できる
         document.addEventListener("mousemove", (event) => {
-            mouseX = event.pageX;
-            mouseY = event.pageY;
+            if (mouseDownFlag) {
+                mouseX = event.pageX;
+                mouseY = event.pageY;
+            }
         });
 
         // 毎フレーム時に実行されるループイベントです
@@ -140,25 +180,25 @@
             // マウスの位置に応じて角度を設定
             // マウスのX座標がステージの幅の何%の位置にあるか調べてそれを360度で乗算する
             const targetRotX = (mouseX / window.innerWidth) * 360;
-            const targetRotY = (mouseY / window.innerHeight) * 360;
+            // const targetRotY = (mouseY / window.innerHeight) * 360;
             // イージングの公式を用いて滑らかにする
             // 値 += (目標値 - 現在の値) * 減速値
             rotX += (targetRotX - rotX) * 0.02;
-            rotY += (targetRotY - rotY) * 0.02;
+            // rotY += (targetRotY - rotY) * 0.02;
             // ラジアンに変換する
             const radianX = rotX * Math.PI / 180;
-            const radianY = rotY * Math.PI / 180;
+            // const radianY = rotY * Math.PI / 180;
             // 角度に応じてカメラの位置を設定
-            camera.position.x = 1000 * Math.sin(radianX);
-            camera.position.z = 1000 * Math.cos(radianX);
+            // camera.position.x = 1000 * Math.sin(radianX);
+            camera.position.z = 100 * Math.cos(radianX);
+            // camera.position.y = 1000 * Math.sin(radianY);
 
-            camera.position.y = 1000 * Math.sin(radianY);
             // 原点方向を見つめる
             camera.lookAt(new THREE.Vector3(0, 0, 0));
             draw();
             requestAnimationFrame(tick);
         }
-        
+
         // function tick() {
         //     controls.update();
         //     draw();
