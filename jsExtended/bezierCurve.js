@@ -129,11 +129,6 @@ function initBezierCurve(globals){
         splineList.push([co6[0], co6[1]]);
     }
 
-    //2点間の距離を求めるメソッド
-    function dist(x1,y1,x2,y2) {
-        return Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2));
-    }
-
     //線分の交差判定を行うメソッド
     //線分abとcdが交差しているかどうか
     function judgeIntersect(ax, ay, bx, by, cx, cy, dx, dy) {
@@ -202,7 +197,6 @@ function initBezierCurve(globals){
         drawBezier: drawBezier,
         defineBeziPoint: defineBeziPoint,
         defineSplinePoint: defineSplinePoint,
-        dist: dist,
         judgeIntersect: judgeIntersect,
         judgeIntersect2: judgeIntersect2,
         getIntersectPoint: getIntersectPoint,

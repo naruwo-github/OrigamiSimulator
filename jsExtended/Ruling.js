@@ -23,7 +23,7 @@ function initRulings(globals) {
       var bpy1 = Math.pow((1-t),3)*y1+3*t*Math.pow((1-t),2)*y2+3*(1-t)*Math.pow(t,2)*y3+Math.pow(t,3)*y4;
       var bpx2 = Math.pow((1-tt),3)*x1+3*tt*Math.pow((1-tt),2)*x2+3*(1-tt)*Math.pow(tt,2)*x3+Math.pow(tt,3)*x4;
       var bpy2 = Math.pow((1-tt),3)*y1+3*tt*Math.pow((1-tt),2)*y2+3*(1-tt)*Math.pow(tt,2)*y3+Math.pow(tt,3)*y4;
-      tmpdist += globals.beziercurve.dist(bpx1,bpy1,bpx2,bpy2);
+      tmpdist += dist(bpx1,bpy1,bpx2,bpy2);
       if(parseInt(tmpdist)-1 <= dividedPoints*tmpbunkatsu && parseInt(tmpdist)+1 >= dividedPoints*tmpbunkatsu){
         console.log("Reached Here!!");
         var start = new THREE.Vector2(bpx1,bpy1);
@@ -63,8 +63,8 @@ function initRulings(globals) {
           var s = rulingStart[i];
           for(var j = 0; j < rulingEnd.length; j++){
             var e = rulingEnd[j];
-            if(tmpDist > globals.beziercurve.dist(s[0],s[1],e[0],e[1])){
-              tmpDist = globals.beziercurve.dist(s[0],s[1],e[0],e[1]);
+            if(tmpDist > dist(s[0],s[1],e[0],e[1])){
+              tmpDist = dist(s[0],s[1],e[0],e[1]);
               rux1 = s[0];
               ruy1 = s[1];
               rux2 = e[0];
@@ -105,7 +105,7 @@ function initRulings(globals) {
       for(var t = 0.0; t < 1.0; t += 0.001){
         var p1 = spline.calcAt(t);
         var p2 = spline.calcAt(t+0.001);
-        tmpdist += globals.beziercurve.dist(p1[0],p1[1],p2[0],p2[1]);
+        tmpdist += dist(p1[0],p1[1],p2[0],p2[1]);
   
         if(parseInt(tmpdist) - 2 <= dividedPoints * tmpbunkatsu && parseInt(tmpdist) + 2 >= dividedPoints * tmpbunkatsu){
           var start = new THREE.Vector2(p1[0],p1[1]);
@@ -142,8 +142,8 @@ function initRulings(globals) {
             var s = rulingStart[i];
             for(var j = 0; j < rulingEnd.length; j++){
               var e = rulingEnd[j];
-              if(tmpDist > globals.beziercurve.dist(s[0],s[1],e[0],e[1])){
-                tmpDist = globals.beziercurve.dist(s[0],s[1],e[0],e[1]);
+              if(tmpDist > dist(s[0],s[1],e[0],e[1])){
+                tmpDist = dist(s[0],s[1],e[0],e[1]);
                 rux1 = s[0];
                 ruy1 = s[1];
                 rux2 = e[0];
@@ -235,10 +235,10 @@ function initRulings(globals) {
             var s = rulingStart[j];
             for(var k = 0; k < rulingEnd.length; k++){
               var e = rulingEnd[k];
-              if(tmpDist > globals.beziercurve.dist(s[0],s[1],e[0],e[1])
+              if(tmpDist > dist(s[0],s[1],e[0],e[1])
               && s[0] != parseInt(vecP1.x) && s[1] != parseInt(vecP1.y)
               && e[0] != parseInt(vecP1.x) && e[1] != parseInt(vecP1.y)){
-                tmpDist = globals.beziercurve.dist(s[0],s[1],e[0],e[1]);
+                tmpDist = dist(s[0],s[1],e[0],e[1]);
                 startx = s[0];
                 starty = s[1];
                 endx = e[0];
@@ -286,8 +286,8 @@ function initRulings(globals) {
           for(var l = 0; l < nextElement.length; l++){
             var nl = nextElement[l];
             var end = nl[1];
-            if(tmpDist > globals.beziercurve.dist(startX,startY,end[0],end[1])){
-              tmpDist = globals.beziercurve.dist(startX,startY,end[0],end[1]);
+            if(tmpDist > dist(startX,startY,end[0],end[1])){
+              tmpDist = dist(startX,startY,end[0],end[1]);
               index = l;
             }
           }
@@ -318,8 +318,8 @@ function initRulings(globals) {
           var tmpDist = 1000;
           for(var l = 0; l < intersected.length; l++){
             var is = intersected[l];
-            if(tmpDist > globals.beziercurve.dist(startX, startY, is[0], is[1])){
-              tmpDist = globals.beziercurve.dist(startX, startY, is[0], is[1]);
+            if(tmpDist > dist(startX, startY, is[0], is[1])){
+              tmpDist = dist(startX, startY, is[0], is[1]);
               extraX = is[0];
               extraY = is[1];
             }
@@ -366,8 +366,8 @@ function initRulings(globals) {
           for(var l = 0; l < nextElement.length; l++){
             var nl = nextElement[l];
             var start = nl[0];
-            if(tmpDist > globals.beziercurve.dist(endX,endY,start[0],start[1])){
-              tmpDist = globals.beziercurve.dist(endX,endY,start[0],start[1]);
+            if(tmpDist > dist(endX,endY,start[0],start[1])){
+              tmpDist = dist(endX,endY,start[0],start[1]);
               index = l;
             }
           }
@@ -398,8 +398,8 @@ function initRulings(globals) {
           var tmpDist = 1000;
           for(var l = 0; l < intersected.length; l++){
             var is = intersected[l];
-            if(tmpDist > globals.beziercurve.dist(endX, endY, is[0], is[1])){
-              tmpDist = globals.beziercurve.dist(endX, endY, is[0], is[1]);
+            if(tmpDist > dist(endX, endY, is[0], is[1])){
+              tmpDist = dist(endX, endY, is[0], is[1]);
               extraX = is[0];
               extraY = is[1];
             }

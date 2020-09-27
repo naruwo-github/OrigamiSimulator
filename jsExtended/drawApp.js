@@ -389,8 +389,6 @@ function initDrawApp(globals) {
         // 格子の線の端点もanchorPoints.pointsに格納していく
         for (let i = 0; i < gridLineList.length; i++) {
           const tmpLine = gridLineList[i];
-          // anchorPoints.points.push(tmpLine[0]);
-          // anchorPoints.points.push(tmpLine[1]);
           // ここにも近い点を弾く処理を入れる
           let distToClosestPoint1 = distClosestPointOnDevelopment(tmpLine[0][0], tmpLine[0][1], globals.svgInformation);
           if (distToClosestPoint1 >= dx / 2.0) { anchorPoints.points.push([tmpLine[0][0], tmpLine[0][1]]); }
@@ -692,24 +690,23 @@ function initDrawApp(globals) {
       }
       */
       //移動する制御点(スプライン曲線の)を求める
-      if(splineList.length > 0) {
+      if (splineList.length > 0) {
         var distance = 10000;
         var tmp = 10000;
         var ind = 10000;
-        for(var i = 0; i < splineList.length; i++){
+        for (var i = 0; i < splineList.length; i++){
           var coo = splineList[i];
-          tmp = dist(coo[0],coo[1],e.offsetX,e.offsetY);
-          if(tmp < distance){
+          tmp = dist(coo[0], coo[1], e.offsetX, e.offsetY);
+          if (tmp < distance){
             distance = tmp;
             ind = i;
           }
         }
-        if(distance < 10.0){
+        if (distance < 10.0) {
           movedIndex2 = ind;
           cpMove2 = true;
         }
       }
-
     }
   });
 
@@ -1219,11 +1216,6 @@ function initDrawApp(globals) {
     });
   }
 
-  // NOTE: 2点間の距離を求める
-  function dist(x1,y1,x2,y2){
-    return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
-  }
-
   // NOTE: 三角形分割の結果を取得し描画する
   function drawTrianglationResult(ctx, trianglatedInformation) {
     for (let index = 0; index < trianglatedInformation.length; index+=2) {
@@ -1261,6 +1253,5 @@ function initDrawApp(globals) {
 
   return {
     drawLine: drawLine,
-    dist: dist,
   };
 }
