@@ -357,31 +357,27 @@ function initDrawApp(globals) {
         let yMax = 0;
         for (let i = 0; i < gridTool.points.length; i++) {
           const tmpPoint = gridTool.points[i];
-          if (xMin >= tmpPoint[0]) {
-            xMin = tmpPoint[0];
-          } else {
-            xMax = tmpPoint[0];
-          }
-          if (yMin >= tmpPoint[1]) {
-            yMin = tmpPoint[1];
-          } else {
-            yMax = tmpPoint[1];
-          }
+          if (xMin >= tmpPoint[0]) { xMin = tmpPoint[0]; } 
+          else { xMax = tmpPoint[0]; }
+
+          if (yMin >= tmpPoint[1]) { yMin = tmpPoint[1]; } 
+          else { yMax = tmpPoint[1]; }
         }
+
         let P0 = [xMin, yMin];
         let P1 = [xMax, yMin];
-        let P2 = [xMax, yMax];
+        // let P2 = [xMax, yMax];
         let P3 = [xMin, yMax];
         let n = gridnumber;
         let dx = dist(P0[0], P0[1], P1[0], P1[1]) / n;
         let dy = dist(P0[0], P0[1], P3[0], P3[1]) / n;
         for (let i = 1; i < n; i++) {
           for (let j = 1; j < n; j++) {
-
             // ここに、近い点を弾く処理を入れるか
             let x = P0[0] + dx * i;
             let y = P0[1] + dy * j;
-            let distToClosestPoint = distClosestPointOnDevelopment(x, y, globals.svgInformation);
+            // let distToClosestPoint = distClosestPointOnDevelopment(x, y, globals.svgInformation);
+            let distToClosestPoint = minimumDistPointToFoldsOnDevelopment(x, y, globals.svgInformation);
             if (distToClosestPoint >= dx / 2.0) { anchorPoints.points.push([x, y]); }
           }
         }
@@ -389,12 +385,12 @@ function initDrawApp(globals) {
         // 格子の線の端点もanchorPoints.pointsに格納していく
         for (let i = 0; i < gridLineList.length; i++) {
           const tmpLine = gridLineList[i];
-          // anchorPoints.points.push(tmpLine[0]);
-          // anchorPoints.points.push(tmpLine[1]);
           // ここにも近い点を弾く処理を入れる
-          let distToClosestPoint1 = distClosestPointOnDevelopment(tmpLine[0][0], tmpLine[0][1], globals.svgInformation);
+          // let distToClosestPoint1 = distClosestPointOnDevelopment(tmpLine[0][0], tmpLine[0][1], globals.svgInformation);
+          let distToClosestPoint1 = minimumDistPointToFoldsOnDevelopment(tmpLine[0][0], tmpLine[0][1], globals.svgInformation);
           if (distToClosestPoint1 >= dx / 2.0) { anchorPoints.points.push([tmpLine[0][0], tmpLine[0][1]]); }
-          let distToClosestPoint2 = distClosestPointOnDevelopment(tmpLine[1][0], tmpLine[1][1], globals.svgInformation);
+          // let distToClosestPoint2 = distClosestPointOnDevelopment(tmpLine[1][0], tmpLine[1][1], globals.svgInformation);
+          let distToClosestPoint2 = minimumDistPointToFoldsOnDevelopment(tmpLine[1][0], tmpLine[1][1], globals.svgInformation);
           if (distToClosestPoint2 >= dx / 2.0) { anchorPoints.points.push([tmpLine[1][0], tmpLine[1][1]]); }
         }
       }
@@ -692,24 +688,23 @@ function initDrawApp(globals) {
       }
       */
       //移動する制御点(スプライン曲線の)を求める
-      if(splineList.length > 0) {
+      if (splineList.length > 0) {
         var distance = 10000;
         var tmp = 10000;
         var ind = 10000;
-        for(var i = 0; i < splineList.length; i++){
+        for (var i = 0; i < splineList.length; i++){
           var coo = splineList[i];
-          tmp = dist(coo[0],coo[1],e.offsetX,e.offsetY);
-          if(tmp < distance){
+          tmp = dist(coo[0], coo[1], e.offsetX, e.offsetY);
+          if (tmp < distance){
             distance = tmp;
             ind = i;
           }
         }
-        if(distance < 10.0){
+        if (distance < 10.0) {
           movedIndex2 = ind;
           cpMove2 = true;
         }
       }
-
     }
   });
 
@@ -1206,25 +1201,7 @@ function initDrawApp(globals) {
     window.URL.revokeObjectURL(url);    
   }
 
-  //hexをgbaに変換する関数
-  function hex2rgb(hex) {
-    if(hex.slice(0,1) == "#") {
-      hex = hex.slice(1);
-    }
-    if(hex.length == 3) {
-      hex = hex.slice(0,1) + hex.slice(0,1) + hex.slice(1,2) + hex.slice(1,2) + hex.slice(2,3) + hex.slice(2,3);
-    }
-    return [hex.slice(0,2), hex.slice(2,4), hex.slice(4,6)].map(function(str) {
-      return parseInt(str,16);
-    });
-  }
-
-  // NOTE: 2点間の距離を求める
-  function dist(x1,y1,x2,y2){
-    return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2));
-  }
-
-  // NOTE: 三角形分割の結果を取得し描画する
+  // 三角形分割の結果を取得し描画する
   function drawTrianglationResult(ctx, trianglatedInformation) {
     for (let index = 0; index < trianglatedInformation.length; index+=2) {
       const start = trianglatedInformation[index];
@@ -1233,7 +1210,7 @@ function initDrawApp(globals) {
     }
   }
 
-  // NOTE: 引数の点と、展開図情報内で最も近い点との距離を算出する
+  // 引数の点と、展開図情報内で最も近い点との距離を算出する
   function distClosestPointOnDevelopment(x, y, svg) {
     let x1 = svg.x1;
     let y1 = svg.y1;
@@ -1248,7 +1225,28 @@ function initDrawApp(globals) {
     return min;
   }
 
-  // NOTE: ruling描画メソッドないで用いる2点を結んで直線を描画するメソッド
+  // 引数の点と、展開図情報内で最も近い点との距離を算出する
+  function minimumDistPointToFoldsOnDevelopment(x, y, svg) {
+    // svg内の折り線について処理する＝輪郭線の場合は計算しないこと！
+    let color = svg.stroke;
+    let x1 = svg.x1;
+    let y1 = svg.y1;
+    let x2 = svg.x2;
+    let y2 = svg.y2;
+    let min = 10000;
+    for (let i = 0; i < x1.length; i++) {
+      if (color[i] !== "#000") {
+        let p0p1length = dist(x, y, x1[i], y1[i]);
+        let p0p2length = dist(x, y, x2[i], y2[i]);
+        let p0pxlength = distPointToPolyline(x, y, x1[i], y1[i], x2[i], y2[i]);
+        min = Math.min(min, p0p1length, p0p2length, p0pxlength);
+      }
+    }
+    return min;
+  }
+
+
+  // 2点を結んで直線を描画するメソッド
   function drawLine(ctx, color, width, x1, y1, x2, y2) {
     ctx.strokeStyle = color;     //線の色
     ctx.lineWidth = width;      //線の太さ
@@ -1261,6 +1259,5 @@ function initDrawApp(globals) {
 
   return {
     drawLine: drawLine,
-    dist: dist,
   };
 }
