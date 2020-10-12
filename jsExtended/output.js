@@ -247,3 +247,14 @@ function makeTerminalProblemFixedDevelopment(fileReader, original, gridList, new
   text += `</svg>\n`;
   fileReader.text = text;
 }
+
+// 配列の値をテキストとして出力する関数
+function makeTextOfLists(fileReader, vectorList) {
+  let text = "";
+  // vectorListは三次元ベクトルのリスト[[x0,y0,z0], [x1,y1,z1],...]
+  // これをテキストで出力する: x0 y0 z0\nx1 y1 z1\n ...
+  vectorList.forEach(n => {
+    text += n.x.toString() + " " + n.y.toString() + " " + n.z.toString() + "\n";
+  });
+  fileReader.text = text;
+}
