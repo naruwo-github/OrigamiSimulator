@@ -1245,6 +1245,34 @@ function initDrawApp(globals) {
     return min;
   }
 
+  // モデルの面法線を計算する
+  function calculateSurfaceNorm() {
+    let positions = globals.model.getPositionsArray();
+    let faces = globals.model.getFaces();
+    let verticesArray = [];
+    let surfaceNorm = [];
+    for (let i = 0; i < positions.length; i++) {
+        const vector = new THREE.Vector3(positions[3*i], positions[3*i+1], positions[3*i+2]);
+        verticesArray.push(vector);
+    }
+    for (let i = 0; i < faces.length; i++) {
+        let vector0 = verticesArray[faces[i][0]];
+        let vector1 = verticesArray[faces[i][1]];
+        let vector2 = verticesArray[faces[i][2]];
+        let vec1 = new THREE.Vector3(vector1.x - vector0.x, vector1.y - vector0.y, vector1.z - vector0.z);
+        let vec2 = new THREE.Vector3(vector2.x - vector0.x, vector2.y - vector0.y, vector2.z - vector0.z);
+        let n = new THREE.Vector3(vec1.y * vec2.z - vec1.z * vec2.y, vec1.z * vec2.x - vec1.x * vec2.z, vec1.x * vec2.y - vec1.y * vec2.x);
+        n.normalize();
+        surfaceNorm.push(n);
+        // n.multiplyScalar(101);
+    }
+    globals.surfNorm = surfaceNorm;
+    let vectorListFileReader = new FileReader();
+    makeTextOfLists(vectorListFileReader, surfaceNorm);
+    // TODO: これがあるとファイルダウンロードはできるけどエラーる
+    downloadFile("vectorList.txt", vectorListFileReader.text);
+  }
+
 
   // 2点を結んで直線を描画するメソッド
   function drawLine(ctx, color, width, x1, y1, x2, y2) {
@@ -1259,5 +1287,7 @@ function initDrawApp(globals) {
 
   return {
     drawLine: drawLine,
+
+    calculateSurfaceNorm: calculateSurfaceNorm,
   };
 }

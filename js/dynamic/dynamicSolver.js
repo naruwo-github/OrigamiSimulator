@@ -579,6 +579,10 @@ function initDynamicSolver(globals){
             let time = globals.timeOfStopSimulation - globals.timeOfInputFixedSvg;
             console.log("time: " + time + "ms");
             console.log("time: " + time / 1000 + "s");
+        } else if (globals.stepNum > 1000) {
+            globals.threeView.pauseSimulation();
+            globals.stepNum = 0;
+            return;
         }
         globals.stepNum++;
     }

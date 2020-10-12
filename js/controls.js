@@ -696,9 +696,7 @@ function initControls(globals){
     setLink("#gauss", function(){
         if (!globals.simulationRunning) {
             // simulationが停止しているときにのみ動作させる
-            console.log("gauss button tapped!");
-            // ここで面法線求めるか？
-            
+            globals.drawapp.calculateSurfaceNorm();
             // 球を描画するページを表示
             window.open('gauss_sphere.html', null, 'width=500,height=500,toolbar=yes,menubar=yes,scrollbars=yes');
         }
