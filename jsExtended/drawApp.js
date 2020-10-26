@@ -4,6 +4,8 @@
 //ドローアプリの部分
 //展開図の修正機能の追加を目的としている
 
+// const kmeans = require("./kmeans").default;
+
 function initDrawApp(globals) {
   // NOTE: キャンバス、コンテキストの準備
   const canvas = document.querySelector('#draw-area');
@@ -1267,10 +1269,28 @@ function initDrawApp(globals) {
         // n.multiplyScalar(101);
     }
     globals.surfNorm = surfaceNorm;
-    let vectorListFileReader = new FileReader();
-    makeTextOfLists(vectorListFileReader, surfaceNorm);
+
+    // surfaceNormを三次元配列にする
+    let surfaceNormList = [];
+    surfaceNorm.forEach(n => {
+      surfaceNormList.push([n.x, n.y, n.z]);
+    });
+    // console.log(surfaceNormList);
+    globals.surfNormList = surfaceNormList;
+
+    // 試しにkmeansやる
+    let clusterNum = 2;
+    new MyKmeans(surfaceNormList, clusterNum, function(err, res) {
+      if (err) throw new Error(err);
+      console.log(res);
+      // クラスタリング結果をグローバル変数に渡す
+      globals.surfNormListClustered = res;
+    });
+
+    // let vectorListFileReader = new FileReader();
+    // makeTextOfLists(vectorListFileReader, surfaceNorm);
     // TODO: これがあるとファイルダウンロードはできるけどエラーる
-    downloadFile("vectorList.txt", vectorListFileReader.text);
+    // downloadFile("vectorList.txt", vectorListFileReader.text);
   }
 
 
