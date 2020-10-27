@@ -99,17 +99,68 @@ function addNormalVectors() {
 
 function addCirclePoints() {
     // 円の点を生成して描画
-    for (let theta = 0.0; theta < 360.0; theta+=0.1) {
-        let radius = 100.1;
-        let x = radius * Math.cos(theta);
-        let y = radius * Math.sin(theta);
-        let z = 0;
-        let geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-        geometry.vertices.push(new THREE.Vector3(x, y, z));
-        let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 10}));
-        scene.add(line);
+    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 10) {
+        // X, Y, Z軸のそれぞれに対してrotationAngleX度回転させる（現状円のZ座標は0のため、Z軸に対して回転しても意味はない）
+        for (let theta = 0.0; theta < 360.0; theta+=1.0) {
+            let radius = 100.1;
+            let x = radius * Math.cos(theta);
+            let y = radius * Math.sin(theta);
+            let z = 0;
+
+            let rotatedXVector = apply3DRotationMatrixAxisX(x, y, z, rotationAngleX);
+            let geometry = new THREE.Geometry();
+            geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+            geometry.vertices.push(rotatedXVector);
+            let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 10}));
+            scene.add(line);
+
+            let rotatedYVector = apply3DRotationMatrixAxisX(x, y, z, rotationAngleX);
+            let geometry2 = new THREE.Geometry();
+            geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+            geometry.vertices.push(rotatedYVector);
+            let line2 = new THREE.Line(geometry2, new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 10}));
+            scene.add(line2);
+        }
     }
+
+    // for (let theta = 0.0; theta < 360.0; theta+=0.1) {
+    //     let radius = 100.1;
+    //     let x = radius * Math.cos(theta);
+    //     let y = radius * Math.sin(theta);
+    //     let z = 0;
+    //     let geometry = new THREE.Geometry();
+    //     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    //     geometry.vertices.push(new THREE.Vector3(x, y, z));
+    //     let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 10}));
+    //     scene.add(line);
+    // }
+}
+
+// ある点をx軸に対してtheta度だけ回転移動させた点を求める関数
+function apply3DRotationMatrixAxisX(x, y, z, theta) {
+    let u, v, w;
+    u = x;
+    v = Math.cos(theta) * y - Math.sin(theta) * z;
+    w = Math.sin(theta) * y + Math.cos(theta) * z;
+    return new THREE.Vector3(u, v, w);
+}
+
+// ある点をy軸に対してtheta度だけ回転移動させた点を求める関数
+function apply3DRotationMatrixAxisY(x, y, z, theta) {
+    let u, v, w;
+    u = Math.cos(theta) * x - Math.sin(theta) * z;
+    v = y;
+    w = Math.sin(theta) * x + Math.cos(theta) * z;
+    return new THREE.Vector3(u, v, w);
+}
+
+// ある点をz軸に対してtheta度だけ回転移動させた点を求める関数
+function apply3DRotationMatrixAxisZ(x, y, z, theta) {
+    let u, v, w;
+    u = Math.cos(theta) * x + Math.sin(theta) * y;
+    v = - Math.sin(theta) * x + Math.cos(theta) * y;
+    w = z;
+    return new THREE.Vector3(u, v, w);
 }
 
 let mouseDownFlag = false;
