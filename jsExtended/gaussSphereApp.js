@@ -58,7 +58,8 @@ function initObject() {
     addNormalVectorsClustered(1);
 
     let orthodromePointsList = getOrthodromePoints();
-    addOrthodromes(orthodromePointsList);
+    // addOrthodromes(orthodromePointsList);
+
     let handleClusterNum = 0;
     const clusterClouds = globalVariable.surfNormListClustered[handleClusterNum];
     let closestDistance = 1000000;
@@ -73,6 +74,10 @@ function initObject() {
     }
     // フィットする大円の頂点リスト
     let fitOrthodromePoints = orthodromePointsList[fitIndex];
+    fitOrthodromePoints.forEach(array => {
+        let vec = new THREE.Vector3(array[0], array[1], array[2]);
+        addLineObject(new THREE.Vector3(0, 0, 0), vec, 0x000000);
+    });
 }
 
 function draw() {
@@ -115,15 +120,11 @@ function addSphere() {
 }
 
 function addNormalVectors() {
-    // // 法線マップの描画
-    // globalVariable.surfNorm.forEach(n => {
-    //     n.multiplyScalar(101);
-    //     let geometry = new THREE.Geometry();
-    //     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    //     geometry.vertices.push(new THREE.Vector3(n.x, n.y, n.z));
-    //     let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 10}));
-    //     scene.add(line);
-    // });
+    // 全ての法線マップの描画
+    globalVariable.surfNorm.forEach(n => {
+        n.multiplyScalar(101);
+        addLineObject(new THREE.Vector3(0, 0, 0), n, 0x000000);
+    });
     
     // クラスタリングされた法線マップの描画
     const clusterNum = 2;
@@ -133,11 +134,7 @@ function addNormalVectors() {
         cluster.forEach(array => {
             let vec = new THREE.Vector3(array[0], array[1], array[2]);
             vec.multiplyScalar(100.5);
-            let geometry = new THREE.Geometry();
-            geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-            geometry.vertices.push(new THREE.Vector3(vec.x, vec.y, vec.z));
-            let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: colorList[index], linewidth: 10}));
-            scene.add(line);
+            addLineObject(new THREE.Vector3(0, 0, 0), vec, colorList[index]);
         });
     }
 }
@@ -149,11 +146,7 @@ function addNormalVectorsClustered(selectedClusterNum) {
     cluster.forEach(array => {
         let vec = new THREE.Vector3(array[0], array[1], array[2]);
         vec.multiplyScalar(100.5);
-        let geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-        geometry.vertices.push(new THREE.Vector3(vec.x, vec.y, vec.z));
-        let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: colorList[selectedClusterNum], linewidth: 10}));
-        scene.add(line);
+        addLineObject(new THREE.Vector3(0, 0, 0), vec, colorList[selectedClusterNum]);
     });
 }
 
@@ -175,11 +168,6 @@ function getOrthodromePoints() {
                 let rotatedXYVector = apply3DRotationMatrixAxisY(rotatedXVector.x, rotatedXVector.y, rotatedXVector.z, rotationAngleY);
 
                 orthodromePointsVectorList.push([rotatedXYVector.x, rotatedXYVector.y, rotatedXYVector.z]);
-                // let geometry = new THREE.Geometry();
-                // geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-                // geometry.vertices.push(rotatedXYVector);
-                // let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 10}));
-                // scene.add(line);
             }
             orthodromePointsVectorList_List.push(orthodromePointsVectorList);
         }
@@ -189,15 +177,12 @@ function getOrthodromePoints() {
 
 // 試しに円の点を描画する
 function addOrthodromes(orthodromePointsList) {
+    // orthodromePointsListは[[[x00, y00, z00], [x01, y01, z02], ...], [[x10, y10, z10], [x11, y11, z11], ...], ...]の形式
     let listList = orthodromePointsList;
     listList.forEach(list => {
         list.forEach(array => {
             let vec = new THREE.Vector3(array[0], array[1], array[2]);
-            let geometry = new THREE.Geometry();
-            geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-            geometry.vertices.push(vec);
-            let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 10}));
-            scene.add(line);
+            addLineObject(new THREE.Vector3(0, 0, 0), vec, 0x000000);
         });
     });
 }
@@ -224,7 +209,6 @@ function getClosestDistanceFromPointToPointClouds(point, clouds) {
     return closestDistance;
 }
 
-// TODO: ラインオブジェクトを追加する関数を記述する
 function addLineObject(startVec, endVec, color) {
     let geometry = new THREE.Geometry();
     geometry.vertices.push(startVec);
