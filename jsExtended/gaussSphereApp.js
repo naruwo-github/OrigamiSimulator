@@ -2,17 +2,16 @@
 * Created by narumi nogawa on 10/26/20.
 */
 
-
-document.addEventListener('DOMContentLoaded', function(e) {
-    startThree();
-}, false);
-
 let parent = window.opener; //クロスオリジン要求のため、デバッガで起動しないと動かない
 let surfNorm = parent.globals.surfNorm;
 let surfNormListClustered = parent.globals.surfNormListClustered;
 
 //グローバル変数の宣言
 let scene, canvasFrame, renderer, camera, sphere, controls;
+
+document.addEventListener('DOMContentLoaded', function(e) {
+    startThree();
+}, false);
 
 function startThree() {
     initThree(); //レンダラー、シーン設定
@@ -99,9 +98,31 @@ function addNormalVectors() {
 
 function addCirclePoints() {
     // 円の点を生成して描画
-    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 10) {
-        // X, Y, Z軸のそれぞれに対してrotationAngleX度回転させる（現状円のZ座標は0のため、Z軸に対して回転しても意味はない）
-        for (let theta = 0.0; theta < 360.0; theta+=1.0) {
+    // for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 45) {
+    //     // X, Y, Z軸のそれぞれに対してrotationAngleX度回転させる（現状円のZ座標は0のため、Z軸に対して回転しても意味はない）
+    //     // まずX軸に対する回転のループを定義
+    //     for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 45) {
+    //         // Y軸に対する回転のループを定義
+    //         for (let theta = 0.0; theta < 360.0; theta+=1.0) {
+    //             let radius = 100.1;
+    //             let x = radius * Math.cos(theta);
+    //             let y = radius * Math.sin(theta);
+    //             let z = 0;
+    
+    //             let rotatedXVector = apply3DRotationMatrixAxisX(x, y, z, rotationAngleX);
+    //             let rotatedXYVector = apply3DRotationMatrixAxisX(rotatedXVector.x, rotatedXVector.y, rotatedXVector.z, rotationAngleY);
+
+    //             let geometry = new THREE.Geometry();
+    //             geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    //             geometry.vertices.push(rotatedXYVector);
+    //             let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 10}));
+    //             scene.add(line);
+    //         }
+    //     }
+    // }
+
+    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 45) {
+        for (let theta = 0.0; theta < 360.0; theta+=0.5) {
             let radius = 100.1;
             let x = radius * Math.cos(theta);
             let y = radius * Math.sin(theta);
@@ -113,13 +134,6 @@ function addCirclePoints() {
             geometry.vertices.push(rotatedXVector);
             let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 10}));
             scene.add(line);
-
-            let rotatedYVector = apply3DRotationMatrixAxisX(x, y, z, rotationAngleX);
-            let geometry2 = new THREE.Geometry();
-            geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-            geometry.vertices.push(rotatedYVector);
-            let line2 = new THREE.Line(geometry2, new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 10}));
-            scene.add(line2);
         }
     }
 
@@ -137,8 +151,9 @@ function addCirclePoints() {
 }
 
 // ある点をx軸に対してtheta度だけ回転移動させた点を求める関数
-function apply3DRotationMatrixAxisX(x, y, z, theta) {
+function apply3DRotationMatrixAxisX(x, y, z, angle) {
     let u, v, w;
+    let theta = angle / 180 * Math.PI;
     u = x;
     v = Math.cos(theta) * y - Math.sin(theta) * z;
     w = Math.sin(theta) * y + Math.cos(theta) * z;
@@ -146,8 +161,9 @@ function apply3DRotationMatrixAxisX(x, y, z, theta) {
 }
 
 // ある点をy軸に対してtheta度だけ回転移動させた点を求める関数
-function apply3DRotationMatrixAxisY(x, y, z, theta) {
+function apply3DRotationMatrixAxisY(x, y, z, angle) {
     let u, v, w;
+    let theta = angle / 180 * Math.PI;
     u = Math.cos(theta) * x - Math.sin(theta) * z;
     v = y;
     w = Math.sin(theta) * x + Math.cos(theta) * z;
@@ -155,8 +171,9 @@ function apply3DRotationMatrixAxisY(x, y, z, theta) {
 }
 
 // ある点をz軸に対してtheta度だけ回転移動させた点を求める関数
-function apply3DRotationMatrixAxisZ(x, y, z, theta) {
+function apply3DRotationMatrixAxisZ(x, y, z, angle) {
     let u, v, w;
+    let theta = angle / 180 * Math.PI;
     u = Math.cos(theta) * x + Math.sin(theta) * y;
     v = - Math.sin(theta) * x + Math.cos(theta) * y;
     w = z;
