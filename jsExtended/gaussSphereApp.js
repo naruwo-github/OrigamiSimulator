@@ -55,8 +55,9 @@ function initObject() {
     scene.add(axes);
     
     addSphere();
-    addNormalVectors();
-    let orthodromePointsList = calcOrthodromePoints();
+    addNormalVectorsClustered(1);
+
+    let orthodromePointsList = getOrthodromePoints();
     addOrthodromes(orthodromePointsList);
 }
 
@@ -127,8 +128,23 @@ function addNormalVectors() {
     }
 }
 
+function addNormalVectorsClustered(selectedClusterNum) {
+    // クラスタリングされた法線マップの描画
+    const colorList = [0xff0000, 0x0000ff];
+    const cluster = globalVariable.surfNormListClustered[selectedClusterNum];
+    cluster.forEach(array => {
+        let vec = new THREE.Vector3(array[0], array[1], array[2]);
+        vec.multiplyScalar(100.5);
+        let geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+        geometry.vertices.push(new THREE.Vector3(vec.x, vec.y, vec.z));
+        let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: colorList[selectedClusterNum], linewidth: 10}));
+        scene.add(line);
+    });
+}
+
 // 円の点を生成する
-function calcOrthodromePoints() {
+function getOrthodromePoints() {
     let orthodromePointsVectorList_List = [];
     // まずX軸に対する回転のループを定義
     for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 60) {
@@ -173,20 +189,20 @@ function addOrthodromes(orthodromePointsList) {
 }
 
 // ある点群Aの各点から、ある点群Bまでの最短距離、の和を返す
-function closestDistanceSumFromCloudsToClouds(cloudsFrom, cloudsTo) {
+function getClosestDistanceSumFromCloudsToClouds(cloudsFrom, cloudsTo) {
     let closestDistanceSum = 0;
     cloudsFrom.forEach(array => {
-        closestDistanceSum += closestDistanceFromPointToPointClouds(array, cloudsTo);
+        closestDistanceSum += getClosestDistanceFromPointToPointClouds(array, cloudsTo);
     });
     return closestDistanceSum;
 }
 
 // 点pointから点群cloudsの最短距離を返す
-function closestDistanceFromPointToPointClouds(point, clouds) {
+function getClosestDistanceFromPointToPointClouds(point, clouds) {
     // pointは[x, y, z]、cloudsは[[x0, y0, z0], [x1, y1, z1], ...]
     let closestDistance = 100000;
     clouds.forEach(array => {
-        const tmpDist = dist3D(point[0], point[1], point[2], array[0], array[1], array[2]);
+        const tmpDist = getDist3D(point[0], point[1], point[2], array[0], array[1], array[2]);
         if (tmpDist < closestDistance) {
             closestDistance = tmpDist;
         }
@@ -194,11 +210,11 @@ function closestDistanceFromPointToPointClouds(point, clouds) {
     return closestDistance;
 }
 
-function dist2D(x0, y0, x1, y1) {
+function getDist2D(x0, y0, x1, y1) {
     return Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2));
 }
 
-function dist3D(x0, y0, z0, x1, y1, z1) {
+function getDist3D(x0, y0, z0, x1, y1, z1) {
     return Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2) + Math.pow(z1 - z0, 2));
 }
 
