@@ -2,14 +2,17 @@
 * Created by narumi nogawa on 10/26/20.
 */
 
-let parent = window.opener; //クロスオリジン要求のため、デバッガで起動しないと動かない
-let surfNorm = parent.globals.surfNorm;
-let surfNormListClustered = parent.globals.surfNormListClustered;
-
-//グローバル変数の宣言
+// corsのためlocalhostで開かないと動かない
+let parent = window.opener;
+const globalVariable = {};
+// このファイルないスコープでのグローバル変数宣言
 let scene, canvasFrame, renderer, camera, sphere, controls;
 
 document.addEventListener('DOMContentLoaded', function(e) {
+    parent = window.opener; //クロスオリジン要求のため、デバッガで起動しないと動かない
+    globalVariable.surfNorm = parent.globals.surfNorm;
+    globalVariable.surfNormListClustered = parent.globals.surfNormListClustered;
+    
     startThree();
 }, false);
 
@@ -46,7 +49,7 @@ function initObject() {
     
     addSphere();
     addNormalVectors();
-    // addCirclePoints();
+    calcOrthodromePoints();
 }
 
 function draw() {
@@ -85,57 +88,57 @@ function addSphere() {
 }
 
 function addNormalVectors() {
-    // 法線マップの描画
-    surfNorm.forEach(n => {
-        n.multiplyScalar(101);
-        let geometry = new THREE.Geometry();
-        geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-        geometry.vertices.push(new THREE.Vector3(n.x, n.y, n.z));
-        let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 10}));
-        scene.add(line);
-    });
+    // // 法線マップの描画
+    // globalVariable.surfNorm.forEach(n => {
+    //     n.multiplyScalar(101);
+    //     let geometry = new THREE.Geometry();
+    //     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    //     geometry.vertices.push(new THREE.Vector3(n.x, n.y, n.z));
+    //     let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 10}));
+    //     scene.add(line);
+    // });
+    
+    // クラスタリングされた法線マップの描画
+    const clusterNum = 2;
+    const colorList = [0xff0000, 0x0000ff];
+    for (let index = 0; index < clusterNum; index++) {
+        const cluster = globalVariable.surfNormListClustered[index];
+        cluster.forEach(array => {
+            let vec = new THREE.Vector3(array[0], array[1], array[2]);
+            vec.multiplyScalar(100);
+            let geometry = new THREE.Geometry();
+            geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+            geometry.vertices.push(new THREE.Vector3(vec.x, vec.y, vec.z));
+            let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: colorList[index], linewidth: 10}));
+            scene.add(line);
+        });
+    }
 }
 
-function addCirclePoints() {
-    // 円の点を生成して描画
-    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 10) {
-        // X, Y, Z軸のそれぞれに対してrotationAngleX度回転させる（現状円のZ座標は0のため、Z軸に対して回転しても意味はない）
-        // まずX軸に対する回転のループを定義
-        for (let theta = 0.0; theta < 360.0; theta+=1.0) {
+// 円の点を生成する
+function calcOrthodromePoints() {
+    // まずX軸に対する回転のループを定義
+    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 1) {
+        // 円の座標を生成
+        for (let theta = 0.0; theta < 360.0; theta+=0.1) {
             let radius = 100.1;
             let x = radius * Math.cos(theta);
             let y = radius * Math.sin(theta);
             let z = 0;
             let rotatedXVector = apply3DRotationMatrixAxisX(x, y, z, rotationAngleX);
 
-            for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 10) {
-                // Y軸に対する回転のループを定義
+            // Y軸に対する回転のループを定義
+            for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 1) {
                 let rotatedXYVector = apply3DRotationMatrixAxisY(rotatedXVector.x, rotatedXVector.y, rotatedXVector.z, rotationAngleY);
-                let geometry = new THREE.Geometry();
-                geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-                geometry.vertices.push(rotatedXYVector);
-                let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 10}));
-                scene.add(line);
+
+                // let geometry = new THREE.Geometry();
+                // geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+                // geometry.vertices.push(rotatedXYVector);
+                // let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 10}));
+                // scene.add(line);
             }
         }
     }
-
-    // X軸回転確認用
-    // for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 45) {
-    //     for (let theta = 0.0; theta < 360.0; theta+=0.5) {
-    //         let radius = 100.1;
-    //         let x = radius * Math.cos(theta);
-    //         let y = radius * Math.sin(theta);
-    //         let z = 0;
-
-    //         let rotatedXVector = apply3DRotationMatrixAxisX(x, y, z, rotationAngleX);
-    //         let geometry = new THREE.Geometry();
-    //         geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    //         geometry.vertices.push(rotatedXVector);
-    //         let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 10}));
-    //         scene.add(line);
-    //     }
-    // }
 }
 
 // ある点をx軸に対してtheta度だけ回転移動させた点を求める関数
