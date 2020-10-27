@@ -46,7 +46,7 @@ function initObject() {
     
     addSphere();
     addNormalVectors();
-    addCirclePoints();
+    // addCirclePoints();
 }
 
 function draw() {
@@ -98,55 +98,43 @@ function addNormalVectors() {
 
 function addCirclePoints() {
     // 円の点を生成して描画
-    // for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 45) {
-    //     // X, Y, Z軸のそれぞれに対してrotationAngleX度回転させる（現状円のZ座標は0のため、Z軸に対して回転しても意味はない）
-    //     // まずX軸に対する回転のループを定義
-    //     for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 45) {
-    //         // Y軸に対する回転のループを定義
-    //         for (let theta = 0.0; theta < 360.0; theta+=1.0) {
-    //             let radius = 100.1;
-    //             let x = radius * Math.cos(theta);
-    //             let y = radius * Math.sin(theta);
-    //             let z = 0;
-    
-    //             let rotatedXVector = apply3DRotationMatrixAxisX(x, y, z, rotationAngleX);
-    //             let rotatedXYVector = apply3DRotationMatrixAxisX(rotatedXVector.x, rotatedXVector.y, rotatedXVector.z, rotationAngleY);
-
-    //             let geometry = new THREE.Geometry();
-    //             geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    //             geometry.vertices.push(rotatedXYVector);
-    //             let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 10}));
-    //             scene.add(line);
-    //         }
-    //     }
-    // }
-
-    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 45) {
-        for (let theta = 0.0; theta < 360.0; theta+=0.5) {
+    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 10) {
+        // X, Y, Z軸のそれぞれに対してrotationAngleX度回転させる（現状円のZ座標は0のため、Z軸に対して回転しても意味はない）
+        // まずX軸に対する回転のループを定義
+        for (let theta = 0.0; theta < 360.0; theta+=1.0) {
             let radius = 100.1;
             let x = radius * Math.cos(theta);
             let y = radius * Math.sin(theta);
             let z = 0;
-
             let rotatedXVector = apply3DRotationMatrixAxisX(x, y, z, rotationAngleX);
-            let geometry = new THREE.Geometry();
-            geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-            geometry.vertices.push(rotatedXVector);
-            let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 10}));
-            scene.add(line);
+
+            for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 10) {
+                // Y軸に対する回転のループを定義
+                let rotatedXYVector = apply3DRotationMatrixAxisY(rotatedXVector.x, rotatedXVector.y, rotatedXVector.z, rotationAngleY);
+                let geometry = new THREE.Geometry();
+                geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+                geometry.vertices.push(rotatedXYVector);
+                let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 10}));
+                scene.add(line);
+            }
         }
     }
 
-    // for (let theta = 0.0; theta < 360.0; theta+=0.1) {
-    //     let radius = 100.1;
-    //     let x = radius * Math.cos(theta);
-    //     let y = radius * Math.sin(theta);
-    //     let z = 0;
-    //     let geometry = new THREE.Geometry();
-    //     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    //     geometry.vertices.push(new THREE.Vector3(x, y, z));
-    //     let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 10}));
-    //     scene.add(line);
+    // X軸回転確認用
+    // for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 45) {
+    //     for (let theta = 0.0; theta < 360.0; theta+=0.5) {
+    //         let radius = 100.1;
+    //         let x = radius * Math.cos(theta);
+    //         let y = radius * Math.sin(theta);
+    //         let z = 0;
+
+    //         let rotatedXVector = apply3DRotationMatrixAxisX(x, y, z, rotationAngleX);
+    //         let geometry = new THREE.Geometry();
+    //         geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    //         geometry.vertices.push(rotatedXVector);
+    //         let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 10}));
+    //         scene.add(line);
+    //     }
     // }
 }
 
