@@ -50,7 +50,7 @@ function initObject() {
     addSphere();
     addNormalVectors();
     calcOrthodromePoints();
-    // drawOrthodromes();
+    drawOrthodromes();
 }
 
 function draw() {
@@ -123,7 +123,7 @@ function calcOrthodromePoints() {
     for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 30) {
         // Y軸に対する回転のループを定義
         for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 30) {
-            let orthodromePointsVectorList = []; // Vector3のリスト
+            let orthodromePointsVectorList = []; // 値のリストのリスト[[x0,y0,z0], [x1,y1,z1], ...]
             // 円の座標を生成
             for (let theta = 0.0; theta < 360.0; theta+=1.0) {
                 let radius = 100.1;
@@ -133,7 +133,7 @@ function calcOrthodromePoints() {
                 let rotatedXVector = apply3DRotationMatrixAxisX(x, y, z, rotationAngleX);
                 let rotatedXYVector = apply3DRotationMatrixAxisY(rotatedXVector.x, rotatedXVector.y, rotatedXVector.z, rotationAngleY);
 
-                orthodromePointsVectorList.push(rotatedXYVector);
+                orthodromePointsVectorList.push([rotatedXYVector.x, rotatedXYVector.y, rotatedXYVector.z]);
                 // let geometry = new THREE.Geometry();
                 // geometry.vertices.push(new THREE.Vector3(0, 0, 0));
                 // geometry.vertices.push(rotatedXYVector);
@@ -150,7 +150,8 @@ function calcOrthodromePoints() {
 function drawOrthodromes() {
     let listList = globalVariable.orthodromePointsVectorList_List;
     listList.forEach(list => {
-        list.forEach(vec => {
+        list.forEach(array => {
+            let vec = new THREE.Vector3(array[0], array[1], array[2]);
             let geometry = new THREE.Geometry();
             geometry.vertices.push(new THREE.Vector3(0, 0, 0));
             geometry.vertices.push(vec);
@@ -158,6 +159,36 @@ function drawOrthodromes() {
             scene.add(line);
         });
     });
+}
+
+// ある点群Aの各点から、ある点群Bまでの最短距離、の和を返す
+function closestDistanceSumFromCloudsToClouds(cloudsFrom, cloudsTo) {
+    let closestDistanceSum = 0;
+    cloudsFrom.forEach(array => {
+        closestDistanceSum += closestDistanceFromPointToPointClouds(array, cloudsTo);
+    });
+    return closestDistanceSum;
+}
+
+// 点pointから点群cloudsの最短距離を返す
+function closestDistanceFromPointToPointClouds(point, clouds) {
+    // pointは[x, y, z]、cloudsは[[x0, y0, z0], [x1, y1, z1], ...]
+    let closestDistance = 100000;
+    clouds.forEach(array => {
+        const tmpDist = dist3D(point[0], point[1], point[2], array[0], array[1], array[2]);
+        if (tmpDist < closestDistance) {
+            closestDistance = tmpDist;
+        }
+    });
+    return closestDistance;
+}
+
+function dist2D(x0, y0, x1, y1) {
+    return Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2));
+}
+
+function dist3D(x0, y0, z0, x1, y1, z1) {
+    return Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2) + Math.pow(z1 - z0, 2));
 }
 
 // ある点をx軸に対してtheta度だけ回転移動させた点を求める関数
