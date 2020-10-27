@@ -120,11 +120,7 @@ function addNormalVectors() {
     // 法線マップの描画
     globalVariable.surfNorm.forEach(n => {
         n.multiplyScalar(101);
-        let geometry = new THREE.Geometry();
-        geometry.vertices.push(get_vec3(0, 0, 0));
-        geometry.vertices.push(get_vec3(n.x, n.y, n.z));
-        let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 10}));
-        scene.add(line);
+        addLineObject(makeVec3(0, 0, 0), get_vec3(n.x, n.y, n.z), 0x000000);
     });
 }
 
@@ -136,11 +132,7 @@ function addNormalVectorsClustered(selectedClusterNum) {
     cluster.forEach(array => {
         let vec = makeVec3(array[0], array[1], array[2]);
         vec.multiplyScalar(100.5);
-        let geometry = new THREE.Geometry();
-        geometry.vertices.push(makeVec3(0, 0, 0));
-        geometry.vertices.push(makeVec3(vec.x, vec.y, vec.z));
-        let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: colorList[selectedClusterNum], linewidth: 10}));
-        scene.add(line);
+        addLineObject(makeVec3(0, 0, 0), vec, colorList[selectedClusterNum]);
     });
     // for (let index = 0; index < clusterNum; index++) {
     //     const cluster = globalVariable.surfNormListClustered[index];
@@ -192,18 +184,18 @@ function addOrthodromes(orthodromePoints) {
     listList.forEach(list => {
         list.forEach(array => {
             let vec = makeVec3(array[0], array[1], array[2]);
-            let geometry = new THREE.Geometry();
-            geometry.vertices.push(makeVec3(0, 0, 0));
-            geometry.vertices.push(vec);
-            let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 10}));
-            scene.add(line);
+            addLineObject(makeVec3(0, 0, 0), vec, 0x000000);
         });
     });
 }
 
 // 線オブジェクトを追加する処理
-function addLineObject() {
-    //
+function addLineObject(vec3_start, vec3_end, lineColor) {
+    let geometry = new THREE.Geometry();
+    geometry.vertices.push(vec3_start);
+    geometry.vertices.push(vec3_end);
+    let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColor, linewidth: 10}));
+    scene.add(line);
 }
 
 // ある点群Aの各点から、ある点群Bまでの最短距離、の和を返す
