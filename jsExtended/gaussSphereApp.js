@@ -2,12 +2,19 @@
 * Created by narumi nogawa on 10/26/20.
 */
 
+//========================================
+//===============変数定義==================
+//========================================
 // corsのためlocalhostで開かないと動かない
 let parent = window.opener;
 const globalVariable = {};
 // このファイルないスコープでのグローバル変数宣言
 let scene, canvasFrame, renderer, camera, sphere, controls;
 
+
+//========================================
+//============ライフサイクル周り=============
+//========================================
 document.addEventListener('DOMContentLoaded', function(e) {
     parent = window.opener; //クロスオリジン要求のため、デバッガで起動しないと動かない
     globalVariable.surfNorm = parent.globals.surfNorm;
@@ -49,8 +56,8 @@ function initObject() {
     
     addSphere();
     addNormalVectors();
-    calcOrthodromePoints();
-    drawOrthodromes();
+    let orthodromePointsList = calcOrthodromePoints();
+    addOrthodromes(orthodromePointsList);
 }
 
 function draw() {
@@ -81,6 +88,10 @@ function tick() {
     requestAnimationFrame(tick);
 }
 
+
+//========================================
+//=======オブジェクト生成や計算処理関数========
+//========================================
 function addSphere() {
     const geometry = new THREE.SphereGeometry(100, 32, 32);
     const material = new THREE.MeshNormalMaterial();
@@ -120,9 +131,9 @@ function addNormalVectors() {
 function calcOrthodromePoints() {
     let orthodromePointsVectorList_List = [];
     // まずX軸に対する回転のループを定義
-    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 30) {
+    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 60) {
         // Y軸に対する回転のループを定義
-        for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 30) {
+        for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 60) {
             let orthodromePointsVectorList = []; // 値のリストのリスト[[x0,y0,z0], [x1,y1,z1], ...]
             // 円の座標を生成
             for (let theta = 0.0; theta < 360.0; theta+=1.0) {
@@ -143,12 +154,12 @@ function calcOrthodromePoints() {
             orthodromePointsVectorList_List.push(orthodromePointsVectorList);
         }
     }
-    globalVariable.orthodromePointsVectorList_List = orthodromePointsVectorList_List;
+    return orthodromePointsVectorList_List;
 }
 
 // 試しに円の点を描画する
-function drawOrthodromes() {
-    let listList = globalVariable.orthodromePointsVectorList_List;
+function addOrthodromes(orthodromePointsList) {
+    let listList = orthodromePointsList;
     listList.forEach(list => {
         list.forEach(array => {
             let vec = new THREE.Vector3(array[0], array[1], array[2]);
@@ -221,6 +232,10 @@ function apply3DRotationMatrixAxisZ(x, y, z, angle) {
     return new THREE.Vector3(u, v, w);
 }
 
+
+//========================================
+//==============イベント処理================
+//========================================
 let mouseDownFlag = false;
 let rotX = 0;
 let mouseX = 0;
