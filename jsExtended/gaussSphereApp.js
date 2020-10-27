@@ -59,6 +59,20 @@ function initObject() {
 
     let orthodromePointsList = getOrthodromePoints();
     addOrthodromes(orthodromePointsList);
+    let handleClusterNum = 0;
+    const clusterClouds = globalVariable.surfNormListClustered[handleClusterNum];
+    let closestDistance = 1000000;
+    let fitIndex = 0;
+    for (let index = 0; index < orthodromePointsList.length; index++) {
+        const orthodromeClouds = orthodromePointsList[index];
+        let tmpClosestDistance = getClosestDistanceSumFromCloudsToClouds(clusterClouds, orthodromeClouds);
+        if (tmpClosestDistance < closestDistance) {
+            closestDistance = tmpClosestDistance;
+            fitIndex = index;
+        }
+    }
+    // フィットする大円の頂点リスト
+    let fitOrthodromePoints = orthodromePointsList[fitIndex];
 }
 
 function draw() {
@@ -208,6 +222,15 @@ function getClosestDistanceFromPointToPointClouds(point, clouds) {
         }
     });
     return closestDistance;
+}
+
+// TODO: ラインオブジェクトを追加する関数を記述する
+function addLineObject(startVec, endVec, color) {
+    let geometry = new THREE.Geometry();
+    geometry.vertices.push(startVec);
+    geometry.vertices.push(endVec);
+    let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: color, linewidth: 10}));
+    scene.add(line);
 }
 
 function getDist2D(x0, y0, x1, y1) {
