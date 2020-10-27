@@ -38,18 +38,55 @@ function initThree() {
 
 function initCamera() {
     camera = new THREE.PerspectiveCamera(45, canvasFrame.clientWidth / canvasFrame.clientHeight);
-    camera.position.set(20, 100, 1000);
+    camera.position.set(0, 300, 1000);
 }
 
 function initObject() {
     const axes = new THREE.AxesHelper(1000);
     scene.add(axes);
     
+    addSphere();
+    addNormalVectors();
+    addCirclePoints();
+}
+
+function draw() {
+    renderer.render(scene, camera);
+}
+
+// 毎フレーム時に実行されるループイベントです
+function tick() {
+    // マウスの位置に応じて角度を設定
+    // マウスのX座標がステージの幅の何%の位置にあるか調べてそれを360度で乗算する
+    const targetRotX = (mouseX / window.innerWidth) * 360;
+    // const targetRotY = (mouseY / window.innerHeight) * 360;
+    // イージングの公式を用いて滑らかにする
+    // 値 += (目標値 - 現在の値) * 減速値
+    rotX += (targetRotX - rotX) * 0.02;
+    // rotY += (targetRotY - rotY) * 0.02;
+    // ラジアンに変換する
+    const radianX = rotX * Math.PI / 180;
+    // const radianY = rotY * Math.PI / 180;
+    // 角度に応じてカメラの位置を設定
+    // camera.position.x = 1000 * Math.sin(radianX);
+    camera.position.z = 100 * Math.cos(radianX);
+    // camera.position.y = 1000 * Math.sin(radianY);
+
+    // 原点方向を見つめる
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    draw();
+    requestAnimationFrame(tick);
+}
+
+function addSphere() {
     const geometry = new THREE.SphereGeometry(100, 32, 32);
     const material = new THREE.MeshNormalMaterial();
     sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
+}
 
+function addNormalVectors() {
+    // 法線マップの描画
     surfNorm.forEach(n => {
         n.multiplyScalar(101);
         let geometry = new THREE.Geometry();
@@ -60,8 +97,19 @@ function initObject() {
     });
 }
 
-function draw() {
-    renderer.render(scene, camera);
+function addCirclePoints() {
+    // 円の点を生成して描画
+    for (let theta = 0.0; theta < 360.0; theta+=0.1) {
+        let radius = 100.1;
+        let x = radius * Math.cos(theta);
+        let y = radius * Math.sin(theta);
+        let z = 0;
+        let geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+        geometry.vertices.push(new THREE.Vector3(x, y, z));
+        let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 10}));
+        scene.add(line);
+    }
 }
 
 let mouseDownFlag = false;
@@ -106,11 +154,6 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-// なぜか聞かない
-document.getElementById("output-button").addEventListener("click", (event) => {
-    camera.position.y -= 10;
-});
-
 // マウス座標はマウスが動いた時のみ取得できる
 document.addEventListener("mousemove", (event) => {
     if (mouseDownFlag) {
@@ -119,27 +162,3 @@ document.addEventListener("mousemove", (event) => {
     }
     console.log("mousemove");
 });
-
-// 毎フレーム時に実行されるループイベントです
-function tick() {
-    // マウスの位置に応じて角度を設定
-    // マウスのX座標がステージの幅の何%の位置にあるか調べてそれを360度で乗算する
-    const targetRotX = (mouseX / window.innerWidth) * 360;
-    // const targetRotY = (mouseY / window.innerHeight) * 360;
-    // イージングの公式を用いて滑らかにする
-    // 値 += (目標値 - 現在の値) * 減速値
-    rotX += (targetRotX - rotX) * 0.02;
-    // rotY += (targetRotY - rotY) * 0.02;
-    // ラジアンに変換する
-    const radianX = rotX * Math.PI / 180;
-    // const radianY = rotY * Math.PI / 180;
-    // 角度に応じてカメラの位置を設定
-    // camera.position.x = 1000 * Math.sin(radianX);
-    camera.position.z = 100 * Math.cos(radianX);
-    // camera.position.y = 1000 * Math.sin(radianY);
-
-    // 原点方向を見つめる
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
-    draw();
-    requestAnimationFrame(tick);
-}
