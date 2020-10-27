@@ -117,10 +117,14 @@ function addNormalVectors() {
 
 // 円の点を生成する
 function calcOrthodromePoints() {
+
+    let orthodromePointsList_List = {};
+    let orthodromePointsList = [];
+    
     // まずX軸に対する回転のループを定義
-    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 1) {
+    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 60) {
         // 円の座標を生成
-        for (let theta = 0.0; theta < 360.0; theta+=0.1) {
+        for (let theta = 0.0; theta < 360.0; theta+=1.0) {
             let radius = 100.1;
             let x = radius * Math.cos(theta);
             let y = radius * Math.sin(theta);
@@ -128,14 +132,14 @@ function calcOrthodromePoints() {
             let rotatedXVector = apply3DRotationMatrixAxisX(x, y, z, rotationAngleX);
 
             // Y軸に対する回転のループを定義
-            for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 1) {
+            for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 60) {
                 let rotatedXYVector = apply3DRotationMatrixAxisY(rotatedXVector.x, rotatedXVector.y, rotatedXVector.z, rotationAngleY);
 
-                // let geometry = new THREE.Geometry();
-                // geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-                // geometry.vertices.push(rotatedXYVector);
-                // let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 10}));
-                // scene.add(line);
+                let geometry = new THREE.Geometry();
+                geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+                geometry.vertices.push(rotatedXYVector);
+                let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 10}));
+                scene.add(line);
             }
         }
     }
