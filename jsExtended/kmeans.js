@@ -66,7 +66,7 @@ class MyKmeans {
         for (let a = 0; a < this.vector[0].length; a++) {
             tempArray.push(0);
         }
-        var vecArray = [];
+        vecArray = [];
         for (var a = 0; a < this.k; a++) {
             vecArray[a] = (tempArray.slice(0));
         }

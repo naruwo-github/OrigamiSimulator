@@ -2,12 +2,19 @@
 * Created by narumi nogawa on 10/26/20.
 */
 
+//========================================
+//===============変数定義==================
+//========================================
 // corsのためlocalhostで開かないと動かない
 let parent = window.opener;
 const globalVariable = {};
 // このファイルないスコープでのグローバル変数宣言
 let scene, canvasFrame, renderer, camera, sphere, controls;
 
+
+//========================================
+//============ライフサイクル周り=============
+//========================================
 document.addEventListener('DOMContentLoaded', function(e) {
     parent = window.opener; //クロスオリジン要求のため、デバッガで起動しないと動かない
     globalVariable.surfNorm = parent.globals.surfNorm;
@@ -48,9 +55,29 @@ function initObject() {
     scene.add(axes);
     
     addSphere();
-    addNormalVectors();
-    calcOrthodromePoints();
-    drawOrthodromes();
+    addNormalVectorsClustered(1);
+
+    let orthodromePointsList = getOrthodromePoints();
+    // addOrthodromes(orthodromePointsList);
+
+    let handleClusterNum = 0;
+    const clusterClouds = globalVariable.surfNormListClustered[handleClusterNum];
+    let closestDistance = 1000000;
+    let fitIndex = 0;
+    for (let index = 0; index < orthodromePointsList.length; index++) {
+        const orthodromeClouds = orthodromePointsList[index];
+        let tmpClosestDistance = getClosestDistanceSumFromCloudsToClouds(clusterClouds, orthodromeClouds);
+        if (tmpClosestDistance < closestDistance) {
+            closestDistance = tmpClosestDistance;
+            fitIndex = index;
+        }
+    }
+    // フィットする大円の頂点リスト
+    let fitOrthodromePoints = orthodromePointsList[fitIndex];
+    fitOrthodromePoints.forEach(array => {
+        let vec = new THREE.Vector3(array[0], array[1], array[2]);
+        addLineObject(new THREE.Vector3(0, 0, 0), vec, 0x000000);
+    });
 }
 
 function draw() {
@@ -81,6 +108,10 @@ function tick() {
     requestAnimationFrame(tick);
 }
 
+
+//========================================
+//=======オブジェクト生成や計算処理関数========
+//========================================
 function addSphere() {
     const geometry = new THREE.SphereGeometry(100, 32, 32);
     const material = new THREE.MeshNormalMaterial();
@@ -89,15 +120,11 @@ function addSphere() {
 }
 
 function addNormalVectors() {
-    // // 法線マップの描画
-    // globalVariable.surfNorm.forEach(n => {
-    //     n.multiplyScalar(101);
-    //     let geometry = new THREE.Geometry();
-    //     geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    //     geometry.vertices.push(new THREE.Vector3(n.x, n.y, n.z));
-    //     let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 10}));
-    //     scene.add(line);
-    // });
+    // 全ての法線マップの描画
+    globalVariable.surfNorm.forEach(n => {
+        n.multiplyScalar(101);
+        addLineObject(new THREE.Vector3(0, 0, 0), n, 0x000000);
+    });
     
     // クラスタリングされた法線マップの描画
     const clusterNum = 2;
@@ -107,22 +134,29 @@ function addNormalVectors() {
         cluster.forEach(array => {
             let vec = new THREE.Vector3(array[0], array[1], array[2]);
             vec.multiplyScalar(100.5);
-            let geometry = new THREE.Geometry();
-            geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-            geometry.vertices.push(new THREE.Vector3(vec.x, vec.y, vec.z));
-            let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: colorList[index], linewidth: 10}));
-            scene.add(line);
+            addLineObject(new THREE.Vector3(0, 0, 0), vec, colorList[index]);
         });
     }
 }
 
+function addNormalVectorsClustered(selectedClusterNum) {
+    // クラスタリングされた法線マップの描画
+    const colorList = [0xff0000, 0x0000ff];
+    const cluster = globalVariable.surfNormListClustered[selectedClusterNum];
+    cluster.forEach(array => {
+        let vec = new THREE.Vector3(array[0], array[1], array[2]);
+        vec.multiplyScalar(100.5);
+        addLineObject(new THREE.Vector3(0, 0, 0), vec, colorList[selectedClusterNum]);
+    });
+}
+
 // 円の点を生成する
-function calcOrthodromePoints() {
+function getOrthodromePoints() {
     let orthodromePointsVectorList_List = [];
     // まずX軸に対する回転のループを定義
-    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 30) {
+    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 60) {
         // Y軸に対する回転のループを定義
-        for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 30) {
+        for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 60) {
             let orthodromePointsVectorList = []; // 値のリストのリスト[[x0,y0,z0], [x1,y1,z1], ...]
             // 円の座標を生成
             for (let theta = 0.0; theta < 360.0; theta+=1.0) {
@@ -134,48 +168,40 @@ function calcOrthodromePoints() {
                 let rotatedXYVector = apply3DRotationMatrixAxisY(rotatedXVector.x, rotatedXVector.y, rotatedXVector.z, rotationAngleY);
 
                 orthodromePointsVectorList.push([rotatedXYVector.x, rotatedXYVector.y, rotatedXYVector.z]);
-                // let geometry = new THREE.Geometry();
-                // geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-                // geometry.vertices.push(rotatedXYVector);
-                // let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 10}));
-                // scene.add(line);
             }
             orthodromePointsVectorList_List.push(orthodromePointsVectorList);
         }
     }
-    globalVariable.orthodromePointsVectorList_List = orthodromePointsVectorList_List;
+    return orthodromePointsVectorList_List;
 }
 
 // 試しに円の点を描画する
-function drawOrthodromes() {
-    let listList = globalVariable.orthodromePointsVectorList_List;
+function addOrthodromes(orthodromePointsList) {
+    // orthodromePointsListは[[[x00, y00, z00], [x01, y01, z02], ...], [[x10, y10, z10], [x11, y11, z11], ...], ...]の形式
+    let listList = orthodromePointsList;
     listList.forEach(list => {
         list.forEach(array => {
             let vec = new THREE.Vector3(array[0], array[1], array[2]);
-            let geometry = new THREE.Geometry();
-            geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-            geometry.vertices.push(vec);
-            let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 10}));
-            scene.add(line);
+            addLineObject(new THREE.Vector3(0, 0, 0), vec, 0x000000);
         });
     });
 }
 
 // ある点群Aの各点から、ある点群Bまでの最短距離、の和を返す
-function closestDistanceSumFromCloudsToClouds(cloudsFrom, cloudsTo) {
+function getClosestDistanceSumFromCloudsToClouds(cloudsFrom, cloudsTo) {
     let closestDistanceSum = 0;
     cloudsFrom.forEach(array => {
-        closestDistanceSum += closestDistanceFromPointToPointClouds(array, cloudsTo);
+        closestDistanceSum += getClosestDistanceFromPointToPointClouds(array, cloudsTo);
     });
     return closestDistanceSum;
 }
 
 // 点pointから点群cloudsの最短距離を返す
-function closestDistanceFromPointToPointClouds(point, clouds) {
+function getClosestDistanceFromPointToPointClouds(point, clouds) {
     // pointは[x, y, z]、cloudsは[[x0, y0, z0], [x1, y1, z1], ...]
     let closestDistance = 100000;
     clouds.forEach(array => {
-        const tmpDist = dist3D(point[0], point[1], point[2], array[0], array[1], array[2]);
+        const tmpDist = getDist3D(point[0], point[1], point[2], array[0], array[1], array[2]);
         if (tmpDist < closestDistance) {
             closestDistance = tmpDist;
         }
@@ -183,11 +209,19 @@ function closestDistanceFromPointToPointClouds(point, clouds) {
     return closestDistance;
 }
 
-function dist2D(x0, y0, x1, y1) {
+function addLineObject(startVec, endVec, color) {
+    let geometry = new THREE.Geometry();
+    geometry.vertices.push(startVec);
+    geometry.vertices.push(endVec);
+    let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: color, linewidth: 10}));
+    scene.add(line);
+}
+
+function getDist2D(x0, y0, x1, y1) {
     return Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2));
 }
 
-function dist3D(x0, y0, z0, x1, y1, z1) {
+function getDist3D(x0, y0, z0, x1, y1, z1) {
     return Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2) + Math.pow(z1 - z0, 2));
 }
 
@@ -221,6 +255,10 @@ function apply3DRotationMatrixAxisZ(x, y, z, angle) {
     return new THREE.Vector3(u, v, w);
 }
 
+
+//========================================
+//==============イベント処理================
+//========================================
 let mouseDownFlag = false;
 let rotX = 0;
 let mouseX = 0;
