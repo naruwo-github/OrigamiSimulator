@@ -120,9 +120,9 @@ function makeExtendedSVGFile(fileReader, original, output, optimized, gridline) 
     if (gridline.length > 0) {
       for (let i = 0; i < gridline.length; i++) {
         let tmp = gridline[i];
-        //magenta.push([1, "#f0f", stroke_width[0], tmp[0][0], tmp[1][0], tmp[0][1], tmp[1][1]]);
+        magenta.push([1, "#f0f", stroke_width[0], tmp[0][0], tmp[1][0], tmp[0][1], tmp[1][1]]);
         //緑で出力
-        green.push([1, "#f0f", stroke_width[0], tmp[0][0], tmp[1][0], tmp[0][1], tmp[1][1]]);
+        // green.push([1, "#f0f", stroke_width[0], tmp[0][0], tmp[1][0], tmp[0][1], tmp[1][1]]);
       }
     }
 

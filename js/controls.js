@@ -698,7 +698,7 @@ function initControls(globals){
             // simulationが停止しているときにのみ動作させる
             globals.drawapp.calculateSurfaceNorm();
             // 球を描画するページを表示
-            window.open('gauss_sphere.html', null, 'width=500,height=500,toolbar=yes,menubar=yes,scrollbars=yes');
+            window.open('gauss_sphere.html', "gauss_map", 'width=500,height=500,toolbar=yes,menubar=yes,scrollbars=yes');
         }
     });
     setLink("#resetBottom", function(){

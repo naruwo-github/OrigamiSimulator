@@ -1280,12 +1280,26 @@ function initDrawApp(globals) {
 
     // 試しにkmeansやる
     let clusterNum = 2;
-    new MyKmeans(surfaceNormList, clusterNum, function(err, res) {
-      if (err) throw new Error(err);
-      console.log(res);
-      // クラスタリング結果をグローバル変数に渡す
-      globals.surfNormListClustered = res;
-    });
+    // new MyKmeans(surfaceNormList, clusterNum, function(err, res) {
+    //   if (err) throw new Error(err);
+    //   console.log(res);
+    //   // クラスタリング結果をグローバル変数に渡す
+    //   globals.surfNormListClustered = res;
+    // });
+    let iterate_num = 1000;
+    let res = KMeans(surfaceNormList, clusterNum, iterate_num);
+    let clusteredNumber = res.node;
+    let clusteredSurfNormList = [[], []];
+    for (let i = 0; i < surfaceNormList.length; i++) {
+      const surfaceNorm = surfaceNormList[i];
+      const cn = clusteredNumber[i];
+      if (cn === 0) {
+        clusteredSurfNormList[0].push(surfaceNorm);
+      } else if (cn === 1) {
+        clusteredSurfNormList[1].push(surfaceNorm);
+      }
+    }
+    globals.surfNormListClustered = clusteredSurfNormList;
 
     // let vectorListFileReader = new FileReader();
     // makeTextOfLists(vectorListFileReader, surfaceNorm);

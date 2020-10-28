@@ -22,9 +22,12 @@
     "version": "0.2.0",
     // ローカルにあるファイルをデバッグ
     "configurations": [
+        
         {
             // デバッグ種別を指定（chrome/node/monoなど）
             "type": "firefox",
+            // "type": "chrome",
+            // chromeだとガウスマップのデバッグができる！！
             
             // lanunchまたはattachを指定
             "request": "launch",
