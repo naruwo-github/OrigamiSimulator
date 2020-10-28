@@ -55,7 +55,8 @@ function initObject() {
     scene.add(axes);
     
     addSphere();
-    addNormalVectorsClustered(1);
+    addNormalVectors();
+    // addNormalVectorsClustered(1);
 
     let orthodromePointsList = getOrthodromePoints();
     // addOrthodromes(orthodromePointsList);
@@ -120,11 +121,11 @@ function addSphere() {
 }
 
 function addNormalVectors() {
-    // 全ての法線マップの描画
-    globalVariable.surfNorm.forEach(n => {
-        n.multiplyScalar(101);
-        addLineObject(new THREE.Vector3(0, 0, 0), n, 0x000000);
-    });
+    // // 全ての法線マップの描画
+    // globalVariable.surfNorm.forEach(n => {
+    //     n.multiplyScalar(101);
+    //     addLineObject(new THREE.Vector3(0, 0, 0), n, 0x000000);
+    // });
     
     // クラスタリングされた法線マップの描画
     const clusterNum = 2;
@@ -154,9 +155,9 @@ function addNormalVectorsClustered(selectedClusterNum) {
 function getOrthodromePoints() {
     let orthodromePointsVectorList_List = [];
     // まずX軸に対する回転のループを定義
-    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 60) {
+    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 30) {
         // Y軸に対する回転のループを定義
-        for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 60) {
+        for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 30) {
             let orthodromePointsVectorList = []; // 値のリストのリスト[[x0,y0,z0], [x1,y1,z1], ...]
             // 円の座標を生成
             for (let theta = 0.0; theta < 360.0; theta+=1.0) {
