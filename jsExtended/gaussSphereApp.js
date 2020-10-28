@@ -155,9 +155,9 @@ function addNormalVectorsClustered(selectedClusterNum) {
 function getOrthodromePoints() {
     let orthodromePointsVectorList_List = [];
     // まずX軸に対する回転のループを定義
-    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 30) {
+    for (let rotationAngleX = 0; rotationAngleX < 360; rotationAngleX += 10) {
         // Y軸に対する回転のループを定義
-        for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 30) {
+        for (let rotationAngleY = 0; rotationAngleY < 360; rotationAngleY += 10) {
             let orthodromePointsVectorList = []; // 値のリストのリスト[[x0,y0,z0], [x1,y1,z1], ...]
             // 円の座標を生成
             for (let theta = 0.0; theta < 360.0; theta+=1.0) {
