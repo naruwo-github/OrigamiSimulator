@@ -58,7 +58,9 @@ function initObject() {
     addNormalVectors();
     // addNormalVectorsClustered(1);
 
-    let orthodromePointsList = getOrthodromePoints();
+    /*
+    // 以下、大円を求めたりする記述
+    let orthodromePointsList = getOrthodromePoints(); // 大円の点群取得
     // addOrthodromes(orthodromePointsList);
 
     let handleClusterNum = 0;
@@ -79,6 +81,7 @@ function initObject() {
         let vec = new THREE.Vector3(array[0], array[1], array[2]);
         addLineObject(new THREE.Vector3(0, 0, 0), vec, 0x000000);
     });
+    */
 }
 
 function draw() {
@@ -141,7 +144,7 @@ function addNormalVectors() {
 }
 
 function addNormalVectorsClustered(selectedClusterNum) {
-    // クラスタリングされた法線マップの描画
+    // クラスタリングされた法線マップの描画（1クラスずつできる）
     const colorList = [0xff0000, 0x0000ff];
     const cluster = globalVariable.surfNormListClustered[selectedClusterNum];
     cluster.forEach(array => {
