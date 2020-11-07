@@ -1270,6 +1270,7 @@ function initDrawApp(globals) {
     }
     globals.surfNorm = surfaceNorm;
 
+    // kmeansのための記述↓
     // surfaceNormを三次元配列にする
     let surfaceNormList = [];
     surfaceNorm.forEach(n => {
@@ -1280,12 +1281,6 @@ function initDrawApp(globals) {
 
     // 試しにkmeansやる
     let clusterNum = 2;
-    // new MyKmeans(surfaceNormList, clusterNum, function(err, res) {
-    //   if (err) throw new Error(err);
-    //   console.log(res);
-    //   // クラスタリング結果をグローバル変数に渡す
-    //   globals.surfNormListClustered = res;
-    // });
     let iterate_num = 1000;
     let res = KMeans(surfaceNormList, clusterNum, iterate_num);
     let clusteredNumber = res.node;
