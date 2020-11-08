@@ -223,11 +223,10 @@ genetic.notification = function(pop, generation, stats, isFinished) {
 	
 	$("#solution").html(poly(pop[0].entity));
 	$("#generation").html(generation+1);
-	$("#bestfit").html(pop[0].fitness.toPrecision(4))
+	$("#bestfit").html(pop[0].fitness.toPrecision(4));
 	
 	$("#vertexerror").html((pop[0].fitness/graph.vertices.length).toPrecision(4));
 
-	;
 	$("#avgbestfit").html(stats.mean.toPrecision(4));
 	$("#errorstdev").html(stats.stdev.toPrecision(4));
 	
@@ -365,12 +364,26 @@ Graph.prototype.draw = function() {
 		ctx.stroke();
 	}
 	
-	// x/y bars：太線の0~1までの線の位置
+	// // x/y bars：太線の0~1までの線の位置
+	// ctx.beginPath();
+	// ctx.strokeStyle = "#bbb";
+	// ctx.moveTo(bound[3], bound[0]);
+	// ctx.lineTo(bound[3], bound[2]);
+	// ctx.lineTo(bound[1], bound[2]);
+	// ctx.lineWidth = 3;
+	// ctx.stroke();
+	// 横線
 	ctx.beginPath();
 	ctx.strokeStyle = "#bbb";
-	ctx.moveTo(bound[3], bound[0]);
-	ctx.lineTo(bound[3], bound[2]);
-	ctx.lineTo(bound[1], bound[2]);
+	ctx.moveTo(0, this.height / 2);
+	ctx.lineTo(this.width, this.height / 2);
+	ctx.lineWidth = 3;
+	ctx.stroke();
+	// 縦線
+	ctx.beginPath();
+	ctx.strokeStyle = "#bbb";
+	ctx.moveTo(this.width / 2, 0);
+	ctx.lineTo(this.width / 2, this.height);
 	ctx.lineWidth = 3;
 	ctx.stroke();
 	
@@ -530,7 +543,7 @@ $(document).ready(function () {
 		}
         
 		// 何かを選択したら強制的に法線データが入る
-		let clusterNum = 0;
+		let clusterNum = 1;
 		graph.vertices = globalVariable.surfNormListClustered[clusterNum];
 		// graph.vertices = globalVariable.surfNormList;
 
@@ -555,22 +568,54 @@ $(document).ready(function () {
 	$("#dataset").val("sinusoidal2").change();
 });
 
-// var inputFile = document.getElementById('inputfile');
-// inputFile.addEventListener("change", function(e) {
-// 	console.log(e.target.files)
-// 	 var reader = new FileReader();
-// 	 reader.readAsText(inputFile[0]);
-// 	 reader.onload = function() {
-// 	 	console.log(reader.result);
-// 	 }
-// },false);
+// TODO: PCAした結果等を受け取れるように、ファイル入力機能をつける
+var inputFile = document.getElementById('inputfile');
+inputFile.addEventListener("change", function(e) {
+	// console.log(e.target.files)
+	var reader = new FileReader();
+	reader.readAsText(e.target.files[0]);
+	reader.onload = function() {
+		// console.log(reader.result);
+		let inputLine = reader.result.split("\n");
+		// console.log(inputLine);
+		let pointList = [[], [], []];
+		inputLine.forEach(line => {
+			let tmpList = line.split(",");
+			let clusterNum = Number(tmpList[0]);
+			let tmpPoint = [Number(tmpList[1]), Number(tmpList[2])];
+			if (tmpList[3] !== undefined) {
+				tmpPoint.push(Number(tmpList[3]));
+			}
+			pointList[clusterNum].push(tmpPoint);
+		});
+		// console.log(pointList);
+		// 入力ファイル内部の情報を格納する
+		let clusterNum = 0;
+		graph.vertices = pointList[clusterNum];
+		// 原点に対してn度動かしてみる
+		graph.vertices.forEach(point3D => {
+			const rotated = rotate2DPoint(point3D[0], point3D[1], 90);
+			point3D[0] = rotated[0];
+			point3D[1] = rotated[1];
+		});
 
-// var file = e.target.files 
-// var reader = new FileReader()
-// reader.readAsDataURL(file[0])
-// reader.onload = function() {
-//     image.src = reader.result;
-// }
+		// これで座標をずらす
+		graph.vertices.forEach(point3D => {
+			point3D[0] += 1;
+			point3D[1] += 1
+		});
+
+		graph.draw();
+		graph.drawVertices();
+	}
+}, false);
+
+// 2D座標を回転させる関数
+function rotate2DPoint(x, y, theta) {
+	let _x = x * Math.cos(theta * Math.PI / 180) - y * Math.sin(theta * Math.PI / 180);
+	let _y = x * Math.sin(theta * Math.PI / 180) + y * Math.cos(theta * Math.PI / 180);
+	return [_x, _y];
+}
 
 </script>
 
