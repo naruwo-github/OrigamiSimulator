@@ -370,7 +370,7 @@ Graph.prototype.draw = function() {
 		ctx.stroke();
 	}
 	
-	// x/y bars
+	// x/y bars：太線の0~1までの線の位置
 	ctx.beginPath();
 	ctx.strokeStyle = "#bbb";
 	ctx.moveTo(bound[3], bound[0]);
@@ -381,11 +381,9 @@ Graph.prototype.draw = function() {
 	
 
 	ctx.lineWidth = 1;
-	var i;
-	
 	// x bars
 	ctx.strokeStyle = "#000";
-	for (i=0;i<=xmax;++i) {
+	for (let i = 0; i <= xmax; i += 0.1) {
 		var cx = i*xstride + bound[3];
 		var y = bound[2];
 		
@@ -396,11 +394,11 @@ Graph.prototype.draw = function() {
 		
 		ctx.font = "12px sans-serif";
 		ctx.textAlign = "center";
-		ctx.fillText(i,cx,y+16);
+		ctx.fillText(i.toPrecision(1), cx, y+16);
 	}
 
 	// y bars
-	for (i=0;i<=ymax;++i) {
+	for (let i = 0; i <= ymax; i += 0.1) {
 		var cx = bound[3];
 		var y = bound[2] - i*ystride;
 		ctx.beginPath();
@@ -410,9 +408,8 @@ Graph.prototype.draw = function() {
 		
 		ctx.font = "12px sans-serif";
 		ctx.textAlign = "right";
-		ctx.fillText(i,cx-8,y+4);
+		ctx.fillText(i.toPrecision(1), cx-8, y+4);
 	}
-	
 		
 	ctx.restore();
 };
