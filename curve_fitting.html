@@ -107,15 +107,20 @@ Dataset:
 
 <script>
 
-
-var graph = new Graph(document.getElementById("scratch"), 10, 10);
-
-
+var graph = new Graph(document.getElementById("scratch"), 1, 1);
 var genetic = Genetic.create();
 
 genetic.optimize = Genetic.Optimize.Minimize;
 genetic.select1 = Genetic.Select1.Tournament2;
 genetic.select2 = Genetic.Select2.FittestRandom;
+
+//
+let parent = window.opener;
+const globalVariable = {};
+parent = window.opener; //クロスオリジン要求のため、デバッガで起動しないと動かない
+globalVariable.surfNorm = parent.globals.surfNorm;
+globalVariable.surfNormListClustered = parent.globals.surfNormListClustered;
+//
 
 genetic.seed = function() {
 	
@@ -266,9 +271,6 @@ genetic.notification = function(pop, generation, stats, isFinished) {
 	}
 };
 
-
-
-
 function Graph(canvas, xmax, ymax) {
 	this.canvas = document.getElementById("scratch");
 	
@@ -332,7 +334,6 @@ Graph.prototype.drawFunction = function(coefficients, strokeStyle, lineWidth) {
 
 Graph.prototype.draw = function() {
 	
-	
 	var ctx = this.ctx;
 	ctx.save();
 	var bound = this.bound;
@@ -345,24 +346,22 @@ Graph.prototype.draw = function() {
 	var ymax = this.ymax;
 	var xstride = (bound[1]-bound[3])/xmax;
 	var ystride = (bound[2]-bound[0])/ymax;
-	
-	
-	var i;
 
 	// x-grid
-	for (i=0;i<=xmax;++i) {
+	ctx.strokeStyle = "#fee";
+	for (let i = 0; i <= xmax; i += 0.1) {
 		var cx = i*xstride + bound[3];
 		var y = bound[2];
-		
-		ctx.strokeStyle = "#eee";
+
 		ctx.beginPath();
 		ctx.moveTo(cx, bound[0]);
 		ctx.lineTo(cx, y);
 		ctx.stroke();
 	}
 	
+	ctx.strokeStyle = "#eef";
 	// y-grid
-	for (i=0;i<=ymax;++i) {
+	for (let i = 0; i <= ymax; i += 0.1) {
 		var cx = bound[3];
 		var y = bound[2] - i*ystride;
 		ctx.beginPath();
@@ -370,7 +369,6 @@ Graph.prototype.draw = function() {
 		ctx.lineTo(bound[1], y);
 		ctx.stroke();
 	}
-	
 	
 	// x/y bars
 	ctx.beginPath();
@@ -384,7 +382,6 @@ Graph.prototype.draw = function() {
 
 	ctx.lineWidth = 1;
 	var i;
-	
 	
 	// x bars
 	ctx.strokeStyle = "#000";
@@ -401,7 +398,6 @@ Graph.prototype.draw = function() {
 		ctx.textAlign = "center";
 		ctx.fillText(i,cx,y+16);
 	}
-	
 
 	// y bars
 	for (i=0;i<=ymax;++i) {
@@ -542,7 +538,11 @@ $(document).ready(function () {
 				graph.vertices.push([i*stride,Math.sin((off + i/n)*2*3.1415627)*3 + 5 + (Math.random()-0.5)*2]);
 			}
 		}
-		
+        
+		// 何かを選択したら強制的に法線データが入る
+		let clusterNum = 0;
+        graph.vertices = globalVariable.surfNormListClustered[clusterNum];
+        
 		graph.draw();
 		graph.drawVertices();
 	});
