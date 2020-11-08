@@ -107,7 +107,7 @@ Dataset:
 
 <script>
 
-var graph = new Graph(document.getElementById("scratch"), 1, 1);
+var graph = new Graph(document.getElementById("scratch"), 2, 2);
 var genetic = Genetic.create();
 
 genetic.optimize = Genetic.Optimize.Minimize;
@@ -118,7 +118,7 @@ genetic.select2 = Genetic.Select2.FittestRandom;
 let parent = window.opener;
 const globalVariable = {};
 parent = window.opener; //クロスオリジン要求のため、デバッガで起動しないと動かない
-globalVariable.surfNorm = parent.globals.surfNorm;
+globalVariable.surfNormList = parent.globals.surfNormList;
 globalVariable.surfNormListClustered = parent.globals.surfNormListClustered;
 //
 
@@ -289,7 +289,7 @@ function Graph(canvas, xmax, ymax) {
 	this.ctx.scale(dpr, dpr);
 	
 	
-	this.bound = [0,this.width-1,this.height-1,0];
+	this.bound = [0, this.width-1, this.height-1, 0];
 	
 	this.bound[0] += 25;
 	this.bound[1] -= 25;
@@ -308,32 +308,27 @@ Graph.prototype.drawFunction = function(coefficients, strokeStyle, lineWidth) {
 	ctx.strokeStyle = strokeStyle;
 	var xmax = this.xmax;
 	var ymax = this.ymax;
-	var xstride = (bound[1]-bound[3])/xmax;
-	var ystride = (bound[2]-bound[0])/ymax;
-	var inc = 1/xstride;
+	var xstride = (bound[1]-bound[3]) / xmax;
+	var ystride = (bound[2]-bound[0]) / ymax;
+	var inc = 1 / xstride;
 	
 	ctx.lineWidth = lineWidth;
 	
 	ctx.beginPath();
-	var x;
-	for (x=0;x<xmax;x+=inc) {
+	for (let x = 0; x < xmax; x += inc) {
 		var cx = x*xstride + bound[3];
-		var cy = bound[2] - genetic.evaluatePoly(coefficients, x)*ystride;
-		
+		var cy = bound[2] - genetic.evaluatePoly(coefficients, x) * ystride;
 		if (x == 0) {
 			ctx.moveTo(cx, cy);
 		} else {
 			ctx.lineTo(cx, cy);
 		}
 	}
-	
 	ctx.stroke();
-	
 	ctx.restore();
 }
 
 Graph.prototype.draw = function() {
-	
 	var ctx = this.ctx;
 	ctx.save();
 	var bound = this.bound;
@@ -344,8 +339,8 @@ Graph.prototype.draw = function() {
 	
 	var xmax = this.xmax;
 	var ymax = this.ymax;
-	var xstride = (bound[1]-bound[3])/xmax;
-	var ystride = (bound[2]-bound[0])/ymax;
+	var xstride = (bound[1]-bound[3]) / xmax;
+	var ystride = (bound[2]-bound[0]) / ymax;
 
 	// x-grid
 	ctx.strokeStyle = "#fee";
@@ -384,31 +379,31 @@ Graph.prototype.draw = function() {
 	// x bars
 	ctx.strokeStyle = "#000";
 	for (let i = 0; i <= xmax; i += 0.1) {
-		var cx = i*xstride + bound[3];
+		var cx = i * xstride + bound[3];
 		var y = bound[2];
 		
 		ctx.beginPath();
 		ctx.moveTo(cx, y);
-		ctx.lineTo(cx, y+4);
+		ctx.lineTo(cx, y + 4);
 		ctx.stroke();
 		
 		ctx.font = "12px sans-serif";
 		ctx.textAlign = "center";
-		ctx.fillText(i.toPrecision(1), cx, y+16);
+		ctx.fillText((i - xmax / 2).toPrecision(1), cx, y + 16);
 	}
 
 	// y bars
 	for (let i = 0; i <= ymax; i += 0.1) {
 		var cx = bound[3];
-		var y = bound[2] - i*ystride;
+		var y = bound[2] - i * ystride;
 		ctx.beginPath();
 		ctx.moveTo(cx, y);
-		ctx.lineTo(cx-4, y);
+		ctx.lineTo(cx - 4, y);
 		ctx.stroke();
 		
 		ctx.font = "12px sans-serif";
 		ctx.textAlign = "right";
-		ctx.fillText(i.toPrecision(1), cx-8, y+4);
+		ctx.fillText((i - ymax / 2).toPrecision(1), cx - 8, y + 4);
 	}
 		
 	ctx.restore();
@@ -418,28 +413,26 @@ Graph.prototype.draw = function() {
 
 Graph.prototype.drawVertices = function() {
 	
-	var ctx = this.ctx;
+	let ctx = this.ctx;
 	ctx.save();
-	var bound = this.bound;
+	let bound = this.bound;
 	
-	var xmax = this.xmax;
-	var ymax = this.ymax;
-	var xstride = (bound[1]-bound[3])/xmax;
-	var ystride = (bound[2]-bound[0])/ymax;
-	
-	var i;
+	let xmax = this.xmax;
+	let ymax = this.ymax;
+	let xstride = (bound[1] - bound[3]) / xmax;
+	let ystride = (bound[2] - bound[0]) / ymax;
 	
 	ctx.fillStyle = "#000";
 	ctx.strokeStyle = "#fff";
 	ctx.lineWidth = 2;
 	
 	// vertices
-	for (i=0;i<this.vertices.length;++i) {
-		var cx = this.vertices[i][0]*xstride + bound[3];
-		var cy = bound[2] - this.vertices[i][1]*ystride;
+	for (let i = 0; i < this.vertices.length; ++i) {
+		const cx = this.vertices[i][0]*xstride + bound[3];
+		const cy = bound[2] - this.vertices[i][1] * ystride;
 		
 		ctx.beginPath();
-		ctx.arc(cx, cy, 3, 0, 2*Math.PI);
+		ctx.arc(cx, cy, 3, 0, 2 * Math.PI);
 		ctx.fill();
 		ctx.stroke();
 	}
@@ -538,7 +531,14 @@ $(document).ready(function () {
         
 		// 何かを選択したら強制的に法線データが入る
 		let clusterNum = 0;
-        graph.vertices = globalVariable.surfNormListClustered[clusterNum];
+		graph.vertices = globalVariable.surfNormListClustered[clusterNum];
+		// graph.vertices = globalVariable.surfNormList;
+
+		// // これで座標をずらす
+		graph.vertices.forEach(point3D => {
+			point3D[0] += 1;
+			point3D[1] += 1
+		});
         
 		graph.draw();
 		graph.drawVertices();
