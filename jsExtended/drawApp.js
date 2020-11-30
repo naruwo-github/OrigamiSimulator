@@ -1297,10 +1297,9 @@ function initDrawApp(globals) {
     globals.surfNormListClustered = clusteredSurfNormList;
 
     // // 必要に応じてコメントアウトをはずそう
-    // let vectorListFileReader = new FileReader();
-    // makeTextOfLists(vectorListFileReader, surfaceNorm);
-    // // TODO: これがあるとファイルダウンロードはできるけどエラーる
-    // downloadFile("vectorList.txt", vectorListFileReader.text);
+    let vectorListFileReader = new FileReader();
+    makeTextOfLists(vectorListFileReader, surfaceNorm);
+    downloadFile("vectorList.txt", vectorListFileReader.text);
   }
 
 

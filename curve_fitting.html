@@ -240,8 +240,6 @@ genetic.notification = function(pop, generation, stats, isFinished) {
 			graph.solutions.push(pop[0].entity);
 			graph.last = str;
 		}
-		
-		
 
 		graph.draw();
 		
@@ -260,11 +258,9 @@ genetic.notification = function(pop, generation, stats, isFinished) {
 			var strokeStyle = "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
 			var lineWidth = Math.floor(lerp(10,1,p));
 
-		
 			//var strokeStyle = i == graph.solutions.length-1 ? "#00f" : "rgba(0,0,0,0.1)";
 			graph.drawFunction(graph.solutions[i], strokeStyle, lineWidth);
 		}
-	
 	
 		graph.drawVertices();
 	}
@@ -618,6 +614,5 @@ function rotate2DPoint(x, y, theta) {
 }
 
 </script>
-
 </body>
 </html>
