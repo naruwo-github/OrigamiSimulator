@@ -574,7 +574,7 @@ inputFile.addEventListener("change", function(e) {
 		// console.log(reader.result);
 		let inputLine = reader.result.split("\n");
 		// console.log(inputLine);
-		let pointList = [[], [], []];
+		let pointList = [[], [], [], []];
 		inputLine.forEach(line => {
 			let tmpList = line.split(",");
 			let clusterNum = Number(tmpList[0]);
@@ -598,7 +598,7 @@ inputFile.addEventListener("change", function(e) {
 		// これで座標をずらす
 		graph.vertices.forEach(point3D => {
 			point3D[0] += 1;
-			point3D[1] += 1
+			point3D[1] += 1;
 		});
 
 		graph.draw();
