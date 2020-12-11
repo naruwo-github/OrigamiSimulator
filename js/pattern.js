@@ -167,9 +167,14 @@ function initPattern(globals){
         parsePolyline(_verticesRaw, _segmentsRaw, $polylines.filter(filter));
     }
 
-    function applyTransformation(vertex, transformations){
-        if (transformations == undefined) return;
-        transformations = transformations.baseVal;
+    function applyTransformation(vertex, element){
+        var transformations = [];
+        var ancestor = element;
+        do {
+            if (ancestor.transform)
+                transformations.push.apply(transformations, ancestor.transform.baseVal);
+            ancestor = ancestor.parentNode;
+        } while (ancestor && ancestor.nodeName !== 'svg');
         for (var i=0;i<transformations.length;i++){
             var t = transformations[i];
             var M = [[t.matrix.a, t.matrix.c, t.matrix.e], [t.matrix.b, t.matrix.d, t.matrix.f], [0,0,1]];
@@ -280,7 +285,7 @@ function initPattern(globals){
                 }
             }
             for (let j = 0; j < pathVertices.length; j++) {
-                applyTransformation(pathVertices[j], path.transform);
+                applyTransformation(pathVertices[j], path);
             }
         }
     }
@@ -292,8 +297,8 @@ function initPattern(globals){
             _verticesRaw.push(new THREE.Vector3(element.x2.baseVal.value, 0, element.y2.baseVal.value));
             _segmentsRaw.push([_verticesRaw.length-2, _verticesRaw.length-1]);
             if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
-            applyTransformation(_verticesRaw[_verticesRaw.length-2], element.transform);
-            applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
+            applyTransformation(_verticesRaw[_verticesRaw.length-2], element);
+            applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
         }
     }
 
@@ -314,7 +319,7 @@ function initPattern(globals){
             _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-4]);
             for (var j=1;j<=4;j++){
                 if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-j].push(element.targetAngle);
-                applyTransformation(_verticesRaw[_verticesRaw.length-j], element.transform);
+                applyTransformation(_verticesRaw[_verticesRaw.length-j], element);
             }
         }
     }
@@ -324,7 +329,7 @@ function initPattern(globals){
             var element = $elements[i];
             for (var j=0;j<element.points.length;j++){
                 _verticesRaw.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
-                applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
+                applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
 
                 if (j<element.points.length-1) _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length]);
                 else _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-element.points.length]);
@@ -339,7 +344,7 @@ function initPattern(globals){
             var element = $elements[i];
             for (var j=0;j<element.points.length;j++){
                 _verticesRaw.push(new THREE.Vector3(element.points[j].x, 0, element.points[j].y));
-                applyTransformation(_verticesRaw[_verticesRaw.length-1], element.transform);
+                applyTransformation(_verticesRaw[_verticesRaw.length-1], element);
                 if (j>0) {
                     _segmentsRaw.push([_verticesRaw.length-1, _verticesRaw.length-2]);
                     if (element.targetAngle) _segmentsRaw[_segmentsRaw.length-1].push(element.targetAngle);
@@ -822,14 +827,30 @@ function initPattern(globals){
 
     function processFold(fold, returnCreaseParams){
 
-        rawFold = JSON.parse(JSON.stringify(fold));//save pre-triangulated for for save later
-        //make 3d
-        for (var i=0;i<rawFold.vertices_coords.length;i++){
-            var vertex = rawFold.vertices_coords[i];
-            if (vertex.length === 2) {//make vertices_coords 3d
-                rawFold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
+        // rawFold = JSON.parse(JSON.stringify(fold));//save pre-triangulated for for save later
+        // //make 3d
+        // for (var i=0;i<rawFold.vertices_coords.length;i++){
+        //     var vertex = rawFold.vertices_coords[i];
+        //     if (vertex.length === 2) {//make vertices_coords 3d
+        //         rawFold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
+        //     }
+        // }
+        
+        //add missing coordinates to make 3d, mapping (x,y) -> (x,0,z)
+        //This is against the FOLD spec which says that, beyond two dimensions,
+        //"all unspecified coordinates are implicitly zero"...
+        var is2d = true;
+        for (var i=0;i<fold.vertices_coords.length;i++){
+            var vertex = fold.vertices_coords[i];
+            if (vertex.length === 2) {
+                fold.vertices_coords[i] = [vertex[0], 0, vertex[1]];
+            } else {
+                is2d = false;
             }
         }
+
+        //save pre-triangulated faces for later saveFOLD()
+        rawFold = JSON.parse(JSON.stringify(fold));
 
         var cuts = FOLD.filter.cutEdges(fold);
         if (cuts.length>0) {
@@ -840,7 +861,8 @@ function initPattern(globals){
         delete fold.vertices_vertices;
         delete fold.vertices_edges;
 
-        foldData = triangulatePolys(fold, true);
+        // foldData = triangulatePolys(fold, true);
+        foldData = triangulatePolys(fold, is2d);
 
         for (let i = 0; i < foldData.vertices_coords.length; i++) {
             let vertex = foldData.vertices_coords[i];
@@ -1298,18 +1320,56 @@ function initPattern(globals){
             }
 
             var faceVert = [];
-            for (var j=0;j<face.length;j++){
-                var vertex = vertices[face[j]];
-                faceVert.push(vertex[0]);
-                faceVert.push(vertex[1]);
-                if (!is2d) faceVert.push(vertex[2]);
+            var triangles = [];
+            if (is2d) {
+                for (var j=0;j<face.length;j++){
+                    var vertex = vertices[face[j]];
+                    faceVert.push(vertex[0]);
+                    faceVert.push(vertex[2]);
+                }
+                triangles = earcut(faceVert, null, 2);
+            } else {
+                // earcut only uses the two first coordinates for triangulation...
+                // as a fix, we try each of the dimension combinations until we get a result
+                for (var j=2; j>=0; j--) {
+                    faceVert = [];
+                    for (var k=0;k<face.length;k++){
+                        var vertex = vertices[face[k]];
+                        faceVert.push(vertex[j]);
+                        faceVert.push(vertex[(j + 1) % 3]);
+                        faceVert.push(vertex[(j + 2) % 3]);
+                    }
+                    triangles = earcut(faceVert, null, 3);
+                    // make sure we got *enough* triangle to cover the face
+                    if (triangles.length >= 3 * (face.length - 2)) break;
+                }
             }
 
-            //ここで三角形分割を行なっている
-            var triangles = earcut(faceVert, null, is2d? 2:3);
+            // triangles from earcut() can have backwards winding relative to original face
+            // [https://github.com/mapbox/earcut/issues/44]
+            // we look for the first edge of the original face among the triangles;
+            // if it appears reversed in any triangle, we flip all triangles
+            var needsFlip = null;
+            for (var j=0;j<triangles.length;j+=3){
+                for (var k=0; k<3; k++) {
+                    if (triangles[j + k] === 0 && triangles[j + (k+1)%3] === 1) {
+                        needsFlip = false;
+                        break;
+                    } else if (triangles[j + k] === 1 && triangles[j + (k+1)%3] === 0) {
+                        needsFlip = true;
+                        break;
+                    }
+                }
+                if (needsFlip != null) break;
+            }
 
             for (var j=0;j<triangles.length;j+=3){
-                var tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
+                var tri;
+                if (needsFlip) {
+                    tri = [face[triangles[j+2]], face[triangles[j+1]], face[triangles[j]]];
+                } else {
+                    tri = [face[triangles[j]], face[triangles[j+1]], face[triangles[j+2]]];
+                }
                 var foundEdges = [false, false, false];//ab, bc, ca
 
                 for (var k=0;k<faceEdges.length;k++){
