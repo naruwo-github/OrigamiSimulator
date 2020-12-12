@@ -427,17 +427,17 @@ function initDrawApp(globals) {
       //   globals.grids.drawParentHexagon(regularTrianglationTool.points, regularTrianglationTool.structure, context, gridLineList, lineColors[3]);
       // }
 
-      if (!autoMeshFlag) {
-        //分割しないやつ
+      if (!autoMeshFlag) { // 合同な正三角形のタイリング
+        // 分割しないやつ
         if (regularTrianglationTool.points.length%4 == 0) {
           globals.grids.regularTrianglation(regularTrianglationTool.points, triangleEdgeDenominator, context, gridLineList, lineColors[3]);
         }
       } else {
-        //分割ありのやつ
+        // 分割ありのやつ
         if (regularTrianglationTool.points.length >= 4) {
           globals.grids.makeParentHexagon(regularTrianglationTool);
 
-          //自動分割する
+          // 自動分割する
           if (autoMeshFlag) {
             globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child0, Hmin, Hmax, globals.svgInformation);
             globals.grids.autoMeshRegularTriangle(regularTrianglationTool.structure.child1, Hmin, Hmax, globals.svgInformation);
@@ -611,54 +611,52 @@ function initDrawApp(globals) {
   //=====================================================
 
 
-
-
-  //canvas内のクリック判定
+  // canvas内のクリック判定
   canvas.addEventListener("click", e => {
-    //クリックした点が展開図情報内の点のいずれかに近い場合、
-    //重ねて配置したいと判定する
-    var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
-    var tmpDist = dist(e.offsetX,e.offsetY,ret[0],ret[1]);
+    // クリックした点が展開図情報内の点のいずれかに近い場合、
+    // 重ねて配置したいと判定する
+    var ret = globals.beziercurve.returnNearCoordinates(globals.svgInformation, e.offsetX, e.offsetY);
+    var tmpDist = dist(e.offsetX, e.offsetY, ret[0], ret[1]);
 
-    if(straight === true) { //直線ツールがON!!
-      if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
+    if(straight === true) { // 直線ツールがON!!
+      if(tmpDist < 10){ // distが10未満なら頂点に入力点を重ねる
         straightLineList.push([ret[0], ret[1]]);
-      }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
+      }else { // 10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         straightLineList.push([e.offsetX, e.offsetY]);
       }
-    } else if(ruling1 === true) { //ベジェ曲線ツールがON!!
-      //特に処理はない
+    } else if(ruling1 === true) { // ベジェ曲線ツールがON!!
+      // 特に処理はない
     } else if(ruling2 === true) {
-      var closest = globals.beziercurve.returnNearCoordinates(globals.svgInformation,e.offsetX,e.offsetY);
+      var closest = globals.beziercurve.returnNearCoordinates(globals.svgInformation, e.offsetX, e.offsetY);
       ru2array.push(closest);
-    } else if(gridTool.flag === true) { //GridTool!!
-      if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
+    } else if(gridTool.flag === true) { // GridTool!!
+      if(tmpDist < 10){ // distが10未満なら頂点に入力点を重ねる
         gridTool.points.push([ret[0], ret[1]]);
-      }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
+      }else { // 10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         gridTool.points.push([e.offsetX, e.offsetY]);
       }
-    } else if(regularTrianglationTool.flag === true) { //正三角形ツール
-      if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
+    } else if(regularTrianglationTool.flag === true) { // 正三角形ツール
+      if(tmpDist < 10){ // distが10未満なら頂点に入力点を重ねる
         regularTrianglationTool.points.push([ret[0], ret[1]]);
-      }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
+      }else { // 10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         regularTrianglationTool.points.push([e.offsetX, e.offsetY]);
       }
     } else if(qtreeFlag === true) {
-      if(tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
+      if(tmpDist < 10){ // distが10未満なら頂点に入力点を重ねる
         q_tree.points.push([ret[0], ret[1]]);
-      }else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
+      }else { // 10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         q_tree.points.push([e.offsetX, e.offsetY]);
       }
     } else if(anchorPoints.flag) {
       anchorPoints.points.push([e.offsetX, e.offsetY]);
     } else if (terminalInputButton.flag) {
-      if (tmpDist < 10){ //distが10未満なら頂点に入力点を重ねる
+      if (tmpDist < 10){ // distが10未満なら頂点に入力点を重ねる
         terminalInputButton.points.push([ret[0], ret[1]]);
-      } else { //10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
+      } else { // 10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         terminalInputButton.points.push([e.offsetX, e.offsetY]);
       }
     } else {
-     canvasReload(); //canvasのリロード
+     canvasReload(); // canvasのリロード
      readerFile.readAsText(globals.svgFile); //svgファイルをテキストで取得
     }
     canvasReload(); //canvasのリロード
