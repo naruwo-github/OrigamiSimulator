@@ -1164,19 +1164,23 @@ function initDrawApp(globals) {
     //canvas初期化
     $('#draw-area').attr('width', globals.svgimg.width);  //canvasリサイズ
     $('#draw-area').attr('height', globals.svgimg.height);
-    //展開図情報の描画
-    drawDevelopment(globals.svgInformation,context);
+    // 展開図情報の描画
+    drawDevelopment(globals.svgInformation, context);
   }
 
-  //展開図情報を描画するメソッド
-  function drawDevelopment(info,ctx) {
+  //
+  let tmpDiff = 50;
+  //
+
+  // NOTE: 展開図情報を描画するメソッド
+  function drawDevelopment(info, ctx) {
     for(var i = 0; i < info.stroke.length; i++) {
-      //drawLine(ctx,info.stroke[i],info.stroke_width[i],info.x1,info.y1,info.x2,info.y2);
-      drawLine(ctx,"rgb("+String(hex2rgb(info.stroke[i]))+")", Number(info.stroke_width[i]), parseInt(info.x1[i]), parseInt(info.y1[i]), parseInt(info.x2[i]), parseInt(info.y2[i]));
+      // drawLine(ctx,"rgb("+String(hex2rgb(info.stroke[i]))+")", Number(info.stroke_width[i]), parseInt(info.x1[i]), parseInt(info.y1[i]), parseInt(info.x2[i]), parseInt(info.y2[i]));
+      drawLine(ctx,"rgb("+String(hex2rgb(info.stroke[i]))+")", Number(info.stroke_width[i]), parseInt(info.x1[i])+tmpDiff, parseInt(info.y1[i])+tmpDiff, parseInt(info.x2[i])+tmpDiff, parseInt(info.y2[i])+tmpDiff);
       // 点
       ctx.fillStyle = "rgb(134, 74, 43)";
-      ctx.fillRect(parseInt(info.x1[i])-3,parseInt(info.y1[i])-3,7,7);
-      ctx.fillRect(parseInt(info.x2[i])-3,parseInt(info.y2[i])-3,7,7);
+      ctx.fillRect(parseInt(info.x1[i])+tmpDiff-3,parseInt(info.y1[i])+tmpDiff-3,7,7);
+      ctx.fillRect(parseInt(info.x2[i])+tmpDiff-3,parseInt(info.y2[i])+tmpDiff-3,7,7);
     }
   }
 

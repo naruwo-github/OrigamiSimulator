@@ -160,23 +160,29 @@ function initBezierCurve(globals){
         return [rx, ry];
     }
 
-    //座標列(info.x1,info.y1)または(info.x2,info.y2)の中から
-    //(ex,ey)から最短の座標(nx,ny)を返すメソッド
+
+    //
+    let tmpDiff = 50;
+    //
+
+
+    // 座標列(info.x1,info.y1)または(info.x2,info.y2)の中から
+    // (ex,ey)から最短の座標(nx,ny)を返すメソッド
     function returnNearCoordinates(info, ex, ey) {
-        //console.log("これは↓、展開図情報に含まれる頂点の集合を表す配列");
-        //console.log(info);
+        // console.log("これは↓、展開図情報に含まれる頂点の集合を表す配列");
+        // console.log(info);
         var i, nx, ny;
         var distance = 10000;
         var tmp = 10000;
-        var index = [10000,10000];//0番目が1,2どっちか、1番目がiを表す
+        var index = [10000,10000]; // 0番目が1,2どっちか、1番目がiを表す
         for (i = 0; i < info.stroke.length; i++) {
-            distance = dist(info.x1[i], info.y1[i], ex, ey);
+            distance = dist(info.x1[i]+tmpDiff, info.y1[i]+tmpDiff, ex, ey);
             if (tmp > distance) {
                 tmp = distance;
                 index[0] = 1;
                 index[1] = i;
             }
-            distance = dist(info.x2[i], info.y2[i], ex, ey);
+            distance = dist(info.x2[i]+tmpDiff, info.y2[i]+tmpDiff, ex, ey);
             if (tmp > distance) {
                 tmp = distance;
                 index[0] = 2;
@@ -184,11 +190,11 @@ function initBezierCurve(globals){
             }
         }
         if (index[0] == 1) {
-            nx = info.x1[index[1]];
-            ny = info.y1[index[1]];
+            nx = info.x1[index[1]]+tmpDiff;
+            ny = info.y1[index[1]]+tmpDiff;
         } else {
-            nx = info.x2[index[1]];
-            ny = info.y2[index[1]];
+            nx = info.x2[index[1]]+tmpDiff;
+            ny = info.y2[index[1]]+tmpDiff;
         }
         return [nx, ny];//最短の座標。x1かx2かの情報はいらないよね？
     }

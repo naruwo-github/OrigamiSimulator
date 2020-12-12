@@ -553,6 +553,10 @@ function initPattern(globals){
                 g.appendChild(line);
             }
 
+            //
+            let tmpDiff = 50;
+            //
+
             //grid line
             for(let i = 0; i < gridList.length; i++){
                 let line = document.createElementNS(ns, 'line');
@@ -565,10 +569,10 @@ function initPattern(globals){
                 // line.setAttribute('y1', parseInt(element[0][1]));
                 // line.setAttribute('x2', parseInt(element[1][0]));
                 // line.setAttribute('y2', parseInt(element[1][1]));
-                line.setAttribute('x1', element[0][0]);
-                line.setAttribute('y1', element[0][1]);
-                line.setAttribute('x2', element[1][0]);
-                line.setAttribute('y2', element[1][1]);
+                line.setAttribute('x1', element[0][0]-tmpDiff);
+                line.setAttribute('y1', element[0][1]-tmpDiff);
+                line.setAttribute('x2', element[1][0]-tmpDiff);
+                line.setAttribute('y2', element[1][1]-tmpDiff);
                 g.appendChild(line);
             }
 
