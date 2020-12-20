@@ -1225,13 +1225,38 @@
         <!-- Errorのところ(最大値、最小値を追加した) -->
         <div id="errorInfo" class="hide smallTxt doubleIndent">
             <div>
-                    <label>Average vertex error: <span id="globalError"></span></label>
+                <label>Average vertex error: <span id="globalError"></span></label>
             </div>
             <div>
                 <label>Max vertex error: <span id="globalErrorMax"></span></label>
             </div>
             <div>
                 <label>Min vertex error: <span id="globalErrorMin"></span></label>
+            </div>
+        </div>
+    </div><br/>
+
+    <div class="fullWidth">
+        <a href="#" class="seeMore closed" data-id="additionalInfo"><span class="fui-triangle-down"></span><b>Additional Info:</b></a><a class="about" href="#" id="additional"><span class="fui-question-circle"></span></a><br/>
+        <!-- 不足角 -->
+        <div id="additionalInfo" class="hide smallTxt doubleIndent">
+            <div>
+                <label>average lack angle: <span id="lackAngleAvg"></span></label>
+            </div>
+            <div>
+                <label>Max lack angle: <span id="lackAngleMax"></span></label>
+            </div>
+            <div>
+                <label>Min lack angle: <span id="lackAngleMin"></span></label>
+            </div>
+            <div>
+                <label>original mesh area: <span id="originalMeshArea"></span></label>
+            </div>
+            <div>
+                <label>now mesh area: <span id="nowMeshArea"></span></label>
+            </div>
+            <div>
+                <label>area ratio: <span id="areaRatio"></span></label>
             </div>
         </div>
     </div><br/>

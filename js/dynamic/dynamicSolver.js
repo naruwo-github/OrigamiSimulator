@@ -37,8 +37,9 @@ function initDynamicSolver(globals){
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
-    //
+    // 追加したもの
     var avgOriginalPosition;
+    var meshArea;
 
     function syncNodesAndEdges(){
         nodes = globals.model.getNodes();
@@ -53,7 +54,9 @@ function initDynamicSolver(globals){
         initTexturesAndPrograms(globals.gpuMath);
         setSolveParams();
 
+        // 追加したもの
         avgOriginalPosition = getAvgOriginalPosition();
+        meshArea = originalTriangleMeshArea();
     }
 
     var programsInited = false;//flag for initial setup
@@ -190,6 +193,15 @@ function initDynamicSolver(globals){
     var $errorOutput2 = $("#globalErrorMax");
     var $errorOutput3 = $("#globalErrorMin");
 
+    // 不足角のやつ
+    let $lackAngleAvgOutput = $("#lackAngleAvg");
+    let $lackAngleMaxOutput = $("#lackAngleMax");
+    let $lackAngleMinOutput = $("#lackAngleMin");
+    // 三角形の面積比率のやつ
+    let $originalMeshAreaOutput = $("#originalMeshArea");
+    let $nowMeshAreaOutput = $("#nowMeshArea");
+    let $areaRatioOutput = $("#areaRatio");
+
     function getAvgPosition(){
         var xavg = 0;
         var yavg = 0;
@@ -231,6 +243,27 @@ function initDynamicSolver(globals){
             return true;
         }
         return false;
+    }
+
+    // メッシュ全体の面積を返す
+    function originalTriangleMeshArea() {
+        let meshAreaSum = 0;
+        faces.forEach(e => {
+            let posA = nodes[e[0]]._originalPosition;
+            let posB = nodes[e[1]]._originalPosition;
+            let posC = nodes[e[2]]._originalPosition;
+            meshAreaSum += getTriangleArea2D(posA.x, posA.z, posB.x, posB.z, posC.x, posC.z);
+        });
+        return meshAreaSum;
+    }
+
+    function getTriangleArea2D(x1, y1, x2, y2, x3, y3) {
+        return 1/2 * Math.abs((x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3));
+    }
+
+    // 三次元の二つのベクトル成分から、それらが構成する三角形の面積を返す
+    function getTriangleArea3D(vecA1, vecA2, vecA3, vecB1, vecB2, vecB3) {
+        return 1/2 * Math.sqrt(Math.pow(vecA2*vecB3 - vecA3*vecB2, 2) + Math.pow(vecA3*vecB1 - vecA1*vecB3, 2) + Math.pow(vecA1*vecB2 - vecA2*vecB1, 2));
     }
 
     function render(){
@@ -279,6 +312,26 @@ function initDynamicSolver(globals){
             $errorOutput.html((globalError/nodes.length).toFixed(7) + " %");
             $errorOutput2.html(globalError2.toFixed(7) + " %");
             $errorOutput3.html(globalError3.toFixed(7) + " %");
+
+            // 不足角の表示
+            // console.log(positions);
+            let nowMeshArea = 0;
+            faces.forEach(e => {
+                let posA = [positions[3 * e[0] + 0], positions[3 * e[0] + 1], positions[3 * e[0] + 2]];
+                let posB = [positions[3 * e[1] + 0], positions[3 * e[1] + 1], positions[3 * e[1] + 2]];
+                let posC = [positions[3 * e[2] + 0], positions[3 * e[2] + 1], positions[3 * e[2] + 2]];
+                // Y座標を考慮して面積を出す
+                let vecAB = [posB[0]-posA[0], posB[1]-posA[1], posB[2]-posA[2]];
+                let vecAC = [posC[0]-posA[0], posC[1]-posA[1], posC[2]-posA[2]];
+                nowMeshArea += getTriangleArea3D(vecAB[0], vecAB[1], vecAB[2], vecAC[0], vecAC[1], vecAC[2]);
+            });
+            // 三角形メッシュ面積の比
+            $originalMeshAreaOutput.html((meshArea).toFixed(7));
+            $nowMeshAreaOutput.html((nowMeshArea).toFixed(7));
+            $areaRatioOutput.html((nowMeshArea / meshArea).toFixed(7));
+            // $lackAngleAvgOutput.html((globalError/nodes.length).toFixed(7) + " %");
+            // $lackAngleMaxOutput.html((globalError/nodes.length).toFixed(7) + " %");
+            // $lackAngleMinOutput.html((globalError/nodes.length).toFixed(7) + " %");
 
         } else {
             console.log("shouldn't be here");
