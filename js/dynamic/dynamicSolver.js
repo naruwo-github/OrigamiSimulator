@@ -385,45 +385,19 @@ function initDynamicSolver(globals){
         }
     }
 
-    // 三点p0, p1, p2から、角度p1を算出する関数（π(ラジアン)ではなくて度で表す）
-    function calculateAngleByCoords(p0, p1, p2) {
-        let angle = 0; // 度だよ
-        // const vec0 = new THREE.Vector3(p0[0], p0[1], p0[2]);
-        // const vec1 = new THREE.Vector3(p1[0], p1[1], p1[2]);
-        // const vec2 = new THREE.Vector3(p2[0], p2[1], p2[2]);
+    // 三点p0, p1, p2から、角度p1を算出する関数（radianではなくてdegreeで表す）
+    function calculateAngleByCoords(p0, p1, p2) { // pi = [a, b, c]の形式
+        let angle = 0;
         const vec10 = new THREE.Vector3(p0[0] - p1[0], p0[1] - p1[1], p0[2] - p1[2]);
         const vec12 = new THREE.Vector3(p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]);
         // vec10とvec12が成す角をThetaとすると
-        const cosTheta = ;
+        const numerator = (vec10.x * vec12.x + vec10.y * vec12.y + vec10.z * vec12.z);
+        const denominator = (Math.sqrt(vec10.x * vec10.x + vec10.y * vec10.y + vec10.z * vec10.z) * Math.sqrt(vec12.x * vec12.x + vec12.y * vec12.y + vec12.z * vec12.z));
+        const cosTheta = numerator / denominator;
         const theta = Math.acos(cosTheta);
-        // TODO: thetaをラジアンから度に直す
+        angle = theta * 180 / Math.PI; // radianからdegreeに直す
         return angle;
     }
-
-    // ***
-    // 不足角を返すようにする関数の例
-    // function getTotalAngleDefect() {
-    //     let omegaTotal = 0;
-    //     for (let i = 0; i < nodes.length; i++) {
-    //         const node = nodes[i];
-    //         // TODO: ＊nodeに隣接してるノードたちを得る=>adjacentNodes
-    //         const adjacentNodes = [];
-    //         // TODO: ＊adjacentNodesを、nodeを囲む順に整形する=>adjacentNodesFixed
-    //         const adjacentNodesFixed = [];
-    //         let localOmega = 0;
-    //         for (let j = 0; j < adjacentNodesFixed.length - 1; j++) {
-    //             const node1 = adjacentNodesFixed[j];
-    //             const node2 = adjacentNodesFixed[j + 1];
-    //             // TODO: node1, node, node2から角度(node1, node, node2)を計算する=>omega
-    //             const omega = 0;
-    //             localOmega += omega;
-    //         }
-    //         omegaTotal += localOmega;
-    //         // NOTE: ＊360、180、90の場合があるから気をつけて
-    //     }
-    //     return omegaTotal;
-    // }
-    // ***
 
     function setSolveParams(){
         var dt = calcDt();
