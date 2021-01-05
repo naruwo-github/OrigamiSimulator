@@ -399,6 +399,28 @@ function initDynamicSolver(globals){
         return angle;
     }
 
+    function husokukaku() {
+        let angles = [], originalAngles = [];
+        for (let i = 0; i < faces.length; i++) {
+            const face = faces[i];
+            const vert0 = nodes[face[0]], vert1 = nodes[face[1]], vert2 = nodes[face[2]];
+            // vert0
+            angles.push(arccos(vert0.getPosition(), vert1.getPosition(), vert2.getPosition()));
+            originalAngles.push(arccos(vert0.getOriginalPosition(), vert1.getOriginalPosition(), vert2.getOriginalPosition()));
+            // vert1
+            angles.push(arccos(vert1.getPosition(), vert0.getPosition(), vert2.getPosition()));
+            originalAngles.push(arccos(vert1.getOriginalPosition(), vert0.getOriginalPosition(), vert2.getOriginalPosition()));
+            // vert2
+            angles.push(arccos(vert2.getPosition(), vert0.getPosition(), vert1.getPosition()));
+            originalAngles.push(arccos(vert2.getOriginalPosition(), vert0.getOriginalPosition(), vert1.getOriginalPosition()));
+        }
+        let error = 0;
+        for (let i = 0; i < angles.length; i++) {
+            error += Math.pow(angles[i]-originalAngles[i], 2);
+        }
+        console.log(error/angles.length); // 不足角の表示
+    }
+
     function setSolveParams(){
         var dt = calcDt();
         $("#deltaT").html(dt);
