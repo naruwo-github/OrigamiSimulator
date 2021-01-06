@@ -93,7 +93,9 @@ convert.vertices_vertices_to_faces_vertices = function(fold) {
     face = [u, v];
     while (w !== face[0]) { //w(next[uv]="a,b":cのc値)が、[u,v]のu("a,b":cのa値)と違う間回るループ
       if (w === null) {
-        //面が欠けている時は、ここに入ってしまう？
+        // 面が欠けている時は、ここに入ってしまう？
+        console.log("欠落");
+        $("#lackOfFacesText").attr("color", "#ff0000");
         console.warn('Confusion with face', face);
         break;
       }
