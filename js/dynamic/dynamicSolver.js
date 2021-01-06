@@ -331,72 +331,125 @@ function initDynamicSolver(globals){
             $areaRatioOutput.html((nowMeshArea / meshArea).toFixed(7));
             // ***
 
-            // ***
-            let nodesCoordinates = []; // 変形中の各座標(3D)
-            for (let i = 0; i < positions.length; i+=3) {
-                const x = positions[i];
-                const y = positions[i+1];
-                const z = positions[i+2];
-                nodesCoordinates.push([x, y, z]);
-            }
-            // ある頂点についての不足角を求める
-            let angleDefectTotal = 0;
-            let angleDefectMax = 0;
-            let angleDefectMin = 100000;
-            for (let i = 0; i < nodesCoordinates.length; i++) {
-                // ある頂点iを含む三角形面情報=>三角形を構成する3つの頂点のインデックス(うち一つはiである)
-                const constructFaces = faces.filter(item => item.includes(i));
-                let angleAroundI = 0;
-                for (let j = 0; j < constructFaces.length; j++) {
-                    const face = constructFaces[j];
-                    // 面faceを構成する各頂点
-                    const p0 = nodesCoordinates[face[0]];
-                    const p1 = nodesCoordinates[face[1]];
-                    const p2 = nodesCoordinates[face[2]];
-                    const pi = nodesCoordinates[i]; // こいつの角度を求めるべし
-                    // 角度piを求める
-                    if (p0 === pi) {
-                        // 角度p1 p0 p2
-                        angleAroundI += calculateAngleByCoords(p1, p0, p2);
-                    } else if (p1 === pi) {
-                        // 角度p0 p1 p2
-                        angleAroundI += calculateAngleByCoords(p0, p1, p2);
-                    } else if (p2 === pi) {
-                        //  角度p0 p2 p1
-                        angleAroundI += calculateAngleByCoords(p0, p2, p1);
-                    }
-                }
-                let angleDefectAroundI = Math.min(Math.abs(angleAroundI - 360), Math.abs(angleAroundI - 180), Math.abs(angleAroundI - 90));
-                angleDefectTotal += angleDefectAroundI;
-                if (angleDefectMax < angleDefectAroundI) {
-                    angleDefectMax = angleDefectAroundI;
-                } else {
-                    angleDefectMin = angleDefectAroundI;
-                }
-            }
-            // 不足角の表示
-            $lackAngleAvgOutput.html((angleDefectTotal / nodesCoordinates.length).toFixed(7));
-            $lackAngleMaxOutput.html(angleDefectMax.toFixed(7));
-            $lackAngleMinOutput.html(angleDefectMin.toFixed(7));
-            // ***
+            // 佐々木くんのコード！！！
+            husokukaku();
+            // // ***
+            // let nodesCoordinates = []; // 変形中の各座標(3D)
+            // for (let i = 0; i < positions.length; i+=3) {
+            //     const x = positions[i];
+            //     const y = positions[i+1];
+            //     const z = positions[i+2];
+            //     nodesCoordinates.push([x, y, z]);
+            // }
+            // // ある頂点についての不足角を求める
+            // let angleDefectTotal = 0;
+            // let angleDefectMax = 0;
+            // let angleDefectMin = 100000;
+            // for (let i = 0; i < nodesCoordinates.length; i++) {
+            //     // ある頂点iを含む三角形面情報=>三角形を構成する3つの頂点のインデックス(うち一つはiである)
+            //     const constructFaces = faces.filter(item => item.includes(i));
+            //     let angleAroundI = 0;
+            //     for (let j = 0; j < constructFaces.length; j++) {
+            //         const face = constructFaces[j];
+            //         // 面faceを構成する各頂点
+            //         const p0 = nodesCoordinates[face[0]];
+            //         const p1 = nodesCoordinates[face[1]];
+            //         const p2 = nodesCoordinates[face[2]];
+            //         const pi = nodesCoordinates[i]; // こいつの角度を求めるべし
+            //         // 角度piを求める
+            //         if (p0 === pi) {
+            //             // 角度p1 p0 p2
+            //             angleAroundI += calculateAngleByCoords(p1, p0, p2);
+            //         } else if (p1 === pi) {
+            //             // 角度p0 p1 p2
+            //             angleAroundI += calculateAngleByCoords(p0, p1, p2);
+            //         } else if (p2 === pi) {
+            //             //  角度p0 p2 p1
+            //             angleAroundI += calculateAngleByCoords(p0, p2, p1);
+            //         }
+            //     }
+            //     let angleDefectAroundI = Math.min(Math.abs(angleAroundI - 360), Math.abs(angleAroundI - 180), Math.abs(angleAroundI - 90));
+            //     angleDefectTotal += angleDefectAroundI;
+            //     if (angleDefectMax < angleDefectAroundI) {
+            //         angleDefectMax = angleDefectAroundI;
+            //     } else {
+            //         angleDefectMin = angleDefectAroundI;
+            //     }
+            // }
+            // // 不足角の表示
+            // $lackAngleAvgOutput.html((angleDefectTotal / nodesCoordinates.length).toFixed(7));
+            // $lackAngleMaxOutput.html(angleDefectMax.toFixed(7));
+            // $lackAngleMinOutput.html(angleDefectMin.toFixed(7));
+            // // ***
 
         } else {
             console.log("shouldn't be here");
         }
     }
 
-    // 三点p0, p1, p2から、角度p1を算出する関数（radianではなくてdegreeで表す）
-    function calculateAngleByCoords(p0, p1, p2) { // pi = [a, b, c]の形式
-        let angle = 0;
-        const vec10 = new THREE.Vector3(p0[0] - p1[0], p0[1] - p1[1], p0[2] - p1[2]);
-        const vec12 = new THREE.Vector3(p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]);
-        // vec10とvec12が成す角をThetaとすると
-        const numerator = (vec10.x * vec12.x + vec10.y * vec12.y + vec10.z * vec12.z);
-        const denominator = (Math.sqrt(vec10.x * vec10.x + vec10.y * vec10.y + vec10.z * vec10.z) * Math.sqrt(vec12.x * vec12.x + vec12.y * vec12.y + vec12.z * vec12.z));
-        const cosTheta = numerator / denominator;
-        const theta = Math.acos(cosTheta);
-        angle = theta * 180 / Math.PI; // radianからdegreeに直す
-        return angle;
+    // // 三点p0, p1, p2から、角度p1を算出する関数（radianではなくてdegreeで表す）
+    // function calculateAngleByCoords(p0, p1, p2) { // pi = [a, b, c]の形式
+    //     let angle = 0;
+    //     const vec10 = new THREE.Vector3(p0[0] - p1[0], p0[1] - p1[1], p0[2] - p1[2]);
+    //     const vec12 = new THREE.Vector3(p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]);
+    //     // vec10とvec12が成す角をThetaとすると
+    //     const numerator = (vec10.x * vec12.x + vec10.y * vec12.y + vec10.z * vec12.z);
+    //     const denominator = (Math.sqrt(vec10.x * vec10.x + vec10.y * vec10.y + vec10.z * vec10.z) * Math.sqrt(vec12.x * vec12.x + vec12.y * vec12.y + vec12.z * vec12.z));
+    //     const cosTheta = numerator / denominator;
+    //     const theta = Math.acos(cosTheta);
+    //     angle = theta * 180 / Math.PI; // radianからdegreeに直す
+    //     return angle;
+    // }
+
+    function arccos(vert0, vert1, vert2) {
+        const vec01 = vert1.sub(vert0);
+        const vec02 = vert2.sub(vert0);
+        const cos = vec01.dot(vec02)/(vec01.length()*vec02.length());
+        return Math.acos(cos);
+    }
+    
+    function husokukaku() {
+        let angles = [], originalAngles = [];
+        for (let i = 0; i < nodes.length; i++) {
+            angles[i] = 0;
+            originalAngles[i] = 0;
+        }
+        for (let i = 0; i < faces.length; i++) {
+            const face = faces[i];
+            const node0 = nodes[face[0]], node1 = nodes[face[1]], node2 = nodes[face[2]];
+            // vert0
+            angles[node0.getIndex()] += arccos(node0.getPosition(), node1.getPosition(), node2.getPosition());
+            originalAngles[node0.getIndex()] += arccos(node0.getOriginalPosition(), node1.getOriginalPosition(), node2.getOriginalPosition());
+            // vert1
+            angles[node1.getIndex()] += arccos(node1.getPosition(), node0.getPosition(), node2.getPosition());
+            originalAngles[node1.getIndex()] += arccos(node1.getOriginalPosition(), node0.getOriginalPosition(), node2.getOriginalPosition());
+            // vert2
+            angles[node2.getIndex()] += arccos(node2.getPosition(), node0.getPosition(), node1.getPosition());
+            originalAngles[node2.getIndex()] += arccos(node2.getOriginalPosition(), node0.getOriginalPosition(), node1.getOriginalPosition());
+        }
+        let error = 0;
+        let error_sum = 0;
+        let error_max = 0;
+        let error_min = 10000;
+        for (let i = 0; i < angles.length; i++) {
+            if (originalAngles[i] < 6.2) {
+                continue;
+            }
+            const error_tmp = Math.abs(angles[i]-originalAngles[i]);
+            error += error_tmp;
+            error_sum++;
+
+            if (error_max < error_tmp) {
+                error_max = error_tmp;
+            } else {
+                error_min = error_tmp;
+            }
+        }
+        const errorAvg = error/error_sum;
+        // 不足角の表示
+        $lackAngleAvgOutput.html(errorAvg.toFixed(7));
+        $lackAngleMaxOutput.html(error_max.toFixed(7));
+        $lackAngleMinOutput.html(error_min.toFixed(7));
     }
 
     function setSolveParams(){
