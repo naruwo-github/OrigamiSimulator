@@ -37,8 +37,9 @@ function initDynamicSolver(globals){
     var theta;//[theta, w, normalIndex1, normalIndex2]
     var lastTheta;//[theta, w, normalIndex1, normalIndex2]
 
-    //
+    // 追加したもの
     var avgOriginalPosition;
+    var meshArea;
 
     function syncNodesAndEdges(){
         nodes = globals.model.getNodes();
@@ -53,7 +54,9 @@ function initDynamicSolver(globals){
         initTexturesAndPrograms(globals.gpuMath);
         setSolveParams();
 
+        // 追加したもの
         avgOriginalPosition = getAvgOriginalPosition();
+        meshArea = originalTriangleMeshArea();
     }
 
     var programsInited = false;//flag for initial setup
@@ -190,6 +193,15 @@ function initDynamicSolver(globals){
     var $errorOutput2 = $("#globalErrorMax");
     var $errorOutput3 = $("#globalErrorMin");
 
+    // 不足角のやつ
+    let $lackAngleAvgOutput = $("#lackAngleAvg");
+    let $lackAngleMaxOutput = $("#lackAngleMax");
+    let $lackAngleMinOutput = $("#lackAngleMin");
+    // 三角形の面積比率のやつ
+    let $originalMeshAreaOutput = $("#originalMeshArea");
+    let $nowMeshAreaOutput = $("#nowMeshArea");
+    let $areaRatioOutput = $("#areaRatio");
+
     function getAvgPosition(){
         var xavg = 0;
         var yavg = 0;
@@ -231,6 +243,27 @@ function initDynamicSolver(globals){
             return true;
         }
         return false;
+    }
+
+    // メッシュ全体の面積を返す
+    function originalTriangleMeshArea() {
+        let meshAreaSum = 0;
+        faces.forEach(e => {
+            let posA = nodes[e[0]]._originalPosition;
+            let posB = nodes[e[1]]._originalPosition;
+            let posC = nodes[e[2]]._originalPosition;
+            meshAreaSum += getTriangleArea2D(posA.x, posA.z, posB.x, posB.z, posC.x, posC.z);
+        });
+        return meshAreaSum;
+    }
+
+    function getTriangleArea2D(x1, y1, x2, y2, x3, y3) {
+        return 1/2 * Math.abs((x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3));
+    }
+
+    // 三次元の二つのベクトル成分から、それらが構成する三角形の面積を返す
+    function getTriangleArea3D(vecA1, vecA2, vecA3, vecB1, vecB2, vecB3) {
+        return 1/2 * Math.sqrt(Math.pow(vecA2*vecB3 - vecA3*vecB2, 2) + Math.pow(vecA3*vecB1 - vecA1*vecB3, 2) + Math.pow(vecA1*vecB2 - vecA2*vecB1, 2));
     }
 
     function render(){
@@ -276,13 +309,147 @@ function initDynamicSolver(globals){
                     colors[3*i+2] = color.b;
                 }
             }
+            // 歪みの値を表示
             $errorOutput.html((globalError/nodes.length).toFixed(7) + " %");
             $errorOutput2.html(globalError2.toFixed(7) + " %");
             $errorOutput3.html(globalError3.toFixed(7) + " %");
 
+            // ***
+            let nowMeshArea = 0;
+            faces.forEach(e => {
+                let posA = [positions[3 * e[0] + 0], positions[3 * e[0] + 1], positions[3 * e[0] + 2]];
+                let posB = [positions[3 * e[1] + 0], positions[3 * e[1] + 1], positions[3 * e[1] + 2]];
+                let posC = [positions[3 * e[2] + 0], positions[3 * e[2] + 1], positions[3 * e[2] + 2]];
+                // Y座標を考慮して面積を出す
+                let vecAB = [posB[0]-posA[0], posB[1]-posA[1], posB[2]-posA[2]];
+                let vecAC = [posC[0]-posA[0], posC[1]-posA[1], posC[2]-posA[2]];
+                nowMeshArea += getTriangleArea3D(vecAB[0], vecAB[1], vecAB[2], vecAC[0], vecAC[1], vecAC[2]);
+            });
+            // 三角形メッシュ面積の比の表示
+            $originalMeshAreaOutput.html((meshArea).toFixed(7));
+            $nowMeshAreaOutput.html((nowMeshArea).toFixed(7));
+            $areaRatioOutput.html((nowMeshArea / meshArea).toFixed(7));
+            // ***
+
+            // 佐々木くんのコード！！！
+            husokukaku();
+            // // ***
+            // let nodesCoordinates = []; // 変形中の各座標(3D)
+            // for (let i = 0; i < positions.length; i+=3) {
+            //     const x = positions[i];
+            //     const y = positions[i+1];
+            //     const z = positions[i+2];
+            //     nodesCoordinates.push([x, y, z]);
+            // }
+            // // ある頂点についての不足角を求める
+            // let angleDefectTotal = 0;
+            // let angleDefectMax = 0;
+            // let angleDefectMin = 100000;
+            // for (let i = 0; i < nodesCoordinates.length; i++) {
+            //     // ある頂点iを含む三角形面情報=>三角形を構成する3つの頂点のインデックス(うち一つはiである)
+            //     const constructFaces = faces.filter(item => item.includes(i));
+            //     let angleAroundI = 0;
+            //     for (let j = 0; j < constructFaces.length; j++) {
+            //         const face = constructFaces[j];
+            //         // 面faceを構成する各頂点
+            //         const p0 = nodesCoordinates[face[0]];
+            //         const p1 = nodesCoordinates[face[1]];
+            //         const p2 = nodesCoordinates[face[2]];
+            //         const pi = nodesCoordinates[i]; // こいつの角度を求めるべし
+            //         // 角度piを求める
+            //         if (p0 === pi) {
+            //             // 角度p1 p0 p2
+            //             angleAroundI += calculateAngleByCoords(p1, p0, p2);
+            //         } else if (p1 === pi) {
+            //             // 角度p0 p1 p2
+            //             angleAroundI += calculateAngleByCoords(p0, p1, p2);
+            //         } else if (p2 === pi) {
+            //             //  角度p0 p2 p1
+            //             angleAroundI += calculateAngleByCoords(p0, p2, p1);
+            //         }
+            //     }
+            //     let angleDefectAroundI = Math.min(Math.abs(angleAroundI - 360), Math.abs(angleAroundI - 180), Math.abs(angleAroundI - 90));
+            //     angleDefectTotal += angleDefectAroundI;
+            //     if (angleDefectMax < angleDefectAroundI) {
+            //         angleDefectMax = angleDefectAroundI;
+            //     } else {
+            //         angleDefectMin = angleDefectAroundI;
+            //     }
+            // }
+            // // 不足角の表示
+            // $lackAngleAvgOutput.html((angleDefectTotal / nodesCoordinates.length).toFixed(7));
+            // $lackAngleMaxOutput.html(angleDefectMax.toFixed(7));
+            // $lackAngleMinOutput.html(angleDefectMin.toFixed(7));
+            // // ***
+
         } else {
             console.log("shouldn't be here");
         }
+    }
+
+    // // 三点p0, p1, p2から、角度p1を算出する関数（radianではなくてdegreeで表す）
+    // function calculateAngleByCoords(p0, p1, p2) { // pi = [a, b, c]の形式
+    //     let angle = 0;
+    //     const vec10 = new THREE.Vector3(p0[0] - p1[0], p0[1] - p1[1], p0[2] - p1[2]);
+    //     const vec12 = new THREE.Vector3(p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]);
+    //     // vec10とvec12が成す角をThetaとすると
+    //     const numerator = (vec10.x * vec12.x + vec10.y * vec12.y + vec10.z * vec12.z);
+    //     const denominator = (Math.sqrt(vec10.x * vec10.x + vec10.y * vec10.y + vec10.z * vec10.z) * Math.sqrt(vec12.x * vec12.x + vec12.y * vec12.y + vec12.z * vec12.z));
+    //     const cosTheta = numerator / denominator;
+    //     const theta = Math.acos(cosTheta);
+    //     angle = theta * 180 / Math.PI; // radianからdegreeに直す
+    //     return angle;
+    // }
+
+    function arccos(vert0, vert1, vert2) {
+        const vec01 = vert1.sub(vert0);
+        const vec02 = vert2.sub(vert0);
+        const cos = vec01.dot(vec02)/(vec01.length()*vec02.length());
+        return Math.acos(cos);
+    }
+    
+    function husokukaku() {
+        let angles = [], originalAngles = [];
+        for (let i = 0; i < nodes.length; i++) {
+            angles[i] = 0;
+            originalAngles[i] = 0;
+        }
+        for (let i = 0; i < faces.length; i++) {
+            const face = faces[i];
+            const node0 = nodes[face[0]], node1 = nodes[face[1]], node2 = nodes[face[2]];
+            // vert0
+            angles[node0.getIndex()] += arccos(node0.getPosition(), node1.getPosition(), node2.getPosition());
+            originalAngles[node0.getIndex()] += arccos(node0.getOriginalPosition(), node1.getOriginalPosition(), node2.getOriginalPosition());
+            // vert1
+            angles[node1.getIndex()] += arccos(node1.getPosition(), node0.getPosition(), node2.getPosition());
+            originalAngles[node1.getIndex()] += arccos(node1.getOriginalPosition(), node0.getOriginalPosition(), node2.getOriginalPosition());
+            // vert2
+            angles[node2.getIndex()] += arccos(node2.getPosition(), node0.getPosition(), node1.getPosition());
+            originalAngles[node2.getIndex()] += arccos(node2.getOriginalPosition(), node0.getOriginalPosition(), node1.getOriginalPosition());
+        }
+        let error = 0;
+        let error_sum = 0;
+        let error_max = 0;
+        let error_min = 10000;
+        for (let i = 0; i < angles.length; i++) {
+            if (originalAngles[i] < 6.2) {
+                continue;
+            }
+            const error_tmp = Math.abs(angles[i]-originalAngles[i]);
+            error += error_tmp;
+            error_sum++;
+
+            if (error_max < error_tmp) {
+                error_max = error_tmp;
+            } else {
+                error_min = error_tmp;
+            }
+        }
+        const errorAvg = error/error_sum;
+        // 不足角の表示
+        $lackAngleAvgOutput.html(errorAvg.toFixed(7));
+        $lackAngleMaxOutput.html(error_max.toFixed(7));
+        $lackAngleMinOutput.html(error_min.toFixed(7));
     }
 
     function setSolveParams(){
