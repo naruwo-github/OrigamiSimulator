@@ -43,6 +43,10 @@ p{
     color: #34495e;
     font-weight: 900;
 }
+#lackOfFacesText{
+    color: #34aa55;
+    font-weight: 900;
+}
 #hideAdvancedOptions{
     font-size: 14px;
     color: #34495e;
