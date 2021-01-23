@@ -957,7 +957,7 @@ function initDrawApp(globals) {
     if (straight === true) {
       straightLineList.pop();
     } else if (ruling1 === true) {
-      if(optimizedRuling.length > 0) {
+      if (optimizedRuling.length > 0) {
         optimizedRuling = [];
       } else {
         /*
@@ -967,7 +967,7 @@ function initDrawApp(globals) {
         }
         */
         //スプライン曲線の制御点を7つ消す
-        for(var i = 0; i < 7; i++){
+        for (var i = 0; i < 7; i++) {
           splineList.pop();
         }
 
@@ -978,7 +978,7 @@ function initDrawApp(globals) {
       gridTool.points.pop();
     } else if (regularTrianglationTool.flag === true) {
       regularTrianglationTool.points.pop();
-    } else if (qtreeFlag === true){
+    } else if (qtreeFlag === true) {
       q_tree.points.pop();
     } else if (terminalInputButton.flag === true) {
       if (terminalInputButton.points.length > 0) {

@@ -1125,6 +1125,7 @@ function initPattern(globals){
     function removeRedundantVertices(fold, epsilon){
         //展開図中の○px以内の点を同じ点として処理する関数
         //○＝epsilonで、svg入力の時のモーダルがその設定箇所
+        // コレ本当？！
 
         var old2new = [];
         var numRedundant = 0;
