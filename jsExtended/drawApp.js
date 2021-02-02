@@ -228,7 +228,14 @@ function initDrawApp(globals) {
   // NOTE: 新たに生成する折り線情報を持つオブジェクト
   var newFoldingLineObject = { colors: [], lines: []};
   //=====================================================
-  
+
+  //=====================================================
+  // 折れ線ツール
+  var oresenFlag = false;
+  var oresenButton = document.getElementById("oresen-button");
+  var oresenSplineList = [];
+  var oresenSplineDistList = [];
+  //=====================================================
 
   // NOTE: キャンバスの描画関数
   function drawCanvas() {
@@ -239,6 +246,9 @@ function initDrawApp(globals) {
     startEndInformation = [];
     gridLineList = [];
     newFoldingLineObject = { colors: [], lines: []};
+
+    // TODO: あああ
+    oresenSplineDistList = [];
 
     //一時的にやってる
     anchorPoints.points = [];
@@ -289,31 +299,31 @@ function initDrawApp(globals) {
       //splineツールの制御点
       let i, t;
       for (i = 0; i < splineList.length; i++) {
-        var coo = splineList[i];
+        let coo = splineList[i];
         context.fillStyle = lineColors[4];
         context.fillRect(coo[0]-3,coo[1]-3,7,7);
       }
 
       for (i = 0; i < splineList.length; i+=7) {
-        var sp1 = splineList[i];
-        var sp2 = splineList[i+1];
-        var sp3 = splineList[i+2];
-        var sp4 = splineList[i+3];
-        var sp5 = splineList[i+4];
-        var sp6 = splineList[i+5];
-        var sp7 = splineList[i+6];
+        let sp1 = splineList[i];
+        let sp2 = splineList[i+1];
+        let sp3 = splineList[i+2];
+        let sp4 = splineList[i+3];
+        let sp5 = splineList[i+4];
+        let sp6 = splineList[i+5];
+        let sp7 = splineList[i+6];
         
-        var points = [[sp1[0], sp1[1]], [sp2[0], sp2[1]], [sp3[0], sp3[1]], 
+        let points = [[sp1[0], sp1[1]], [sp2[0], sp2[1]], [sp3[0], sp3[1]], 
         [sp4[0], sp4[1]], [sp5[0], sp5[1]], [sp6[0], sp6[1]], [sp7[0], sp7[1]]];
 
-        var spline = new BSpline(points, 5);
-        var splineDist = 0.0;
+        let spline = new BSpline(points, 5);
+        let splineDist = 0.0;
 
         context.strokeStyle = "rgb(0,0,0)";
         context.lineWidth = 2;
         for (t = 0; t < 1; t+=0.01) {
-          var p1 = spline.calcAt(t);
-          var p2 = spline.calcAt(t+0.01);
+          let p1 = spline.calcAt(t);
+          let p2 = spline.calcAt(t+0.01);
           context.beginPath();
           context.moveTo(p1[0], p1[1]);
           context.lineTo(p2[0], p2[1]);
@@ -324,6 +334,49 @@ function initDrawApp(globals) {
         }
         splineDistList.push(splineDist);
         globals.ruling.findSplineRuling(rulingNum,startEndInformation,outputList,context,splineDistList[splineDistList.length - 1],spline);
+      }
+    }
+
+    // NOTE: 折れ線用のスプライン曲線を描画
+    if (oresenSplineList.length > 0 && oresenSplineList.length % 7 == 0) {
+      //splineツールの制御点
+      let i, t;
+      for (i = 0; i < oresenSplineList.length; i++) {
+        let coo = oresenSplineList[i];
+        context.fillStyle = lineColors[4];
+        context.fillRect(coo[0]-3,coo[1]-3,7,7);
+      }
+
+      for (i = 0; i < oresenSplineList.length; i+=7) {
+        let sp1 = oresenSplineList[i];
+        let sp2 = oresenSplineList[i+1];
+        let sp3 = oresenSplineList[i+2];
+        let sp4 = oresenSplineList[i+3];
+        let sp5 = oresenSplineList[i+4];
+        let sp6 = oresenSplineList[i+5];
+        let sp7 = oresenSplineList[i+6];
+        
+        let points = [[sp1[0], sp1[1]], [sp2[0], sp2[1]], [sp3[0], sp3[1]], 
+        [sp4[0], sp4[1]], [sp5[0], sp5[1]], [sp6[0], sp6[1]], [sp7[0], sp7[1]]];
+
+        let spline = new BSpline(points, 5);
+        let splineDist = 0.0;
+
+        // TODO: うまく折れ線に近似したい→展開図情報として扱いたい
+        context.strokeStyle = "rgb(0,0,0)";
+        context.lineWidth = 2;
+        for (t = 0; t < 1; t+=0.1) {
+          let p1 = spline.calcAt(t);
+          let p2 = spline.calcAt(t+0.01);
+          context.beginPath();
+          context.moveTo(p1[0], p1[1]);
+          context.lineTo(p2[0], p2[1]);
+          context.closePath();
+          context.stroke();
+
+          splineDist += dist(p1[0], p1[1], p2[0], p2[1]);
+        }
+        oresenSplineDistList.push(splineDist);
       }
     }
 
@@ -655,6 +708,8 @@ function initDrawApp(globals) {
       } else { // 10以上ならクリックしたところに素直に入力(この時canvasのoffset距離であることに注意)
         terminalInputButton.points.push([e.offsetX, e.offsetY]);
       }
+    } else if (oresenFlag) {
+      // 特に処理はない
     } else {
      canvasReload(); // canvasのリロード
      readerFile.readAsText(globals.svgFile); //svgファイルをテキストで取得
@@ -665,7 +720,7 @@ function initDrawApp(globals) {
   });
 
   canvas.addEventListener("mousedown", e => {
-    if(ruling1 == true) { //rulingツール1がon
+    if (ruling1) { //rulingツール1がon
       dragging = true;
       /*
       //以下、移動する制御点(ベジェ曲線の)を求める
@@ -689,11 +744,32 @@ function initDrawApp(globals) {
       */
       //移動する制御点(スプライン曲線の)を求める
       if (splineList.length > 0) {
-        var distance = 10000;
-        var tmp = 10000;
-        var ind = 10000;
-        for (var i = 0; i < splineList.length; i++){
-          var coo = splineList[i];
+        let distance = 10000;
+        let tmp = 10000;
+        let ind = 10000;
+        for (let i = 0; i < splineList.length; i++){
+          let coo = splineList[i];
+          tmp = dist(coo[0], coo[1], e.offsetX, e.offsetY);
+          if (tmp < distance){
+            distance = tmp;
+            ind = i;
+          }
+        }
+        if (distance < 10.0) {
+          movedIndex2 = ind;
+          cpMove2 = true;
+        }
+      }
+    }
+    if (oresenFlag) { // Oresenツールがon
+      dragging = true;
+      // 移動する制御点(スプライン曲線の)を求める
+      if (oresenSplineList.length > 0) {
+        let distance = 10000;
+        let tmp = 10000;
+        let ind = 10000;
+        for (let i = 0; i < oresenSplineList.length; i++){
+          let coo = oresenSplineList[i];
           tmp = dist(coo[0], coo[1], e.offsetX, e.offsetY);
           if (tmp < distance){
             distance = tmp;
@@ -716,8 +792,12 @@ function initDrawApp(globals) {
         canvasReload();
         drawCanvas();
       }else */if(cpMove2 == true) {
-        //これはスプライン
-        splineList.splice(movedIndex2,1,[e.offsetX,e.offsetY]);
+        // これはスプライン
+        if (oresenFlag) {
+          oresenSplineList.splice(movedIndex2,1,[e.offsetX,e.offsetY]);
+        } else {
+          splineList.splice(movedIndex2,1,[e.offsetX,e.offsetY]);
+        }
         canvasReload();
         drawCanvas();
       }else{
@@ -735,7 +815,11 @@ function initDrawApp(globals) {
         dragging = false;
       }else */if (cpMove2 == true) {
         //これはスプライン
-        splineList.splice(movedIndex2,1,[e.offsetX,e.offsetY]);
+        if (oresenFlag) {
+          oresenSplineList.splice(movedIndex2,1,[e.offsetX,e.offsetY]);
+        } else {
+          splineList.splice(movedIndex2,1,[e.offsetX,e.offsetY]);
+        }
         cpMove2 = false;
         dragging = false;
       } else {
@@ -745,7 +829,11 @@ function initDrawApp(globals) {
         globals.beziercurve.defineBeziPoint(dragList, beziList);
         */
         //ここでスプライン曲線の制御点を求める処理
-        globals.beziercurve.defineSplinePoint(dragList, splineList);
+        if (oresenFlag) {
+          globals.beziercurve.defineSplinePoint(dragList, oresenSplineList);
+        } else {
+          globals.beziercurve.defineSplinePoint(dragList, splineList);
+        }
         //tmpCooListの初期化
         dragList = [];
       }
@@ -777,6 +865,8 @@ function initDrawApp(globals) {
       qtreeButton.style.backgroundColor = buttonColor;
       terminalInputButton.flag = false;
       terminalInputButton.style.backgroundColor = buttonColor;
+      oresenFlag = false;
+      oresenButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -803,6 +893,8 @@ function initDrawApp(globals) {
       qtreeButton.style.backgroundColor = buttonColor;
       terminalInputButton.flag = false;
       terminalInputButton.style.backgroundColor = buttonColor;
+      oresenFlag = false;
+      oresenButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -829,6 +921,8 @@ function initDrawApp(globals) {
       qtreeButton.style.backgroundColor = buttonColor;
       terminalInputButton.flag = false;
       terminalInputButton.style.backgroundColor = buttonColor;
+      oresenFlag = false;
+      oresenButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -855,6 +949,8 @@ function initDrawApp(globals) {
       qtreeButton.style.backgroundColor = buttonColor;
       terminalInputButton.flag = false;
       terminalInputButton.style.backgroundColor = buttonColor;
+      oresenFlag = false;
+      oresenButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -879,6 +975,8 @@ function initDrawApp(globals) {
       qtreeButton.style.backgroundColor = buttonColor;
       terminalInputButton.flag = false;
       terminalInputButton.style.backgroundColor = buttonColor;
+      oresenFlag = false;
+      oresenButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -905,6 +1003,8 @@ function initDrawApp(globals) {
       regularTriangleButton.style.backgroundColor = buttonColor;
       terminalInputButton.flag = false;
       terminalInputButton.style.backgroundColor = buttonColor;
+      oresenFlag = false;
+      oresenButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -928,6 +1028,33 @@ function initDrawApp(globals) {
       regularTriangleButton.style.backgroundColor = buttonColor;
       qtreeFlag = false;
       qtreeButton.style.backgroundColor = buttonColor;
+      oresenFlag = false;
+      oresenButton.style.backgroundColor = buttonColor;
+    }
+  });
+
+  oresenButton.addEventListener("click", function() {
+    if(oresenFlag) {
+      oresenFlag = false;
+      oresenButton.style.backgroundColor = buttonColor;
+    } else {
+      oresenFlag = true;
+      oresenButton.style.backgroundColor = '#aaaaaa';
+      //ほかのボタン
+      straight = false;
+      straightLineButton.style.backgroundColor = buttonColor;
+      ruling1 = false;
+      ruling1Button.style.backgroundColor = buttonColor;
+      ruling2 = false;
+      ruling2Button.style.backgroundColor = buttonColor;
+      gridTool.flag = false;
+      gridButton.style.backgroundColor = buttonColor;
+      regularTrianglationTool.flag = false;
+      regularTriangleButton.style.backgroundColor = buttonColor;
+      qtreeFlag = false;
+      qtreeButton.style.backgroundColor = buttonColor;
+      terminalInputButton.flag = false;
+      terminalInputButton.style.backgroundColor = buttonColor;
     }
   });
 
@@ -957,7 +1084,7 @@ function initDrawApp(globals) {
     if (straight === true) {
       straightLineList.pop();
     } else if (ruling1 === true) {
-      if(optimizedRuling.length > 0) {
+      if (optimizedRuling.length > 0) {
         optimizedRuling = [];
       } else {
         /*
@@ -967,7 +1094,7 @@ function initDrawApp(globals) {
         }
         */
         //スプライン曲線の制御点を7つ消す
-        for(var i = 0; i < 7; i++){
+        for (var i = 0; i < 7; i++) {
           splineList.pop();
         }
 
@@ -978,7 +1105,7 @@ function initDrawApp(globals) {
       gridTool.points.pop();
     } else if (regularTrianglationTool.flag === true) {
       regularTrianglationTool.points.pop();
-    } else if (qtreeFlag === true){
+    } else if (qtreeFlag === true) {
       q_tree.points.pop();
     } else if (terminalInputButton.flag === true) {
       if (terminalInputButton.points.length > 0) {
@@ -986,6 +1113,11 @@ function initDrawApp(globals) {
       } else {
         terminalInputButton.inputLineList.pop();
         terminalInputButton.inputLineColors.pop();
+      }
+    } else if (oresenFlag) {
+      //スプライン曲線の制御点を7つ消す
+      for (var i = 0; i < 7; i++) {
+        oresenSplineList.pop();
       }
     } else {
       // NOTE: ...
@@ -1147,6 +1279,9 @@ function initDrawApp(globals) {
 
     qtreeFlag = false;
     q_tree.points = [];
+
+    oresenSplineDistList = [];
+    oresenSplineList = [];
 
     canvasReload();
     drawCanvas();
